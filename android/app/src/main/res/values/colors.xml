@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppColors.blueBottom, so the splash matches the app's background. -->
+    <color name="splash_background">#1B3FA0</color>
+</resources>

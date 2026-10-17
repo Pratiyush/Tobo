@@ -10,15 +10,23 @@ import 'providers/words_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
-  final words = parseWords(await rootBundle.loadString(wordsAsset));
-  runApp(
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-        wordsProvider.overrideWithValue(words),
-      ],
-      child: const GermanWordsApp(),
-    ),
-  );
+  try {
+    // Load both at once; the splash stays up until the first frame.
+    final (prefs, json) = await (
+      SharedPreferences.getInstance(),
+      rootBundle.loadString(wordsAsset),
+    ).wait;
+    runApp(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          wordsProvider.overrideWithValue(parseWords(json)),
+        ],
+        child: const GermanWordsApp(),
+      ),
+    );
+  } catch (error) {
+    // Never leave the user staring at the splash screen.
+    runApp(StartupErrorApp(error: error));
+  }
 }
