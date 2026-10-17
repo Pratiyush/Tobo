@@ -68,3 +68,28 @@ class _RootScreenState extends ConsumerState<RootScreen> {
     );
   }
 }
+
+/// Shown instead of the app if startup fails.
+class StartupErrorApp extends StatelessWidget {
+  const StartupErrorApp({super.key, required this.error});
+
+  final Object error;
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    title: appTitle,
+    debugShowCheckedModeBanner: false,
+    theme: buildTheme(),
+    home: Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            'Wortschatz couldn’t start.\n\n$error',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    ),
+  );
+}

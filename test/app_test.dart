@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/app.dart';
 import 'package:german_words/games/hive.dart';
 import 'package:german_words/models/word.dart';
 import 'package:german_words/providers/progress_provider.dart';
@@ -14,6 +15,12 @@ import 'package:german_words/screens/spelling_screen.dart';
 import 'helpers.dart';
 
 void main() {
+  testWidgets('a failed startup explains itself', (tester) async {
+    await tester.pumpWidget(const StartupErrorApp(error: 'boom'));
+    expect(find.textContaining('couldn’t start'), findsOneWidget);
+    expect(find.textContaining('boom'), findsOneWidget);
+  });
+
   testWidgets('home shows stats and the word lists', (tester) async {
     final c = await createContainer();
     await tester.pumpWidget(buildApp(c));
