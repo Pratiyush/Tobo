@@ -18,6 +18,7 @@ import 'package:german_words/models/word.dart';
 import 'package:german_words/widgets/level_badge.dart';
 import 'package:german_words/models/level.dart';
 import 'package:german_words/providers/daily_goal_provider.dart';
+import 'package:german_words/providers/daily_hive_provider.dart';
 import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/progress_provider.dart';
@@ -350,5 +351,37 @@ void main() {
     await tester.pumpAndSettle();
     expect(c.read(settingsProvider).levels.sequence, isTrue);
     expect(c.read(wordListsProvider).first.level, Level.a1);
+  });
+
+  testWidgets('Daily Hive: the shared board plays once and offers a share', (
+    tester,
+  ) async {
+    final c = await launch(tester);
+    await tapText(tester, 'Practice');
+    await tester.tap(find.byKey(const ValueKey('daily-hive')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Daily Hive ·'), findsOneWidget);
+    await shot(tester, '10-daily-hive');
+
+    final state = tester.state(find.byType(HiveScreen)) as dynamic;
+    final words = (state.debugTargets as List).length;
+    for (var w = 0; w < words; w++) {
+      final path =
+          (tester.state(find.byType(HiveScreen)) as dynamic).debugTargetPath
+              as List<Hex>;
+      for (final hex in path) {
+        await tester.tap(
+          find.byKey(ValueKey('hex-${hex.q}-${hex.r}')),
+          warnIfMissed: false,
+        );
+        await tester.pump();
+      }
+      await tester.pump(const Duration(milliseconds: 600));
+    }
+    await tester.pumpAndSettle();
+    expect(find.text('SHARE RESULT'), findsOneWidget);
+    expect(c.read(dailyHiveResultProvider), 3);
+    await tapText(tester, 'Done');
+    expect(find.textContaining('Done today: ★★★'), findsOneWidget);
   });
 }
