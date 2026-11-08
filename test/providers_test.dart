@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/progress_provider.dart';
 import 'package:german_words/providers/settings_provider.dart';
+import 'package:german_words/providers/speech_provider.dart';
 import 'package:german_words/providers/stats_provider.dart';
 import 'package:german_words/providers/words_provider.dart';
 
@@ -103,4 +104,25 @@ void main() {
     c.read(progressProvider.notifier).learn(id);
     expect(c.read(gamePoolProvider(false)).first.id, id);
   });
+
+  test(
+    'the speaker retries a failed voice check and never caches a no',
+    () async {
+      final engine = FakeSpeechEngine(available: false);
+      final speaker = Speaker(engine, retryDelay: Duration.zero);
+
+      expect(await speaker.say('der Tag'), isFalse);
+      expect(engine.availabilityChecks, 2, reason: 'one retry');
+      expect(engine.spoken, isEmpty);
+
+      // The engine finishes binding, or the user installs a German voice.
+      engine.available = true;
+      expect(await speaker.say('der Tag'), isTrue);
+      expect(engine.spoken, ['der Tag']);
+
+      // A yes is cached.
+      await speaker.say('die Zeit');
+      expect(engine.availabilityChecks, 3);
+    },
+  );
 }

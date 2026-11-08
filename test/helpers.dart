@@ -18,11 +18,16 @@ final List<Word> deck = parseWords(File(wordsAsset).readAsStringSync());
 class FakeSpeechEngine implements SpeechEngine {
   FakeSpeechEngine({this.available = true});
 
-  final bool available;
+  /// What [isLanguageAvailable] answers; tests may flip it.
+  bool available;
+  int availabilityChecks = 0;
   final spoken = <String>[];
 
   @override
-  Future<bool> isLanguageAvailable(String locale) async => available;
+  Future<bool> isLanguageAvailable(String locale) async {
+    availabilityChecks++;
+    return available;
+  }
 
   @override
   Future<void> setLanguage(String locale) async {}

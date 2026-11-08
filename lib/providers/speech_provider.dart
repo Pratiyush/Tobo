@@ -45,15 +45,29 @@ final speechEngineProvider = Provider<SpeechEngine>((ref) {
 
 /// Speaks German. Widgets use this, never `FlutterTts` directly.
 class Speaker {
-  Speaker(this._engine);
+  Speaker(this._engine, {this.retryDelay = const Duration(milliseconds: 800)});
 
   final SpeechEngine _engine;
-  bool? _available;
+
+  /// Wait before asking the engine a second time. A cold Android TTS engine
+  /// can fail its first query while it is still binding.
+  final Duration retryDelay;
+
+  /// Only a positive answer is cached: a "no" may be a transient failure, or
+  /// the user may install a German voice while the app is running.
+  bool _available = false;
 
   /// Returns false when the device has no German voice.
   Future<bool> say(String text) async {
-    _available ??= await _engine.isLanguageAvailable(germanLocale);
-    if (!_available!) return false;
+    if (!_available) {
+      _available =
+          await _engine.isLanguageAvailable(germanLocale) ||
+          await Future<bool>.delayed(
+            retryDelay,
+            () => _engine.isLanguageAvailable(germanLocale),
+          );
+    }
+    if (!_available) return false;
     await _engine.stop();
     await _engine.setLanguage(germanLocale);
     await _engine.speak(text);
