@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/word_repository.dart';
 import '../models/word.dart';
+import 'content_client.dart';
 
 /// Recorded pronunciations, one `<word id>.mp3` each.
 const audioDir = 'assets/audio/de';
@@ -32,6 +33,22 @@ final class AssetMedia extends MediaRef {
 
   @override
   String toString() => 'AssetMedia($path)';
+}
+
+/// A file downloaded from the CDN into the app's content store.
+final class FileMedia extends MediaRef {
+  const FileMedia(this.path);
+
+  final String path;
+
+  @override
+  bool operator ==(Object other) => other is FileMedia && other.path == path;
+
+  @override
+  int get hashCode => path.hashCode;
+
+  @override
+  String toString() => 'FileMedia($path)';
 }
 
 final class RemoteMedia extends MediaRef {
@@ -70,17 +87,19 @@ class BundledContentSource implements ContentSource {
   final AssetBundle _bundle;
   Set<String> _audioIds = const {};
 
+  /// sha256 of every bundled clip (the seed), keyed by word id.
+  Map<String, String> seedClipHashes = const {};
+
   @override
   Future<List<Word>> loadWords() async {
     final (words, manifest) = await (
       _bundle.loadString(wordsAsset),
       _bundle.loadString(audioManifestAsset),
     ).wait;
-    _audioIds = {
-      for (final id
-          in (jsonDecode(manifest) as Map<String, dynamic>)['ids'] as List)
-        id as String,
-    };
+    final audio = jsonDecode(manifest) as Map<String, dynamic>;
+    _audioIds = {for (final id in audio['ids'] as List) id as String};
+    seedClipHashes = (audio['sha256'] as Map<String, dynamic>? ?? const {})
+        .cast<String, String>();
     return parseWords(words);
   }
 
@@ -90,6 +109,36 @@ class BundledContentSource implements ContentSource {
 
   @override
   MediaRef? imageFor(String wordId) => null;
+}
+
+/// The bundled seed overlaid with content downloaded from the CDN
+/// ([ContentStore]): newer words when installed, downloaded clips where
+/// they changed, the bundled ones everywhere else.
+class UpdatableContentSource extends BundledContentSource {
+  UpdatableContentSource(this.store, [super.bundle]);
+
+  final ContentStore store;
+
+  @override
+  Future<List<Word>> loadWords() async {
+    final seed = await super.loadWords();
+    final installed = store.words;
+    if (installed == null) return seed;
+    try {
+      final words = [
+        for (final row in installed) Word.fromJson(row as Map<String, dynamic>),
+      ];
+      return words.isEmpty ? seed : words;
+    } on Object {
+      return seed;
+    }
+  }
+
+  @override
+  MediaRef? audioFor(String wordId) {
+    final downloaded = store.clipPath(wordId);
+    return downloaded != null ? FileMedia(downloaded) : super.audioFor(wordId);
+  }
 }
 
 /// Injected in `main()` with `overrideWithValue`, like the word list.

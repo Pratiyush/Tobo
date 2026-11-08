@@ -75,6 +75,7 @@ class AudioPlayersEngine implements AudioEngine {
       AssetMedia(:final path) => AssetSource(
         path.replaceFirst(RegExp('^assets/'), ''),
       ),
+      FileMedia(:final path) => DeviceFileSource(path),
       RemoteMedia(:final url) => UrlSource(url.toString()),
     });
   }

@@ -4,4 +4,7 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Debug only: plain HTTP to the local content server (content/tools/serve)
+         from the emulator (10.0.2.2) for the content E2E test. -->
+    <application android:networkSecurityConfig="@xml/network_security_config"/>
 </manifest>

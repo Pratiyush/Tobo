@@ -17,6 +17,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
+
 void main(List<String> args) {
   if (args.length != 1) {
     stderr.writeln(
@@ -44,19 +46,21 @@ void main(List<String> args) {
   target.createSync(recursive: true);
 
   final copied = <String>[];
+  final hashes = <String, String>{};
   final missing = <String>[];
   for (final id in ids) {
     final clip = File('${source.path}/$id.mp3');
     if (clip.existsSync()) {
       clip.copySync('${target.path}/$id.mp3');
       copied.add(id);
+      hashes[id] = sha256.convert(clip.readAsBytesSync()).toString();
     } else {
       missing.add(id);
     }
   }
 
   File('${target.path}/manifest.json').writeAsStringSync(
-    '${const JsonEncoder.withIndent('  ').convert({'lang': 'de', 'source': 'lernle app/assets/audio/de (ElevenLabs v3)', 'count': copied.length, 'ids': copied})}\n',
+    '${const JsonEncoder.withIndent('  ').convert({'lang': 'de', 'source': 'lernle app/assets/audio/de (ElevenLabs v3)', 'count': copied.length, 'ids': copied, 'sha256': hashes})}\n',
   );
   stdout.writeln(
     'Copied ${copied.length} of ${ids.length} clips to ${target.path}'

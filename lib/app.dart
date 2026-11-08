@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ads/ads_service.dart';
+import 'providers/content_update_provider.dart';
 import 'providers/progress_provider.dart';
 import 'providers/stats_provider.dart';
 import 'screens/home_screen.dart';
@@ -42,9 +43,11 @@ class _RootScreenState extends ConsumerState<RootScreen> {
   void initState() {
     super.initState();
     // Consent (UMP, then ATT) needs a visible app, so start after frame one.
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => ref.read(adsServiceProvider).start(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(adsServiceProvider).start();
+      // At most once a day; silent when offline.
+      ref.read(contentUpdateProvider.notifier).checkDaily();
+    });
     _lifecycle = AppLifecycleListener(
       onResume: () => ref
         ..invalidate(dueWordsProvider)
