@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AppColors.blueTop to blueBottom, like the app's ground. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="270"
+        android:startColor="#2E7BC4"
+        android:endColor="#1B3FA0"/>
+</shape>
