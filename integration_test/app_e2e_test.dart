@@ -380,8 +380,11 @@ void main() {
     }
     await tester.pumpAndSettle();
     expect(find.text('SHARE RESULT'), findsOneWidget);
-    expect(c.read(dailyHiveResultProvider), 3);
+    expect(c.read(dailyHiveResultProvider), (stars: 3, hints: 0));
     await tapText(tester, 'Done');
-    expect(find.textContaining('Done today: ★★★'), findsOneWidget);
+    expect(
+      find.textContaining('Done today: ★★★. Tap to share'),
+      findsOneWidget,
+    );
   });
 }

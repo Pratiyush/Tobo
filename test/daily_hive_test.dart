@@ -76,10 +76,35 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
     }
     await tester.pumpAndSettle();
-    expect(c.read(dailyHiveResultProvider), 3);
+    expect(c.read(dailyHiveResultProvider), (stars: 3, hints: 0));
     expect(find.text('NEXT ROUND'), findsNothing);
     await tester.tap(find.text('SHARE RESULT'));
     await tester.pump();
     expect(shared.single, day.shareText(stars: 3, hints: 0));
+  });
+
+  testWidgets('a played board shares from the Practice tab card', (
+    tester,
+  ) async {
+    final shared = <String>[];
+    final c = await createContainer(
+      overrides: [
+        shareTextProvider.overrideWithValue((t) async => shared.add(t)),
+      ],
+    );
+    c.read(dailyHiveResultProvider.notifier).record(2, 1);
+    await tester.pumpWidget(buildApp(c));
+    await tester.tap(find.text('Practice'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('Done today: ★★☆. Tap to share'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('daily-hive')));
+    await tester.pump();
+    expect(
+      shared.single,
+      c.read(dailyHiveProvider).shareText(stars: 2, hints: 1),
+    );
   });
 }

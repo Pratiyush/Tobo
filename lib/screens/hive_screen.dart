@@ -169,7 +169,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
       feedback.roundEnd();
       ref.read(bestScoresProvider.notifier).submit('hive', _score + points);
       if (widget.daily != null) {
-        ref.read(dailyHiveResultProvider.notifier).record(_stars);
+        ref.read(dailyHiveResultProvider.notifier).record(_stars, _roundHints);
       }
     } else {
       feedback.right(combo: _combo.current);

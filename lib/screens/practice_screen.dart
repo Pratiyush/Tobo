@@ -90,13 +90,18 @@ class PracticeScreen extends ConsumerWidget {
                 title: 'Daily Hive · ${daily.level.label}',
                 subtitle: result == null
                     ? 'Today\'s board, the same for every learner'
-                    : 'Done today: ${'★' * result}${'☆' * (3 - result)}. '
-                          'New board tomorrow',
+                    : 'Done today: ${'★' * result.stars}'
+                          '${'☆' * (3 - result.stars)}. Tap to share',
                 icon: Icons.today_rounded,
                 color: AppColors.gold,
                 onTap: result == null
                     ? () => open(HiveScreen(daily: daily))
-                    : () {},
+                    : () => ref.read(shareTextProvider)(
+                        daily.shareText(
+                          stars: result.stars,
+                          hints: result.hints,
+                        ),
+                      ),
               );
             },
           ),

@@ -17,22 +17,30 @@ final dailyHiveProvider = Provider<DailyHive>((ref) {
   );
 });
 
-/// Stars earned on today's board (0–3), or null when not played yet.
-class DailyHiveResult extends Notifier<int?> {
-  @override
-  int? build() => ref
-      .watch(sharedPreferencesProvider)
-      .getInt(ref.watch(dailyHiveProvider).prefsKey);
+/// Today's board result, or null when not played yet.
+typedef DailyResult = ({int stars, int hints});
 
-  void record(int stars) {
-    state = stars;
-    ref
-        .read(sharedPreferencesProvider)
-        .setInt(ref.read(dailyHiveProvider).prefsKey, stars);
+class DailyHiveResult extends Notifier<DailyResult?> {
+  @override
+  DailyResult? build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final key = ref.watch(dailyHiveProvider).prefsKey;
+    final stars = prefs.getInt(key);
+    return stars == null
+        ? null
+        : (stars: stars, hints: prefs.getInt('${key}_hints') ?? 0);
+  }
+
+  void record(int stars, int hints) {
+    state = (stars: stars, hints: hints);
+    final key = ref.read(dailyHiveProvider).prefsKey;
+    ref.read(sharedPreferencesProvider)
+      ..setInt(key, stars)
+      ..setInt('${key}_hints', hints);
   }
 }
 
-final dailyHiveResultProvider = NotifierProvider<DailyHiveResult, int?>(
+final dailyHiveResultProvider = NotifierProvider<DailyHiveResult, DailyResult?>(
   DailyHiveResult.new,
 );
 
