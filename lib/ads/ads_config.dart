@@ -11,6 +11,11 @@ const adsEnabled = bool.fromEnvironment('ADS_ENABLED');
 /// release build. Never set it for a store build.
 const forceTestAdUnits = bool.fromEnvironment('ADS_TEST_UNITS');
 
+/// QA only: `--dart-define=ADS_DEBUG_EEA=true` makes UMP treat the device as
+/// being in the EEA, so the consent form shows on an emulator anywhere.
+/// Emulators are test devices automatically. Never set it for a store build.
+const debugConsentInEea = bool.fromEnvironment('ADS_DEBUG_EEA');
+
 enum AdKind { banner, interstitial, rewarded }
 
 /// Real ad unit ids from the AdMob account (pub-5964569110696877). Empty

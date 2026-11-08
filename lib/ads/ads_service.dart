@@ -116,7 +116,13 @@ class GoogleAdsService implements AdsService {
     final consent = ConsentInformation.instance;
     final updated = Completer<void>();
     consent.requestConsentInfoUpdate(
-      ConsentRequestParameters(),
+      ConsentRequestParameters(
+        consentDebugSettings: debugConsentInEea
+            ? ConsentDebugSettings(
+                debugGeography: DebugGeography.debugGeographyEea,
+              )
+            : null,
+      ),
       updated.complete,
       (error) {
         _log('consent update failed: ${error.message}');
@@ -264,8 +270,8 @@ final adsServiceProvider = Provider<AdsService>((ref) {
   );
 });
 
-/// Anchored adaptive banner for menus and lists only (placement map). It
-/// takes no space until an ad has loaded.
+/// Standard banner for menus and lists only (placement map). It takes no
+/// space until an ad has loaded.
 class AdBanner extends ConsumerStatefulWidget {
   const AdBanner({super.key});
 
@@ -289,8 +295,11 @@ class _AdBannerState extends ConsumerState<AdBanner> {
     final unit = ads.bannerUnit;
     if (unit == null || width == _width) return;
     _width = width;
-    final size = await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width);
-    if (!mounted || size == null) return;
+    // Standard 320x50, not the "large adaptive" size (137 dp on a Pixel 7,
+    // 15% of the screen): this is a learning app's menu. To trade calm for
+    // eCPM, use AdSize.getLargeAnchoredAdaptiveBannerAdSize(width).
+    const size = AdSize.banner;
+    if (!mounted) return;
     await _ad?.dispose();
     _ad = BannerAd(
       adUnitId: unit,
@@ -321,8 +330,12 @@ class _AdBannerState extends ConsumerState<AdBanner> {
             _load(constraints.maxWidth.truncate());
             final ad = _ad;
             if (!_loaded || ad == null) return const SizedBox.shrink();
-            return Padding(
-              // Keep the ad clear of tap targets above and below it.
+            return Container(
+              // A full-width white strip, keeping the ad clear of the tap
+              // targets above and below it.
+              width: double.infinity,
+              color: Colors.white,
+              alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: SizedBox(
                 width: ad.size.width.toDouble(),

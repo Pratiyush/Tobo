@@ -70,7 +70,7 @@ class _RootScreenState extends ConsumerState<RootScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           // One banner for all three tabs (menus only, per the placement map).
-          const ColoredBox(color: Colors.white, child: AdBanner()),
+          const AdBanner(),
           NavigationBar(
             selectedIndex: _tab,
             onDestinationSelected: (i) => setState(() => _tab = i),
