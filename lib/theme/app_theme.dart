@@ -10,7 +10,9 @@ abstract final class AppColors {
   static const orange = Color(0xFFF2A03D);
   static const orangeDeep = Color(0xFFD9822B);
   static const green = Color(0xFF34B36B);
-  static const red = Color(0xFFE5484D);
+  // Errors use the flag red (die); the old #E5484D read as pinkish coral,
+  // which the hub rules out.
+  static const red = Color(0xFFDD1F26);
   static const ink = Color(0xFF1F2A44);
   static const inkSoft = Color(0xFF66718A);
   static const card = Colors.white;
