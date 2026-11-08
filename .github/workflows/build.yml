@@ -21,7 +21,7 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed lib test tool
+      - run: dart format --output=none --set-exit-if-changed lib test tool integration_test test_driver
       - run: flutter analyze
       - run: flutter test
 
@@ -41,12 +41,20 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Play upload format: obfuscated AAB; symbols kept for crash reports.
+      # Signed with the upload key only when android/key.properties exists.
+      - run: flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
       - run: flutter build apk --release
-      - run: cp build/app/outputs/flutter-apk/app-release.apk wortschatz.apk
+      - run: |
+          cp build/app/outputs/flutter-apk/app-release.apk wortschatz.apk
+          cp build/app/outputs/bundle/release/app-release.aab wortschatz.aab
       - uses: actions/upload-artifact@v4
         with:
           name: wortschatz-android
-          path: wortschatz.apk
+          path: |
+            wortschatz.apk
+            wortschatz.aab
+            build/symbols
 
   ios:
     name: iOS app (unsigned)
@@ -70,3 +78,52 @@ jobs:
         with:
           name: wortschatz-ios
           path: wortschatz-unsigned.ipa
+
+  e2e-android:
+    name: E2E on Android emulator
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          disable-animations: true
+          script: flutter test integration_test -d emulator-5554
+
+  e2e-ios:
+    name: E2E on iOS simulator
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Boot an iPhone simulator and run the E2E suite
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print(next(x['udid'] for r, v in d.items() if 'iOS' in r for x in v if x['name'].startswith('iPhone')))")
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          flutter test integration_test -d "$UDID"
