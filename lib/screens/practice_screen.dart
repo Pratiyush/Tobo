@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/daily_hive_provider.dart';
 import '../ads/ad_widgets.dart';
 import '../providers/progress_provider.dart';
 import '../theme/app_theme.dart';
@@ -80,6 +81,26 @@ class PracticeScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           Text('GAMES', style: heading),
           const SizedBox(height: 12),
+          Consumer(
+            builder: (context, ref, _) {
+              final daily = ref.watch(dailyHiveProvider);
+              final result = ref.watch(dailyHiveResultProvider);
+              return _GameCard(
+                key: const ValueKey('daily-hive'),
+                title: 'Daily Hive · ${daily.level.label}',
+                subtitle: result == null
+                    ? 'Today\'s board, the same for every learner'
+                    : 'Done today: ${'★' * result}${'☆' * (3 - result)}. '
+                          'New board tomorrow',
+                icon: Icons.today_rounded,
+                color: AppColors.gold,
+                onTap: result == null
+                    ? () => open(HiveScreen(daily: daily))
+                    : () {},
+              );
+            },
+          ),
+          const SizedBox(height: 10),
           _GameCard(
             title: 'Hive',
             subtitle: 'Swipe across the honeycomb to spell each word',
@@ -113,6 +134,7 @@ class PracticeScreen extends ConsumerWidget {
 
 class _GameCard extends StatelessWidget {
   const _GameCard({
+    super.key,
     required this.title,
     required this.subtitle,
     required this.icon,

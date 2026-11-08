@@ -4,6 +4,9 @@ import 'dart:ui' show PointMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/words_provider.dart';
+import '../providers/daily_hive_provider.dart';
+import '../games/daily.dart';
 import '../providers/daily_goal_provider.dart';
 import '../games/combo.dart';
 import '../providers/feedback_provider.dart';
@@ -27,16 +30,19 @@ const hiveWordsPerRound = 3;
 /// adjacent tiles to spell the German for the clue; the letters you use are
 /// consumed, so the pool shrinks until the board is empty.
 class HiveScreen extends ConsumerStatefulWidget {
-  const HiveScreen({super.key, this.random});
+  const HiveScreen({super.key, this.random, this.daily});
 
   final Random? random;
+
+  /// Today's shared board: one seeded round from that level's words.
+  final DailyHive? daily;
 
   @override
   ConsumerState<HiveScreen> createState() => _HiveScreenState();
 }
 
 class _HiveScreenState extends ConsumerState<HiveScreen> {
-  late final Random _rng = widget.random ?? Random();
+  late final Random _rng = widget.random ?? widget.daily?.random ?? Random();
   int _round = 0;
   int _score = 0;
   List<Word> _targets = const [];
@@ -70,7 +76,10 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
   String _spell(Word w) => w.german;
 
   void _newRound() {
-    final pool = ref.read(gamePoolProvider(false));
+    final daily = widget.daily;
+    final pool = daily != null
+        ? daily.pool(ref.read(wordsProvider))
+        : ref.read(gamePoolProvider(false));
     for (var count = hiveWordsPerRound; count > 0; count--) {
       final words = pickHiveWords(pool, _spell, _rng, count: count);
       final board = HiveBoard.layout(words.map(_spell).toList(), _rng);
@@ -99,6 +108,13 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
 
   @visibleForTesting
   List<Word> get debugTargets => _targets;
+
+  /// Stars for this board: no hints 3, up to 2 hints 2, more 1.
+  int get _stars => _roundHints == 0
+      ? 3
+      : _roundHints <= 2
+      ? 2
+      : 1;
 
   String get _traced => _path.map((h) => _board.tiles[h]!).join();
 
@@ -152,6 +168,9 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     if (lastWord) {
       feedback.roundEnd();
       ref.read(bestScoresProvider.notifier).submit('hive', _score + points);
+      if (widget.daily != null) {
+        ref.read(dailyHiveResultProvider.notifier).record(_stars);
+      }
     } else {
       feedback.right(combo: _combo.current);
     }
@@ -202,7 +221,9 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
             child: Row(
               children: [
                 Text(
-                  'Round $_round',
+                  widget.daily != null
+                      ? 'Daily Hive · ${widget.daily!.level.label}'
+                      : 'Round $_round',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -231,13 +252,18 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                     ? _RoundComplete(
                         words: _targets,
                         points: _roundPoints,
-                        stars: _roundHints == 0
-                            ? 3
-                            : _roundHints <= 2
-                            ? 2
-                            : 1,
-                        onNext: () =>
-                            finishRound(ref, () => setState(_newRound)),
+                        stars: _stars,
+                        onShare: widget.daily == null
+                            ? null
+                            : () => ref.read(shareTextProvider)(
+                                widget.daily!.shareText(
+                                  stars: _stars,
+                                  hints: _roundHints,
+                                ),
+                              ),
+                        onNext: widget.daily != null
+                            ? () => Navigator.of(context).maybePop()
+                            : () => finishRound(ref, () => setState(_newRound)),
                       )
                     : Column(
                         children: [
@@ -331,7 +357,11 @@ class _RoundComplete extends StatelessWidget {
     required this.points,
     required this.stars,
     required this.onNext,
+    this.onShare,
   });
+
+  /// Daily board: share the result instead of starting another round.
+  final VoidCallback? onShare;
 
   final int points;
   final int stars;
@@ -385,13 +415,24 @@ class _RoundComplete extends StatelessWidget {
             ],
           ),
         const SizedBox(height: 12),
-        DoublePointsButton(points: points),
+        if (onShare == null) DoublePointsButton(points: points),
+        if (onShare != null)
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onShare,
+              icon: const Icon(Icons.ios_share_rounded),
+              label: const Text('SHARE RESULT'),
+            ),
+          ),
         SizedBox(
           width: double.infinity,
-          child: FilledButton(
-            onPressed: onNext,
-            child: const Text('NEXT ROUND'),
-          ),
+          child: onShare != null
+              ? TextButton(onPressed: onNext, child: const Text('Done'))
+              : FilledButton(
+                  onPressed: onNext,
+                  child: const Text('NEXT ROUND'),
+                ),
         ),
       ],
     );

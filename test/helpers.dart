@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:german_words/ads/ads_service.dart';
 import 'package:german_words/app.dart';
 import 'package:german_words/content/content_source.dart';
@@ -96,6 +97,7 @@ Future<ProviderContainer> createContainer({
   AdsService? ads,
   FeedbackEngine? feedback,
   TestClock? clock,
+  List<Override> overrides = const [],
   List<Word>? words,
 }) async {
   // Tests start past the first-run level question unless they set it.
@@ -113,6 +115,7 @@ Future<ProviderContainer> createContainer({
         feedback ?? FakeFeedbackEngine(),
       ),
       if (clock != null) clockProvider.overrideWithValue(clock.call),
+      ...overrides,
     ],
   );
 }
