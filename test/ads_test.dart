@@ -5,9 +5,11 @@ import 'package:german_words/ads/ad_policy.dart';
 import 'package:german_words/ads/ad_widgets.dart';
 import 'package:german_words/ads/ads_config.dart';
 import 'package:german_words/ads/ads_service.dart';
+import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/stats_provider.dart';
 import 'package:german_words/screens/der_die_das_screen.dart';
 import 'package:german_words/screens/spelling_screen.dart';
+import 'package:german_words/widgets/common.dart';
 
 import 'helpers.dart';
 
@@ -213,6 +215,35 @@ void main() {
     await tester.tap(find.text('PLAY AGAIN'));
     await tester.pumpAndSettle();
     expect(ads.roundsFinished, 1);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('Der Die Das: a combo badge, sounds, stars and a new best', (
+    tester,
+  ) async {
+    final sounds = FakeFeedbackEngine();
+    final c = await createContainer(feedback: sounds);
+    await tester.pumpWidget(buildScreen(c, const DerDieDasScreen()));
+    for (var i = 0; i < derDieDasRounds; i++) {
+      final noun = deck.firstWhere(
+        (w) => w.isNoun && find.text(w.german).evaluate().isNotEmpty,
+      );
+      final name = noun.gender!.name;
+      await tester.tap(
+        find.text('${name[0].toUpperCase()}${name.substring(1)}'),
+      );
+      await tester.pump();
+      if (i == 2) expect(find.text('🔥 ×3'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 4));
+    }
+    await tester.pumpAndSettle();
+    expect(tester.widget<StarRow>(find.byType(StarRow)).stars, 3);
+    expect(find.text('NEW BEST!'), findsOneWidget);
+    expect(find.text('Best combo: 20 in a row'), findsOneWidget);
+    // 20 answers: 20 x 1, +1 for answers 3-5, +2 for answers 6-20 = 53.
+    expect(find.text('+53 points'), findsOneWidget);
+    expect(sounds.played.last, GameSound.roundEnd);
+    expect(sounds.played.where((s) => s == GameSound.combo), hasLength(18));
     await tester.pumpWidget(const SizedBox());
   });
 

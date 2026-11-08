@@ -7,6 +7,7 @@ import 'package:german_words/app.dart';
 import 'package:german_words/content/content_source.dart';
 import 'package:german_words/data/word_repository.dart';
 import 'package:german_words/models/word.dart';
+import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/speech_provider.dart';
 import 'package:german_words/providers/words_provider.dart';
@@ -70,6 +71,14 @@ class FakeContentSource implements ContentSource {
   MediaRef? imageFor(String wordId) => null;
 }
 
+/// Records game sounds instead of playing them.
+class FakeFeedbackEngine implements FeedbackEngine {
+  final played = <GameSound>[];
+
+  @override
+  void play(GameSound sound) => played.add(sound);
+}
+
 /// A clock tests can move forward.
 class TestClock {
   TestClock([DateTime? start]) : now = start ?? DateTime(2026, 10, 17, 9);
@@ -85,6 +94,7 @@ Future<ProviderContainer> createContainer({
   AudioEngine? audio,
   ContentSource? content,
   AdsService? ads,
+  FeedbackEngine? feedback,
   TestClock? clock,
   List<Word>? words,
 }) async {
@@ -98,6 +108,9 @@ Future<ProviderContainer> createContainer({
       audioEngineProvider.overrideWithValue(audio ?? FakeAudioEngine()),
       contentSourceProvider.overrideWithValue(content ?? FakeContentSource()),
       adsServiceProvider.overrideWithValue(ads ?? NoAdsService()),
+      feedbackEngineProvider.overrideWithValue(
+        feedback ?? FakeFeedbackEngine(),
+      ),
       if (clock != null) clockProvider.overrideWithValue(clock.call),
     ],
   );

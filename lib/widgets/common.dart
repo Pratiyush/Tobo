@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../games/combo.dart';
 import '../models/word.dart';
 import '../providers/progress_provider.dart';
 import '../providers/speech_provider.dart';
 import '../theme/app_theme.dart';
+import 'session_summary.dart';
+
+export 'session_summary.dart';
 
 /// Signal-strength bars for a word's mastery level (0 = not learned).
 class MasteryBars extends StatelessWidget {
@@ -205,11 +209,15 @@ class GameHeader extends StatelessWidget {
     required this.index,
     required this.total,
     required this.score,
+    this.combo = 0,
   });
 
   final int index;
   final int total;
   final int score;
+
+  /// Right answers in a row; a badge pops in from [Combo.showFrom].
+  final int combo;
 
   @override
   Widget build(BuildContext context) {
@@ -226,6 +234,8 @@ class GameHeader extends StatelessWidget {
                 style: style,
               ),
               const Spacer(),
+              ComboBadge(combo: combo),
+              const SizedBox(width: 12),
               const Icon(Icons.bolt_rounded, color: AppColors.gold),
               Text('$score', style: style),
             ],
@@ -241,81 +251,6 @@ class GameHeader extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// End-of-session card shared by every game and drill.
-class SessionSummary extends StatelessWidget {
-  const SessionSummary({
-    super.key,
-    required this.title,
-    required this.message,
-    required this.onAgain,
-    this.onDone,
-    this.extra,
-  });
-
-  final String title;
-  final String message;
-  final VoidCallback? onAgain;
-
-  /// Defaults to leaving the screen.
-  final VoidCallback? onDone;
-
-  /// Shown above the buttons, e.g. a "Double points" offer.
-  final Widget? extra;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: WhiteCard(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.emoji_events_rounded,
-                size: 64,
-                color: AppColors.gold,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: AppColors.inkSoft,
-                ),
-              ),
-              const SizedBox(height: 20),
-              ?extra,
-              if (onAgain != null)
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: onAgain,
-                    child: const Text('PLAY AGAIN'),
-                  ),
-                ),
-              TextButton(
-                onPressed: onDone ?? () => Navigator.of(context).maybePop(),
-                child: const Text('Done'),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

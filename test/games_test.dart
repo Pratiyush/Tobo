@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/games/combo.dart';
 import 'package:german_words/games/gender_rules.dart';
 import 'package:german_words/models/word.dart';
 import 'package:german_words/games/hive.dart';
@@ -155,5 +156,25 @@ void main() {
       }
       expect(hinted, greaterThan(20));
     });
+  });
+
+  test('combos pay from the 3rd answer in a row and reset on a miss', () {
+    final c = Combo();
+    expect([c.hit(), c.hit(), c.hit(), c.hit()], [0, 0, 1, 1]);
+    c
+      ..hit()
+      ..miss();
+    expect(c.current, 0);
+    expect(c.best, 5);
+    expect([for (var i = 0; i < 6; i++) c.hit()].last, 2, reason: '6th');
+  });
+
+  test('stars by accuracy', () {
+    expect(starsFor(20, 20), 3);
+    expect(starsFor(18, 20), 3);
+    expect(starsFor(14, 20), 2);
+    expect(starsFor(8, 20), 1);
+    expect(starsFor(3, 20), 0);
+    expect(starsFor(0, 0), 0);
   });
 }

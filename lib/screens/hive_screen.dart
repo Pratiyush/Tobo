@@ -4,6 +4,8 @@ import 'dart:ui' show PointMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../games/combo.dart';
+import '../providers/feedback_provider.dart';
 import '../ads/ad_policy.dart';
 import '../ads/ad_widgets.dart';
 import '../ads/ads_service.dart';
@@ -48,6 +50,12 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
   /// Points earned on this board, for "Double points".
   int _roundPoints = 0;
 
+  /// Words solved in a row without a hint (across boards).
+  final Combo _combo = Combo();
+
+  /// Hints used on this board: 0 earns 3 stars, up to 2 earns 2, more 1.
+  int _roundHints = 0;
+
   /// Briefly true after a wrong path, to flash the tiles red.
   bool _wrong = false;
 
@@ -73,6 +81,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     }
     _round++;
     _roundPoints = 0;
+    _roundHints = 0;
     _hintQuota = HintQuota(limited: ref.read(adsServiceProvider).enabled);
     _solved = 0;
     _hints = 0;
@@ -114,6 +123,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
   void _check() {
     if (_path.isEmpty || _roundDone) return;
     if (_traced != _spell(_target)) {
+      ref.read(feedbackProvider).wrong();
       setState(() => _wrong = true);
       Future<void>.delayed(const Duration(milliseconds: 350), () {
         if (!mounted) return;
@@ -127,11 +137,25 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
 
     final word = _target;
     ref.read(progressProvider.notifier).gradeFromGame(word.id, correct: true);
-    final points = _hints == 0 ? Reward.hiveWord : Reward.game;
+    final bonus = _hints == 0 ? _combo.hit() : 0;
+    if (_hints > 0) _combo.miss();
+    final points = (_hints == 0 ? Reward.hiveWord : Reward.game) + bonus;
     _roundPoints += points;
     ref.read(statsProvider.notifier).addPoints(points);
+    final feedback = ref.read(feedbackProvider);
+    final lastWord = _solved + 1 >= _targets.length;
+    if (lastWord) {
+      feedback.roundEnd();
+      ref.read(bestScoresProvider.notifier).submit('hive', _score + points);
+    } else {
+      feedback.right(combo: _combo.current);
+    }
     if (ref.read(settingsProvider).autoSpeak) {
-      ref.read(speakerProvider).sayWord(word);
+      // After the sound, so the chime doesn't cover the word.
+      Future<void>.delayed(
+        Duration(milliseconds: feedback.enabled ? 300 : 0),
+        () => mounted ? ref.read(speakerProvider).sayWord(word) : null,
+      );
     }
 
     setState(() {
@@ -151,6 +175,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
   Future<void> _hint() async {
     if (!await requestHint(context, ref, _hintQuota)) return;
     setState(() {
+      _roundHints++;
       _path.clear();
       _hints = min(_hints + 1, _spell(_target).length);
     });
@@ -179,6 +204,8 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                   ),
                 ),
                 const Spacer(),
+                ComboBadge(combo: _combo.current),
+                const SizedBox(width: 12),
                 const Icon(Icons.bolt_rounded, color: AppColors.gold),
                 Text(
                   '$_score',
@@ -199,6 +226,11 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                     ? _RoundComplete(
                         words: _targets,
                         points: _roundPoints,
+                        stars: _roundHints == 0
+                            ? 3
+                            : _roundHints <= 2
+                            ? 2
+                            : 1,
                         onNext: () =>
                             finishRound(ref, () => setState(_newRound)),
                       )
@@ -292,10 +324,12 @@ class _RoundComplete extends StatelessWidget {
   const _RoundComplete({
     required this.words,
     required this.points,
+    required this.stars,
     required this.onNext,
   });
 
   final int points;
+  final int stars;
 
   final List<Word> words;
   final VoidCallback onNext;
@@ -305,10 +339,18 @@ class _RoundComplete extends StatelessWidget {
     final theme = Theme.of(context);
     return Column(
       children: [
+        StarRow(stars: stars),
         Text(
           'Board cleared!',
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w900,
+          ),
+        ),
+        Text(
+          '+$points points',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: AppColors.orangeInk,
           ),
         ),
         const SizedBox(height: 8),

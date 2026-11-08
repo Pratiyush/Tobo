@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../games/combo.dart';
+import '../providers/feedback_provider.dart';
 import '../games/spelling.dart';
 import '../ads/ad_policy.dart';
 import '../ads/ad_widgets.dart';
@@ -43,6 +45,10 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
   late SpellingPuzzle _puzzle;
   late HintQuota _hints;
 
+  /// Words spelled right this session, for the stars.
+  int _correct = 0;
+  bool _newBest = false;
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +59,8 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
     _words = widget.words.take(spellingSessionSize).toList();
     _index = 0;
     _score = 0;
+    _correct = 0;
+    _newBest = false;
     _hints = HintQuota(limited: ref.read(adsServiceProvider).enabled);
     _load();
   }
@@ -69,13 +77,22 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
   void _submit() {
     final correct = _puzzle.isCorrect;
     ref.read(progressProvider.notifier).grade(_word.id, correct: correct);
+    final feedback = ref.read(feedbackProvider);
     if (correct) {
       final points = _hinted ? Reward.game : Reward.practice;
       ref.read(statsProvider.notifier).addPoints(points);
       _score += points;
+      _correct++;
+      feedback.right();
+    } else {
+      feedback.wrong();
     }
     if (ref.read(settingsProvider).autoSpeak) {
-      ref.read(speakerProvider).sayWord(_word);
+      final word = _word;
+      Future<void>.delayed(
+        Duration(milliseconds: feedback.enabled ? 300 : 0),
+        () => mounted ? ref.read(speakerProvider).sayWord(word) : null,
+      );
     }
     setState(() => _result = correct ? _Result.correct : _Result.wrong);
   }
@@ -88,6 +105,12 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
 
   void _next() => setState(() {
     _index++;
+    if (_index >= _words.length) {
+      ref.read(feedbackProvider).roundEnd();
+      _newBest = ref
+          .read(bestScoresProvider.notifier)
+          .submit('practice', _score);
+    }
     _load();
   });
 
@@ -98,6 +121,9 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
       onPop: () => ref.read(speakerProvider).stop(),
       body: _index >= _words.length
           ? SessionSummary(
+              stars: starsFor(_correct, _words.length),
+              points: _score,
+              newBest: _newBest,
               title: 'Gut gemacht!',
               message:
                   'You practised ${_words.length} words and earned '

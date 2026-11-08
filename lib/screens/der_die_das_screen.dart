@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../games/combo.dart';
+import '../providers/feedback_provider.dart';
 import '../ads/ad_widgets.dart';
 import '../games/gender_rules.dart';
 import '../games/quiz.dart';
@@ -41,6 +43,12 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
   /// Why the noun has its article, shown with the feedback when known.
   String? _hint;
 
+  Combo _combo = Combo();
+
+  /// Points this round, bonuses included.
+  int _points = 0;
+  bool _newBest = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +64,9 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
     _index = 0;
     _score = 0;
     _picked = null;
+    _combo = Combo();
+    _points = 0;
+    _newBest = false;
   }
 
   Future<void> _answer(Gender g) async {
@@ -65,12 +76,23 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
     ref
         .read(progressProvider.notifier)
         .gradeFromGame(word.id, correct: correct);
+    final feedback = ref.read(feedbackProvider);
     if (correct) {
+      final points = Reward.game + _combo.hit();
       _score++;
-      ref.read(statsProvider.notifier).addPoints(Reward.game);
+      _points += points;
+      ref.read(statsProvider.notifier).addPoints(points);
+      feedback.right(combo: _combo.current);
+    } else {
+      _combo.miss();
+      feedback.wrong();
     }
     if (ref.read(settingsProvider).autoSpeak) {
-      ref.read(speakerProvider).sayWord(word);
+      // After the sound, so the chime doesn't cover the word.
+      Future<void>.delayed(
+        Duration(milliseconds: feedback.enabled ? 300 : 0),
+        () => mounted ? ref.read(speakerProvider).sayWord(word) : null,
+      );
     }
     final hint = genderHint(word, ref.read(nounsProvider));
     setState(() {
@@ -84,6 +106,12 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
     setState(() {
       _picked = null;
       _index++;
+      if (_index >= _words.length) {
+        feedback.roundEnd();
+        _newBest = ref
+            .read(bestScoresProvider.notifier)
+            .submit('derdiedas', _score);
+      }
     });
   }
 
@@ -99,7 +127,11 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
               message: _score == _words.length
                   ? 'Perfekt! Every article right.'
                   : 'Colour is the memory hook: der black, die red, das gold.',
-              extra: DoublePointsButton(points: _score * Reward.game),
+              stars: starsFor(_score, _words.length),
+              points: _points,
+              bestCombo: _combo.best,
+              newBest: _newBest,
+              extra: DoublePointsButton(points: _points),
               onAgain: () => finishRound(ref, () => setState(_start)),
               onDone: () => finishRound(ref, () {
                 if (mounted) Navigator.of(context).maybePop();
@@ -107,7 +139,12 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
             )
           : Column(
               children: [
-                GameHeader(index: _index, total: _words.length, score: _score),
+                GameHeader(
+                  index: _index,
+                  total: _words.length,
+                  score: _score,
+                  combo: _combo.current,
+                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16),

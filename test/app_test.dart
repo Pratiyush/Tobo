@@ -126,6 +126,8 @@ void main() {
     expect(find.text('Richtig!'), findsOneWidget);
     expect(c.read(progressProvider)[word.id]!.level, 2);
     expect(c.read(statsProvider).points, Reward.game);
+    // Let the delayed pronunciation (after the sound) fire.
+    await tester.pump(const Duration(milliseconds: 400));
   });
 
   testWidgets('Der Die Das scores the right article', (tester) async {

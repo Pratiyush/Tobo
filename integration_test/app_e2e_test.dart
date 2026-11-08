@@ -15,6 +15,7 @@ import 'package:german_words/app.dart';
 import 'package:german_words/content/content_source.dart';
 import 'package:german_words/games/hive.dart';
 import 'package:german_words/models/word.dart';
+import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/progress_provider.dart';
 import 'package:german_words/providers/settings_provider.dart';
@@ -22,6 +23,7 @@ import 'package:german_words/providers/speech_provider.dart';
 import 'package:german_words/providers/stats_provider.dart';
 import 'package:german_words/providers/words_provider.dart';
 import 'package:german_words/screens/hive_screen.dart';
+import 'package:german_words/widgets/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -209,24 +211,39 @@ void main() {
     expect(c.read(statsProvider).points, Reward.hiveWord);
   });
 
-  testWidgets('Der Die Das: the right article scores, with a rule hint', (
+  testWidgets('Der Die Das: combo, sounds and a juicy round end', (
     tester,
   ) async {
     final c = await launch(tester);
     await tapText(tester, 'Practice');
     await tapText(tester, 'Der Die Das');
-    await shot(tester, '05-der-die-das');
 
-    final noun = words.firstWhere(
-      (w) => w.isNoun && find.text(w.german).evaluate().isNotEmpty,
-    );
-    final name = noun.gender!.name;
-    await tester.tap(find.text('${name[0].toUpperCase()}${name.substring(1)}'));
-    await tester.pump();
-    expect(find.text('Richtig!'), findsOneWidget);
-    expect(c.read(statsProvider).points, Reward.game);
-    await tester.pump(const Duration(seconds: 3));
-    expect(find.text('2/20'), findsOneWidget);
+    for (var i = 0; i < 20; i++) {
+      final noun = words.firstWhere(
+        (w) => w.isNoun && find.text(w.german).evaluate().isNotEmpty,
+      );
+      final name = noun.gender!.name;
+      await tester.tap(
+        find.text('${name[0].toUpperCase()}${name.substring(1)}'),
+      );
+      await tester.pump();
+      if (i == 0) {
+        expect(find.text('Richtig!'), findsOneWidget);
+        expect(c.read(statsProvider).points, Reward.game);
+      }
+      if (i == 3) {
+        expect(find.text('🔥 ×4'), findsOneWidget);
+        await shot(tester, '05-der-die-das', settle: false);
+      }
+      // Feedback lasts up to 3 s when a gender hint is shown.
+      await tester.pump(const Duration(seconds: 3));
+    }
+    await tester.pumpAndSettle();
+    expect(tester.widget<StarRow>(find.byType(StarRow)).stars, 3);
+    expect(find.text('NEW BEST!'), findsOneWidget);
+    expect(find.text('+53 points'), findsOneWidget);
+    expect(c.read(bestScoresProvider)['derdiedas'], 20);
+    await shot(tester, '08-round-end');
   });
 
   testWidgets('Fallee: real fall speed, and the right meaning scores', (

@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../games/combo.dart';
+import '../providers/feedback_provider.dart';
 import '../ads/ad_widgets.dart';
 import '../games/quiz.dart';
 import '../models/word.dart';
@@ -50,6 +52,12 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
   Word? _picked;
   bool _answered = false;
 
+  Combo _combo = Combo();
+
+  /// Points this round, bonuses included.
+  int _points = 0;
+  bool _newBest = false;
+
   @override
   void initState() {
     super.initState();
@@ -64,6 +72,9 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
     );
     _index = 0;
     _score = 0;
+    _combo = Combo();
+    _points = 0;
+    _newBest = false;
     _load();
   }
 
@@ -72,6 +83,12 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
     _picked = null;
     if (_index >= _words.length) {
       _fall.stop();
+      if (_words.isNotEmpty) {
+        ref.read(feedbackProvider).roundEnd();
+        _newBest = ref
+            .read(bestScoresProvider.notifier)
+            .submit('fallee', _score);
+      }
       return;
     }
     final word = _words[_index];
@@ -97,9 +114,16 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
     ref
         .read(progressProvider.notifier)
         .gradeFromGame(word.id, correct: correct);
+    final feedback = ref.read(feedbackProvider);
     if (correct) {
+      final points = Reward.game + _combo.hit();
       _score++;
-      ref.read(statsProvider.notifier).addPoints(Reward.game);
+      _points += points;
+      ref.read(statsProvider.notifier).addPoints(points);
+      feedback.right(combo: _combo.current);
+    } else {
+      _combo.miss();
+      feedback.wrong();
     }
     setState(() => _picked = picked);
     await Future<void>.delayed(Duration(milliseconds: correct ? 500 : 1300));
@@ -128,7 +152,11 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
               message: _score >= _words.length * 0.8
                   ? 'Blitzschnell! Lightning fast.'
                   : 'Keep going: the more you play, the faster you’ll read.',
-              extra: DoublePointsButton(points: _score * Reward.game),
+              stars: starsFor(_score, _words.length),
+              points: _points,
+              bestCombo: _combo.best,
+              newBest: _newBest,
+              extra: DoublePointsButton(points: _points),
               onAgain: () => finishRound(ref, () => setState(_start)),
               onDone: () => finishRound(ref, () {
                 if (mounted) Navigator.of(context).maybePop();
@@ -136,7 +164,12 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
             )
           : Column(
               children: [
-                GameHeader(index: _index, total: _words.length, score: _score),
+                GameHeader(
+                  index: _index,
+                  total: _words.length,
+                  score: _score,
+                  combo: _combo.current,
+                ),
                 Expanded(
                   child: AnimatedBuilder(
                     animation: _fall,

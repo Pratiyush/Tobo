@@ -61,6 +61,15 @@ class SettingsScreen extends ConsumerWidget {
                       .setCountGamesAsPractice,
                 ),
                 const Divider(height: 1),
+                SwitchListTile(
+                  title: const Text('Sounds & vibration'),
+                  subtitle: const Text('In games and practice'),
+                  value: settings.soundEffects,
+                  onChanged: ref
+                      .read(settingsProvider.notifier)
+                      .setSoundEffects,
+                ),
+                const Divider(height: 1),
                 const ContentUpdateTile(),
                 const Divider(height: 1),
                 ListTile(
