@@ -45,7 +45,13 @@ test/                  helpers.dart, data_test, games_test, providers_test, app_
 - Time comes from `clockProvider` so tests can move between days.
 - Keep game rules in `lib/games/` as pure Dart with unit tests; screens only hold short-lived UI state.
 - Every colour lives in `lib/theme/app_theme.dart`. Der/die/das use the German flag colours (black, red, gold).
-- No ads, no paywall, no locking content behind points.
+- **Ads (owner policy, 2026-11-08):** personalised AdMob ads behind Google UMP consent and, on iOS, the App Tracking Transparency prompt. Everything sits behind a compile-time `ADS_ENABLED` flag (`--dart-define=ADS_ENABLED=true`) that stays **off** until Pratiyush creates the AdMob apps and ad units. Debug builds use Google's test unit ids. The ads code is not built yet. When it is, it needs:
+  - `google_mobile_ads` (bundles the UMP SDK) and an `AdsService` behind a Riverpod provider with a no-op fake for tests, the same pattern as `SpeechEngine`.
+  - Placements: a banner on Home, Word list and Settings; an interstitial after a finished Hive / Der Die Das / Fallee round, capped and never in the first session or mid-round; rewarded only for extras (hint/skip, streak freeze). Never during Learn or Practice answers.
+  - Android: `com.google.android.gms.ads.APPLICATION_ID` meta-data in `AndroidManifest.xml`. The `AD_ID` permission comes from the SDK.
+  - iOS: `GADApplicationIdentifier`, `NSUserTrackingUsageDescription` and `SKAdNetworkItems` in `Info.plist`. Request ATT after UMP consent.
+  - A "Privacy & ad choices" entry in Settings that reopens the UMP form, a privacy policy that names AdMob, `app-ads.txt` on the developer site, and updated Play Data safety and App Privacy answers.
+- No paywall, and nothing locked behind points or ads.
 - Layouts must work at 360 dp width. British spelling in UI copy ("practise", "favourites").
 - New logic needs a unit test; new screens need a widget test (`buildApp` / `buildScreen` in `test/helpers.dart`).
 - Android declares the `TTS_SERVICE` query in `AndroidManifest.xml` (needed on Android 11+). Don't remove it.

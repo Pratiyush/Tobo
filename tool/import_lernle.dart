@@ -1,6 +1,6 @@
 // Regenerates assets/words_de.json from lernle's reviewed German deck.
 //
-//   dart run tool/import_lernle.dart ../../lernle/content/lemmas/de.jsonl
+//   dart run tool/import_lernle.dart ../lernle/content/lemmas/de.jsonl
 //
 // Only `de.jsonl` (reviewed) is imported. `de_tobo.jsonl` is pending review
 // and must not ship.

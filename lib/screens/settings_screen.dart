@@ -79,7 +79,7 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   '$words German words with English translations, from the '
-                  'Lernle word deck. No ads, no paywall.',
+                  'Lernle word deck. No paywall: every word and game is free.',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.inkSoft,
                   ),

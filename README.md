@@ -1,8 +1,9 @@
 # Wortschatz
 
 A Flutter app (Android and iOS) for learning German vocabulary, in an arcade
-style: blue background, white cards, orange buttons. No ads, no paywall, and
-nothing is locked behind points.
+style: blue background, white cards, orange buttons. It will be free and
+ad-supported (personalised AdMob ads behind consent, not built yet; see
+`AGENTS.md`). There is no paywall and nothing is locked behind points.
 
 ## Features
 
