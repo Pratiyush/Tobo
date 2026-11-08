@@ -73,6 +73,19 @@ class StatsNotifier extends Notifier<Stats> {
       ..setString(_lastDayKey, today);
   }
 
+  /// Rewarded "Restore streak": the missed day counts as played, so the
+  /// streak continues when points are earned today.
+  void restoreStreak() {
+    final now = ref.read(clockProvider)();
+    final yesterday = _dayKey(now.subtract(const Duration(days: 1)));
+    state = Stats(
+      points: state.points,
+      streak: state.streak,
+      lastDay: yesterday,
+    );
+    ref.read(sharedPreferencesProvider).setString(_lastDayKey, yesterday);
+  }
+
   void reset() {
     state = const Stats();
     ref.read(sharedPreferencesProvider)
@@ -90,4 +103,13 @@ final currentStreakProvider = Provider<int>((ref) {
   final now = ref.watch(clockProvider)();
   final live = {_dayKey(now), _dayKey(now.subtract(const Duration(days: 1)))};
   return live.contains(stats.lastDay) ? stats.streak : 0;
+});
+
+/// A streak lost by exactly one missed day, which a rewarded ad can restore;
+/// 0 otherwise.
+final restorableStreakProvider = Provider<int>((ref) {
+  final stats = ref.watch(statsProvider);
+  final now = ref.watch(clockProvider)();
+  final missed = _dayKey(now.subtract(const Duration(days: 2)));
+  return stats.lastDay == missed ? stats.streak : 0;
 });

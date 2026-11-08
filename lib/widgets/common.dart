@@ -249,11 +249,19 @@ class SessionSummary extends StatelessWidget {
     required this.title,
     required this.message,
     required this.onAgain,
+    this.onDone,
+    this.extra,
   });
 
   final String title;
   final String message;
   final VoidCallback? onAgain;
+
+  /// Defaults to leaving the screen.
+  final VoidCallback? onDone;
+
+  /// Shown above the buttons, e.g. a "Double points" offer.
+  final Widget? extra;
 
   @override
   Widget build(BuildContext context) {
@@ -288,6 +296,7 @@ class SessionSummary extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+              ?extra,
               if (onAgain != null)
                 SizedBox(
                   width: double.infinity,
@@ -297,7 +306,7 @@ class SessionSummary extends StatelessWidget {
                   ),
                 ),
               TextButton(
-                onPressed: () => Navigator.of(context).maybePop(),
+                onPressed: onDone ?? () => Navigator.of(context).maybePop(),
                 child: const Text('Done'),
               ),
             ],

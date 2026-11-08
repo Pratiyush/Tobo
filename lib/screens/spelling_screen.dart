@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../games/spelling.dart';
+import '../ads/ad_policy.dart';
+import '../ads/ad_widgets.dart';
+import '../ads/ads_service.dart';
 import '../models/word.dart';
 import '../providers/progress_provider.dart';
 import '../providers/settings_provider.dart';
@@ -38,6 +41,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
   bool _hinted = false;
   _Result _result = _Result.pending;
   late SpellingPuzzle _puzzle;
+  late HintQuota _hints;
 
   @override
   void initState() {
@@ -49,6 +53,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
     _words = widget.words.take(spellingSessionSize).toList();
     _index = 0;
     _score = 0;
+    _hints = HintQuota(limited: ref.read(adsServiceProvider).enabled);
     _load();
   }
 
@@ -201,10 +206,13 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
                 tooltip: 'Hint',
                 icon: Icons.lightbulb_rounded,
                 color: AppColors.gold,
-                onTap: () => setState(() {
-                  _hinted = true;
-                  _puzzle.hint();
-                }),
+                onTap: () async {
+                  if (!await requestHint(context, ref, _hints)) return;
+                  setState(() {
+                    _hinted = true;
+                    _puzzle.hint();
+                  });
+                },
               ),
               const SizedBox(width: 8),
               _RoundKey(

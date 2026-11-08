@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
+import '../ads/ads_service.dart';
 import '../app.dart';
+import '../app_links.dart';
 import '../providers/progress_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/stats_provider.dart';
@@ -67,6 +71,64 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           WhiteCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                ValueListenableBuilder<bool>(
+                  valueListenable: ref
+                      .watch(adsServiceProvider)
+                      .privacyOptionsRequired,
+                  builder: (context, required, _) => required
+                      ? Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.tune_rounded),
+                              title: const Text('Privacy & ad choices'),
+                              onTap: ref
+                                  .read(adsServiceProvider)
+                                  .showPrivacyOptions,
+                            ),
+                            const Divider(height: 1),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
+                ),
+                _LinkTile(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacy policy',
+                  url: Uri.parse(privacyPolicyUrl),
+                ),
+                const Divider(height: 1),
+                _LinkTile(
+                  icon: Icons.info_outline_rounded,
+                  title: 'Impressum',
+                  url: Uri.parse(impressumUrl),
+                ),
+                const Divider(height: 1),
+                _LinkTile(
+                  icon: Icons.mail_outline_rounded,
+                  title: 'Contact support',
+                  url: Uri(
+                    scheme: 'mailto',
+                    path: supportEmail,
+                    query: 'subject=$appTitle $appVersion',
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: const Text('Open-source licences'),
+                  onTap: () => showLicensePage(
+                    context: context,
+                    applicationName: appTitle,
+                    applicationVersion: appVersion,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          WhiteCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -78,8 +140,9 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$words German words with English translations, from the '
-                  'Lernle word deck. No paywall: every word and game is free.',
+                  '$words common German words with English translations and '
+                  'recorded pronunciations. No paywall: every word and game '
+                  'is free.',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.inkSoft,
                   ),
@@ -118,4 +181,20 @@ class SettingsScreen extends ConsumerWidget {
     ref.read(progressProvider.notifier).reset();
     ref.read(statsProvider.notifier).reset();
   }
+}
+
+class _LinkTile extends StatelessWidget {
+  const _LinkTile({required this.icon, required this.title, required this.url});
+
+  final IconData icon;
+  final String title;
+  final Uri url;
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    leading: Icon(icon),
+    title: Text(title),
+    trailing: const Icon(Icons.open_in_new_rounded, size: 18),
+    onTap: () => launchUrl(url, mode: LaunchMode.externalApplication),
+  );
 }

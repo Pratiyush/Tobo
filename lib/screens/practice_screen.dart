@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../ads/ad_widgets.dart';
 import '../providers/progress_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
@@ -103,6 +104,7 @@ class PracticeScreen extends ConsumerWidget {
             color: AppColors.blueTop,
             onTap: () => open(const FalleeScreen()),
           ),
+          const HouseAdCard(),
         ],
       ),
     );

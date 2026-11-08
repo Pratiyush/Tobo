@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../ads/ads_service.dart';
 import '../providers/progress_provider.dart';
 import '../providers/speech_provider.dart';
 import '../providers/words_provider.dart';
@@ -29,6 +30,7 @@ class WordListScreen extends ConsumerWidget {
     return BlueScaffold(
       title: list.title,
       onPop: () => ref.read(speakerProvider).stop(),
+      bottom: const AdBanner(),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [

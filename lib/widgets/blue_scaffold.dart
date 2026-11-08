@@ -10,7 +10,11 @@ class BlueScaffold extends StatelessWidget {
     this.title,
     this.actions,
     this.onPop,
+    this.bottom,
   });
+
+  /// Pinned under the body, e.g. a banner ad on list screens.
+  final Widget? bottom;
 
   final Widget body;
   final String? title;
@@ -46,6 +50,9 @@ class BlueScaffold extends StatelessWidget {
                   actions: actions,
                 ),
           body: SafeArea(top: title == null && actions == null, child: body),
+          bottomNavigationBar: bottom == null
+              ? null
+              : SafeArea(top: false, child: bottom!),
         ),
       ),
     );

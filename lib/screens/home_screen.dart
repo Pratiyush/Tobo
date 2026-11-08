@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../ads/ad_widgets.dart';
 import '../data/word_repository.dart';
 import '../providers/progress_provider.dart';
 import '../providers/stats_provider.dart';
@@ -85,6 +86,7 @@ class _Header extends ConsumerWidget {
             ],
           ),
         ),
+        const StreakRestoreCard(),
       ],
     );
   }

@@ -4,6 +4,9 @@ import 'dart:ui' show PointMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../ads/ad_policy.dart';
+import '../ads/ad_widgets.dart';
+import '../ads/ads_service.dart';
 import '../games/hive.dart';
 import '../models/word.dart';
 import '../providers/progress_provider.dart';
@@ -39,6 +42,12 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
   final List<Hex> _path = [];
   int _hints = 0;
 
+  /// Hint taps left on this board (ads on only).
+  late HintQuota _hintQuota;
+
+  /// Points earned on this board, for "Double points".
+  int _roundPoints = 0;
+
   /// Briefly true after a wrong path, to flash the tiles red.
   bool _wrong = false;
 
@@ -62,6 +71,8 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
       }
     }
     _round++;
+    _roundPoints = 0;
+    _hintQuota = HintQuota(limited: ref.read(adsServiceProvider).enabled);
     _solved = 0;
     _hints = 0;
     _path.clear();
@@ -116,6 +127,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     final word = _target;
     ref.read(progressProvider.notifier).gradeFromGame(word.id, correct: true);
     final points = _hints == 0 ? Reward.hiveWord : Reward.game;
+    _roundPoints += points;
     ref.read(statsProvider.notifier).addPoints(points);
     if (ref.read(settingsProvider).autoSpeak) {
       ref.read(speakerProvider).sayWord(word);
@@ -135,10 +147,13 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     });
   }
 
-  void _hint() => setState(() {
-    _path.clear();
-    _hints = min(_hints + 1, _spell(_target).length);
-  });
+  Future<void> _hint() async {
+    if (!await requestHint(context, ref, _hintQuota)) return;
+    setState(() {
+      _path.clear();
+      _hints = min(_hints + 1, _spell(_target).length);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +197,9 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                 child: _roundDone
                     ? _RoundComplete(
                         words: _targets,
-                        onNext: () => setState(_newRound),
+                        points: _roundPoints,
+                        onNext: () =>
+                            finishRound(ref, () => setState(_newRound)),
                       )
                     : Column(
                         children: [
@@ -271,7 +288,13 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
 }
 
 class _RoundComplete extends StatelessWidget {
-  const _RoundComplete({required this.words, required this.onNext});
+  const _RoundComplete({
+    required this.words,
+    required this.points,
+    required this.onNext,
+  });
+
+  final int points;
 
   final List<Word> words;
   final VoidCallback onNext;
@@ -314,6 +337,7 @@ class _RoundComplete extends StatelessWidget {
             ],
           ),
         const SizedBox(height: 12),
+        DoublePointsButton(points: points),
         SizedBox(
           width: double.infinity,
           child: FilledButton(

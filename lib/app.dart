@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'ads/ads_service.dart';
 import 'providers/progress_provider.dart';
 import 'providers/stats_provider.dart';
 import 'screens/home_screen.dart';
@@ -40,6 +41,10 @@ class _RootScreenState extends ConsumerState<RootScreen> {
   @override
   void initState() {
     super.initState();
+    // Consent (UMP, then ATT) needs a visible app, so start after frame one.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ref.read(adsServiceProvider).start(),
+    );
     _lifecycle = AppLifecycleListener(
       onResume: () => ref
         ..invalidate(dueWordsProvider)
@@ -61,28 +66,35 @@ class _RootScreenState extends ConsumerState<RootScreen> {
         index: _tab,
         children: const [HomeScreen(), PracticeScreen(), SettingsScreen()],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: (i) => setState(() => _tab = i),
-        destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Words',
-          ),
-          NavigationDestination(
-            icon: Badge(
-              isLabelVisible: due > 0,
-              label: Text('$due'),
-              child: const Icon(Icons.rocket_launch_outlined),
-            ),
-            selectedIcon: const Icon(Icons.rocket_launch_rounded),
-            label: 'Practice',
-          ),
-          const NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Settings',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // One banner for all three tabs (menus only, per the placement map).
+          const ColoredBox(color: Colors.white, child: AdBanner()),
+          NavigationBar(
+            selectedIndex: _tab,
+            onDestinationSelected: (i) => setState(() => _tab = i),
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Words',
+              ),
+              NavigationDestination(
+                icon: Badge(
+                  isLabelVisible: due > 0,
+                  label: Text('$due'),
+                  child: const Icon(Icons.rocket_launch_outlined),
+                ),
+                selectedIcon: const Icon(Icons.rocket_launch_rounded),
+                label: 'Practice',
+              ),
+              const NavigationDestination(
+                icon: Icon(Icons.person_outline_rounded),
+                selectedIcon: Icon(Icons.person_rounded),
+                label: 'Settings',
+              ),
+            ],
           ),
         ],
       ),

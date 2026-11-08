@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:german_words/ads/ads_service.dart';
 import 'package:german_words/app.dart';
 import 'package:german_words/content/content_source.dart';
 import 'package:german_words/data/word_repository.dart';
@@ -83,6 +84,7 @@ Future<ProviderContainer> createContainer({
   SpeechEngine? engine,
   AudioEngine? audio,
   ContentSource? content,
+  AdsService? ads,
   TestClock? clock,
   List<Word>? words,
 }) async {
@@ -95,6 +97,7 @@ Future<ProviderContainer> createContainer({
       speechEngineProvider.overrideWithValue(engine ?? FakeSpeechEngine()),
       audioEngineProvider.overrideWithValue(audio ?? FakeAudioEngine()),
       contentSourceProvider.overrideWithValue(content ?? FakeContentSource()),
+      adsServiceProvider.overrideWithValue(ads ?? NoAdsService()),
       if (clock != null) clockProvider.overrideWithValue(clock.call),
     ],
   );

@@ -1,0 +1,3 @@
+// AdMob app id for Info.plist (GADApplicationIdentifier). Google's sample id
+// until the real one is supplied from the AdMob account.
+ADMOB_APP_ID = ca-app-pub-3940256099942544~1458002511

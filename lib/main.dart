@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'ads/ads_service.dart';
 import 'app.dart';
 import 'content/content_source.dart';
 import 'providers/preferences_provider.dart';
@@ -16,6 +17,7 @@ Future<void> main() async {
       SharedPreferences.getInstance(),
       content.loadWords(),
     ).wait;
+    await prefs.setInt(launchCountKey, (prefs.getInt(launchCountKey) ?? 0) + 1);
     runApp(
       ProviderScope(
         overrides: [

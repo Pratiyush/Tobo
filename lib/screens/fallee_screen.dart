@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../ads/ad_widgets.dart';
 import '../games/quiz.dart';
 import '../models/word.dart';
 import '../providers/progress_provider.dart';
@@ -127,7 +128,11 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
               message: _score >= _words.length * 0.8
                   ? 'Blitzschnell! Lightning fast.'
                   : 'Keep going: the more you play, the faster you’ll read.',
-              onAgain: () => setState(_start),
+              extra: DoublePointsButton(points: _score * Reward.game),
+              onAgain: () => finishRound(ref, () => setState(_start)),
+              onDone: () => finishRound(ref, () {
+                if (mounted) Navigator.of(context).maybePop();
+              }),
             )
           : Column(
               children: [
