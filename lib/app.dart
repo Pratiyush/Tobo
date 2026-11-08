@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'providers/progress_provider.dart';
+import 'providers/stats_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/practice_screen.dart';
 import 'screens/settings_screen.dart';
@@ -31,6 +32,26 @@ class RootScreen extends ConsumerStatefulWidget {
 
 class _RootScreenState extends ConsumerState<RootScreen> {
   int _tab = 0;
+
+  /// Recomputes what depends on today's date when the app comes back to the
+  /// foreground, e.g. the next morning after a night in the background.
+  late final AppLifecycleListener _lifecycle;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycle = AppLifecycleListener(
+      onResume: () => ref
+        ..invalidate(dueWordsProvider)
+        ..invalidate(currentStreakProvider),
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycle.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

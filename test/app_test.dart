@@ -73,6 +73,36 @@ void main() {
     expect(find.text('Fallee'), findsOneWidget);
   });
 
+  testWidgets('words fall due when the app resumes the next day', (
+    tester,
+  ) async {
+    final clock = TestClock();
+    final c = await createContainer(clock: clock);
+    c.read(progressProvider.notifier).learn(deck.first.id);
+    await tester.pumpWidget(buildApp(c));
+    expect(c.read(dueWordsProvider), isEmpty);
+
+    // A night in the background.
+    for (final state in [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    clock.now = clock.now.add(const Duration(days: 1));
+    for (final state in [
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]) {
+      tester.binding.handleAppLifecycleStateChanged(state);
+    }
+    await tester.pump();
+
+    expect(c.read(dueWordsProvider).map((w) => w.id), [deck.first.id]);
+  });
+
   testWidgets('spelling a noun with its article using hints', (tester) async {
     final c = await createContainer();
     final word = deck.firstWhere((w) => w.isNoun);
