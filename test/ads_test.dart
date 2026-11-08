@@ -92,15 +92,37 @@ void main() {
     expect(on.left, HintQuota.perReward);
   });
 
-  test('release builds request no test ads while real ids are empty', () {
+  test('Android: release uses the real ids, debug keeps test ids', () {
+    expect(
+      adUnitFor(AdKind.banner, android: true, release: true),
+      'ca-app-pub-5964569110696877/2103685971',
+    );
+    expect(
+      adUnitFor(AdKind.interstitial, android: true, release: true),
+      'ca-app-pub-5964569110696877/7575504506',
+    );
+    expect(
+      adUnitFor(AdKind.rewarded, android: true, release: true),
+      'ca-app-pub-5964569110696877/9569057117',
+    );
     for (final kind in AdKind.values) {
-      for (final android in [true, false]) {
-        expect(adUnitFor(kind, android: android, release: true), isNull);
-        expect(
-          adUnitFor(kind, android: android, release: false),
-          startsWith('ca-app-pub-3940256099942544/'),
-        );
-      }
+      final debug = adUnitFor(kind, android: true, release: false);
+      expect(debug, startsWith('ca-app-pub-3940256099942544/'));
+      expect(
+        adUnitFor(kind, android: true, release: true, forceTest: true),
+        debug,
+        reason: 'ADS_TEST_UNITS QA builds use test units in release',
+      );
+    }
+    expect(AdMobIds.androidApp, 'ca-app-pub-5964569110696877~7110414739');
+  });
+
+  test('iOS has no AdMob app yet: no units at all, ads are a no-op', () {
+    expect(platformHasAdMobApp(android: false), isFalse);
+    expect(platformHasAdMobApp(android: true), isTrue);
+    for (final kind in AdKind.values) {
+      expect(adUnitFor(kind, android: false, release: true), isNull);
+      expect(adUnitFor(kind, android: false, release: false), isNull);
     }
   });
 

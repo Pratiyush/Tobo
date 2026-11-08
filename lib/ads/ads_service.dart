@@ -261,7 +261,11 @@ class GoogleAdsService implements AdsService {
 const launchCountKey = 'app_launches';
 
 final adsServiceProvider = Provider<AdsService>((ref) {
-  if (!adsEnabled) return NoAdsService();
+  // Off unless built with ADS_ENABLED, and a no-op on a platform that has
+  // no AdMob app yet (iOS today).
+  if (!adsEnabled || !platformHasAdMobApp(android: Platform.isAndroid)) {
+    return NoAdsService();
+  }
   final launches =
       ref.watch(sharedPreferencesProvider).getInt(launchCountKey) ?? 1;
   return GoogleAdsService(

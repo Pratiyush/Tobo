@@ -37,11 +37,9 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        // AdMob app id. Google's sample id until the real one is supplied:
-        // ./gradlew -PADMOB_APP_ID=ca-app-pub-...~... or android/gradle.properties.
-        manifestPlaceholders["admobAppId"] =
-            (project.findProperty("ADMOB_APP_ID") as String?)
-                ?: "ca-app-pub-3940256099942544~3347511713"
+        // AdMob app id: Google's sample id for debug and profile builds;
+        // release overrides it with Wortschatz's real id (below).
+        manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
     }
 
     signingConfigs {
@@ -57,6 +55,8 @@ android {
 
     buildTypes {
         release {
+            // Wortschatz on AdMob (pub-5964569110696877), German/docs/admob-ids.json.
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-5964569110696877~7110414739"
             signingConfig = signingConfigs.findByName("upload")
                 ?: signingConfigs.getByName("debug")
             // google_mobile_ads pulls in WorkManager/Room; without these rules
