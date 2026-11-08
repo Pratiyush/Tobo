@@ -4,6 +4,7 @@ import 'dart:ui' show PointMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/daily_goal_provider.dart';
 import '../games/combo.dart';
 import '../providers/feedback_provider.dart';
 import '../ads/ad_policy.dart';
@@ -145,6 +146,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     final points = (_hints == 0 ? Reward.hiveWord : Reward.game) + bonus;
     _roundPoints += points;
     ref.read(statsProvider.notifier).addPoints(points);
+    ref.read(dailyGoalProvider.notifier).tick();
     final feedback = ref.read(feedbackProvider);
     final lastWord = _solved + 1 >= _targets.length;
     if (lastWord) {

@@ -1,3 +1,5 @@
+import 'learn_screen.dart';
+import '../providers/daily_goal_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/level_badge.dart';
 
@@ -93,6 +95,8 @@ class _Header extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         const _LevelProgress(),
+        const SizedBox(height: 12),
+        const _TodayCard(),
         const StreakRestoreCard(),
         const ContentUpdateCard(),
       ],
@@ -310,6 +314,112 @@ class _LevelProgress extends ConsumerWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// New learners: one tap to their first words. Afterwards: today's goal.
+class _TodayCard extends ConsumerWidget {
+  const _TodayCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final progress = ref.watch(progressProvider);
+    final lists = ref.watch(wordListsProvider);
+    if (progress.isEmpty && lists.isNotEmpty) {
+      final first = lists.first.words;
+      return WhiteCard(
+        key: const ValueKey('start-here'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Start here',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Learn your first 10 words with sound, then play them in '
+              'the games.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.inkSoft,
+              ),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => LearnScreen(words: first),
+                ),
+              ),
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: const Text('LEARN 10 WORDS'),
+            ),
+          ],
+        ),
+      );
+    }
+    final done = ref.watch(dailyGoalProvider);
+    final reached = done >= dailyGoal;
+    return WhiteCard(
+      key: const ValueKey('daily-goal'),
+      child: Row(
+        children: [
+          SizedBox.square(
+            dimension: 48,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CircularProgressIndicator(
+                  value: (done / dailyGoal).clamp(0.0, 1.0),
+                  strokeWidth: 6,
+                  backgroundColor: AppColors.track,
+                  color: reached ? AppColors.green : AppColors.orange,
+                  strokeCap: StrokeCap.round,
+                ),
+                Center(
+                  child: reached
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: AppColors.greenInk,
+                        )
+                      : Text(
+                          '$done',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  reached ? 'Today\'s goal reached!' : 'Today\'s goal',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  reached
+                      ? 'See you tomorrow, or keep playing for points.'
+                      : '$done of $dailyGoal words learned or answered right',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.inkSoft,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import '../providers/daily_goal_provider.dart';
 import '../widgets/level_badge.dart';
 
 import 'dart:math';
@@ -60,6 +61,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     final word = _deck.removeAt(0);
     ref.read(progressProvider.notifier).learn(word.id);
     ref.read(statsProvider.notifier).addPoints(Reward.learn);
+    ref.read(dailyGoalProvider.notifier).tick();
     setState(() {
       _known++;
       _flipped = false;

@@ -25,9 +25,13 @@ class WordListScreen extends ConsumerWidget {
     final list = ref.watch(wordListsProvider)[number - 1];
     final progress = ref.watch(progressProvider);
     final fresh = list.words.where((w) => !progress.containsKey(w.id)).toList();
-    final learned = list.words
-        .where((w) => progress.containsKey(w.id))
-        .toList();
+    // Same meaning as the Practice tab: only words that are due, so
+    // practising a list never pushes not-yet-due words up the schedule.
+    final dueIds = {for (final w in ref.watch(dueWordsProvider)) w.id};
+    final due = [
+      for (final w in list.words)
+        if (dueIds.contains(w.id)) w,
+    ];
 
     return BlueScaffold(
       title: list.title,
@@ -68,12 +72,12 @@ class WordListScreen extends ConsumerWidget {
           const SizedBox(height: 10),
           _ActionCard(
             label: 'Practice',
-            count: learned.length,
-            onTap: learned.isEmpty
+            count: due.length,
+            onTap: due.isEmpty
                 ? null
                 : () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => SpellingScreen(words: learned),
+                      builder: (_) => SpellingScreen(words: due),
                     ),
                   ),
           ),

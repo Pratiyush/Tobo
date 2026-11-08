@@ -37,6 +37,8 @@ void main() {
     final c = await createContainer(engine: engine, audio: audio);
     await tester.pumpWidget(buildApp(c));
 
+    await tester.ensureVisible(find.text('Words 1'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Words 1'));
     await tester.pumpAndSettle();
     expect(find.text('There are 50 words left in this list.'), findsOneWidget);

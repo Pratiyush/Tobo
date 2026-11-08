@@ -17,6 +17,7 @@ import 'package:german_words/games/hive.dart';
 import 'package:german_words/models/word.dart';
 import 'package:german_words/widgets/level_badge.dart';
 import 'package:german_words/models/level.dart';
+import 'package:german_words/providers/daily_goal_provider.dart';
 import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/progress_provider.dart';
@@ -118,6 +119,8 @@ void main() {
   }
 
   Future<void> tapText(WidgetTester tester, String text) async {
+    await tester.ensureVisible(find.text(text).first);
+    await tester.pumpAndSettle();
     await tester.tap(find.text(text).first);
     await tester.pumpAndSettle();
   }
@@ -142,11 +145,13 @@ void main() {
   ) async {
     final c = await launch(tester);
     expect(find.text('WORTSCHATZ'), findsOneWidget);
-    expect(find.text('Words 1'), findsOneWidget);
+    expect(find.byKey(const ValueKey('start-here')), findsOneWidget);
     await shot(tester, '01-home');
 
     await learn(tester, 3);
     expect(c.read(progressProvider), hasLength(3));
+    expect(c.read(dailyGoalProvider), 3);
+    expect(find.byKey(const ValueKey('daily-goal')), findsOneWidget);
     expect(c.read(statsProvider).points, 3 * Reward.learn);
     expect(prefs.getString('word_progress'), contains(words.first.id));
   });

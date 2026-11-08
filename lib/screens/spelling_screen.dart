@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/daily_goal_provider.dart';
 import '../games/combo.dart';
 import '../providers/feedback_provider.dart';
 import '../games/spelling.dart';
@@ -83,6 +84,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
       ref.read(statsProvider.notifier).addPoints(points);
       _score += points;
       _correct++;
+      ref.read(dailyGoalProvider.notifier).tick();
       feedback.right();
     } else {
       feedback.wrong();

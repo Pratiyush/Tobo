@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/daily_goal_provider.dart';
 import '../games/combo.dart';
 import '../providers/feedback_provider.dart';
 import '../ads/ad_widgets.dart';
@@ -120,6 +121,7 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
       _score++;
       _points += points;
       ref.read(statsProvider.notifier).addPoints(points);
+      ref.read(dailyGoalProvider.notifier).tick();
       feedback.right(combo: _combo.current);
     } else {
       _combo.miss();
