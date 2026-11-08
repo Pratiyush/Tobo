@@ -126,6 +126,23 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
+  testWidgets('Fallee keeps its speed when animations are turned off', (
+    tester,
+  ) async {
+    // Android "Remove animations" / iOS Reduce Motion.
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    final c = await createContainer();
+    await tester.pumpWidget(buildScreen(c, FalleeScreen(random: Random(3))));
+
+    // At 5% speed the word would have landed long ago.
+    await tester.pump(falleeStartDuration ~/ 2);
+    expect(find.text('1/$falleeRounds'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('Hive: tapping a word path solves it and consumes letters', (
     tester,
   ) async {

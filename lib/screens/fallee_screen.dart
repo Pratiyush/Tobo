@@ -35,6 +35,9 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
   late final AnimationController _fall = AnimationController(
     vsync: this,
     duration: falleeStartDuration,
+    // The fall is the game's timer, not decoration: keep its real speed when
+    // the device has "Remove animations" on (Flutter would cut it to 5%).
+    animationBehavior: AnimationBehavior.preserve,
   )..addStatusListener(_onFallStatus);
 
   late List<Word> _words;
