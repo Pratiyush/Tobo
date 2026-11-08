@@ -1,3 +1,5 @@
+import 'level.dart';
+
 /// German grammatical gender, named after its definite article.
 enum Gender { der, die, das }
 
@@ -45,6 +47,8 @@ class Word {
   final String cefr;
 
   bool get isNoun => gender != null;
+
+  Level get level => Level.of(cefr);
 
   /// The word as learners should say it: nouns carry their article.
   String get display => gender == null ? german : '${gender!.name} $german';

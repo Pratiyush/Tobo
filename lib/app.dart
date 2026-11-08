@@ -1,3 +1,6 @@
+import 'providers/onboarding_provider.dart';
+import 'screens/onboarding_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,15 +15,18 @@ import 'theme/app_theme.dart';
 
 const appTitle = 'Wortschatz';
 
-class GermanWordsApp extends StatelessWidget {
+class GermanWordsApp extends ConsumerWidget {
   const GermanWordsApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) => MaterialApp(
     title: appTitle,
     debugShowCheckedModeBanner: false,
     theme: buildTheme(),
-    home: const RootScreen(),
+    // First run asks for the level; then the app proper.
+    home: ref.watch(onboardedProvider)
+        ? const RootScreen()
+        : const OnboardingScreen(),
   );
 }
 

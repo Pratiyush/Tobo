@@ -96,6 +96,9 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
   @visibleForTesting
   List<Hex> get debugTargetPath => _board.paths[_spell(_target)]!;
 
+  @visibleForTesting
+  List<Word> get debugTargets => _targets;
+
   String get _traced => _path.map((h) => _board.tiles[h]!).join();
 
   void _extend(Hex hex) {

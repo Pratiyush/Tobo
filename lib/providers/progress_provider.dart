@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/level.dart';
 import '../models/word.dart';
 import 'preferences_provider.dart';
 import 'settings_provider.dart';
@@ -100,13 +101,15 @@ final learnedWordsProvider = Provider<List<Word>>((ref) {
       .toList();
 });
 
-/// Learned words due for practice, most overdue first.
+/// Learned words of the chosen levels due for practice, most overdue first.
 final dueWordsProvider = Provider<List<Word>>((ref) {
   final progress = ref.watch(progressProvider);
   final now = ref.watch(clockProvider)();
   return ref
-      .watch(learnedWordsProvider)
-      .where((w) => !progress[w.id]!.due.isAfter(now))
+      .watch(activeWordsProvider)
+      .where(
+        (w) => progress.containsKey(w.id) && !progress[w.id]!.due.isAfter(now),
+      )
       .toList()
     ..sort((a, b) => progress[a.id]!.due.compareTo(progress[b.id]!.due));
 });
@@ -116,11 +119,28 @@ final dueWordsProvider = Provider<List<Word>>((ref) {
 final gamePoolProvider = Provider.family<List<Word>, bool>((ref, nounsOnly) {
   final progress = ref.watch(progressProvider);
   final words = ref
-      .watch(wordsProvider)
+      .watch(activeWordsProvider)
       .where((w) => !nounsOnly || w.isNoun)
       .toList();
   final learned = words.where((w) => progress.containsKey(w.id)).toList()
     ..sort((a, b) => progress[a.id]!.level.compareTo(progress[b.id]!.level));
   final fresh = words.where((w) => !progress.containsKey(w.id));
   return [...learned, ...fresh.take(learned.length < 40 ? 40 : 10)];
+});
+
+/// Learned and total words per level (all levels, whatever is chosen).
+final levelProgressProvider = Provider<Map<Level, ({int learned, int total})>>((
+  ref,
+) {
+  final progress = ref.watch(progressProvider);
+  final words = ref.watch(wordsProvider);
+  return {
+    for (final level in Level.values)
+      level: (
+        learned: words
+            .where((w) => w.level == level && progress.containsKey(w.id))
+            .length,
+        total: words.where((w) => w.level == level).length,
+      ),
+  };
 });

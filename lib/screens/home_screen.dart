@@ -1,3 +1,6 @@
+import '../providers/settings_provider.dart';
+import '../widgets/level_badge.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -88,6 +91,8 @@ class _Header extends ConsumerWidget {
             ],
           ),
         ),
+        const SizedBox(height: 12),
+        const _LevelProgress(),
         const StreakRestoreCard(),
         const ContentUpdateCard(),
       ],
@@ -218,11 +223,17 @@ class _WordListCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  list.title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      list.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    LevelBadge(level: list.level),
+                  ],
                 ),
                 Text(
                   '$total items · ${list.words.first.german} … '
@@ -239,6 +250,66 @@ class _WordListCard extends StatelessWidget {
           const Icon(Icons.chevron_right_rounded, color: AppColors.inkSoft),
         ],
       ),
+    );
+  }
+}
+
+/// Learned words per chosen level, e.g. "A1 12/531" with a thin bar.
+class _LevelProgress extends ConsumerWidget {
+  const _LevelProgress();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final choice = ref.watch(settingsProvider.select((s) => s.levels));
+    final progress = ref.watch(levelProgressProvider);
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        for (final level in choice.active) ...[
+          if (level != choice.active.first) const SizedBox(width: 8),
+          Expanded(
+            child: Semantics(
+              label:
+                  'Level ${level.label}: ${progress[level]!.learned} of '
+                  '${progress[level]!.total} words learned',
+              excludeSemantics: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      LevelBadge(level: level),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          '${progress[level]!.learned}/${progress[level]!.total}',
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: LinearProgressIndicator(
+                      value: progress[level]!.total == 0
+                          ? 0
+                          : progress[level]!.learned / progress[level]!.total,
+                      minHeight: 5,
+                      backgroundColor: Colors.white24,
+                      color: AppColors.gold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

@@ -98,7 +98,8 @@ Future<ProviderContainer> createContainer({
   TestClock? clock,
   List<Word>? words,
 }) async {
-  SharedPreferences.setMockInitialValues(prefs);
+  // Tests start past the first-run level question unless they set it.
+  SharedPreferences.setMockInitialValues({'onboarded': true, ...prefs});
   final instance = await SharedPreferences.getInstance();
   return ProviderContainer(
     overrides: [

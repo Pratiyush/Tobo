@@ -1,3 +1,5 @@
+import '../widgets/level_badge.dart';
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -169,6 +171,8 @@ class _Front extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            LevelBadge(level: word.level, large: true),
+            const SizedBox(height: 12),
             ArticleWord(
               word: word,
               style: theme.textTheme.headlineMedium?.copyWith(
@@ -216,6 +220,8 @@ class _Back extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                LevelBadge(level: word.level),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

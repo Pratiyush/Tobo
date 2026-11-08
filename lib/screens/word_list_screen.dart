@@ -1,3 +1,5 @@
+import '../widgets/level_badge.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,8 +38,8 @@ class WordListScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline_rounded, color: Colors.white70),
-              const SizedBox(width: 8),
+              LevelBadge(level: list.level, large: true),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   fresh.isEmpty

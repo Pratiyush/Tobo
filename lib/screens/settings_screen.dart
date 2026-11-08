@@ -1,3 +1,5 @@
+import '../widgets/level_picker.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,6 +45,19 @@ class SettingsScreen extends ConsumerWidget {
             padding: EdgeInsets.zero,
             child: Column(
               children: [
+                ListTile(
+                  key: const ValueKey('settings-levels'),
+                  leading: const Icon(Icons.school_rounded),
+                  title: const Text('Levels'),
+                  subtitle: Text(settings.levels.label),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const LevelSettingsScreen(),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
                 SwitchListTile(
                   title: const Text('Speak words automatically'),
                   subtitle: const Text('On flashcards and after answers'),
@@ -223,4 +238,31 @@ String _supportQuery(String? lastError) {
     '\n\n---\nLast error on this device (delete if you prefer):\n$lastError',
   );
   return 'subject=$subject&body=$body';
+}
+
+/// Settings › Levels: changes apply at once to the lists and all games.
+class LevelSettingsScreen extends ConsumerWidget {
+  const LevelSettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => BlueScaffold(
+    title: 'Levels',
+    body: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        LevelPicker(
+          value: ref.watch(settingsProvider).levels,
+          onChanged: ref.read(settingsProvider.notifier).setLevels,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Your progress is kept for every level, so switching never loses '
+          'a learned word.',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium
+              ?.copyWith(color: Colors.white),
+        ),
+      ],
+    ),
+  );
 }

@@ -15,6 +15,8 @@ import 'package:german_words/app.dart';
 import 'package:german_words/content/content_source.dart';
 import 'package:german_words/games/hive.dart';
 import 'package:german_words/models/word.dart';
+import 'package:german_words/widgets/level_badge.dart';
+import 'package:german_words/models/level.dart';
 import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/progress_provider.dart';
@@ -67,6 +69,7 @@ void main() {
 
   setUp(() async {
     await prefs.clear();
+    await prefs.setBool('onboarded', true);
     audio.played.clear();
     // Android needs the surface converted once per test, not once per run.
     surfaceConverted = false;
@@ -306,5 +309,41 @@ void main() {
     expect(c.read(progressProvider), isEmpty);
     expect(c.read(statsProvider).points, 0);
     expect(find.text('Open-source licences'), findsOneWidget);
+  });
+
+  testWidgets('first run: pick B1, then lists and games use only B1', (
+    tester,
+  ) async {
+    await prefs.remove('onboarded');
+    final c = await launch(tester);
+    expect(find.text('Willkommen!'), findsOneWidget);
+    await shot(tester, '00-onboarding');
+
+    await tester.tap(find.byKey(const ValueKey('level-B1')));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'START');
+    expect(find.text('WORTSCHATZ'), findsOneWidget);
+    expect(c.read(wordListsProvider).every((l) => l.level == Level.b1), isTrue);
+    final badges = tester.widgetList<LevelBadge>(find.byType(LevelBadge));
+    expect(badges, isNotEmpty);
+    expect(badges.every((b) => b.level == Level.b1), isTrue);
+
+    await tapText(tester, 'Practice');
+    await tapText(tester, 'Der Die Das');
+    final noun = words.firstWhere(
+      (w) => w.isNoun && find.text(w.german).evaluate().isNotEmpty,
+    );
+    expect(noun.level, Level.b1);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tapText(tester, 'Settings');
+    await tester.tap(find.byKey(const ValueKey('settings-levels')));
+    await tester.pumpAndSettle();
+    await shot(tester, '09-levels');
+    await tester.tap(find.byKey(const ValueKey('level-sequence')));
+    await tester.pumpAndSettle();
+    expect(c.read(settingsProvider).levels.sequence, isTrue);
+    expect(c.read(wordListsProvider).first.level, Level.a1);
   });
 }
