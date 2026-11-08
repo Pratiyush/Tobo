@@ -235,10 +235,27 @@ void main() {
         expect(find.text('🔥 ×4'), findsOneWidget);
         await shot(tester, '05-der-die-das', settle: false);
       }
-      // Feedback lasts up to 3 s when a gender hint is shown.
-      await tester.pump(const Duration(seconds: 3));
+      // Wait for the next noun (feedback lasts up to 3 s with a rule hint),
+      // or for the summary after the last one.
+      final next = i + 2 <= 20 ? '${i + 2}/20' : null;
+      await pumpUntil(
+        tester,
+        () => next == null
+            ? find.byType(StarRow).evaluate().isNotEmpty
+            : find.text(next).evaluate().isNotEmpty,
+      );
+      if ((next == null && find.byType(StarRow).evaluate().isEmpty) ||
+          (next != null && find.text(next).evaluate().isEmpty)) {
+        final texts = find
+            .byType(Text)
+            .evaluate()
+            .map((e) => (e.widget as Text).data)
+            .whereType<String>()
+            .take(12);
+        fail('stuck after answer ${i + 1}; on screen: ${texts.join(' | ')}');
+      }
     }
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
     expect(tester.widget<StarRow>(find.byType(StarRow)).stars, 3);
     expect(find.text('NEW BEST!'), findsOneWidget);
     expect(find.text('+53 points'), findsOneWidget);
