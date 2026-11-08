@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/providers/daily_goal_provider.dart';
+import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/progress_provider.dart';
 import 'package:german_words/providers/stats_provider.dart';
 import 'package:german_words/screens/word_list_screen.dart';
@@ -71,5 +72,23 @@ void main() {
     c.invalidate(dueWordsProvider);
     await tester.pumpAndSettle();
     expect(find.text('2 items'), findsOneWidget);
+  });
+
+  testWidgets('Reset progress also clears best scores and today\'s goal', (
+    tester,
+  ) async {
+    final c = await createContainer();
+    c.read(bestScoresProvider.notifier).submit('fallee', 12);
+    c.read(dailyGoalProvider.notifier).tick();
+    await tester.pumpWidget(buildApp(c));
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Reset progress'));
+    await tester.tap(find.text('Reset progress'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Reset'));
+    await tester.pumpAndSettle();
+    expect(c.read(bestScoresProvider)['fallee'], 0);
+    expect(c.read(dailyGoalProvider), 0);
   });
 }

@@ -1,3 +1,5 @@
+import '../providers/feedback_provider.dart';
+import '../providers/daily_goal_provider.dart';
 import '../widgets/level_picker.dart';
 
 import 'package:flutter/material.dart';
@@ -211,6 +213,8 @@ class SettingsScreen extends ConsumerWidget {
     if (ok != true) return;
     ref.read(progressProvider.notifier).reset();
     ref.read(statsProvider.notifier).reset();
+    ref.read(bestScoresProvider.notifier).reset();
+    ref.read(dailyGoalProvider.notifier).reset();
   }
 }
 

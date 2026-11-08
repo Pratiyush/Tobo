@@ -34,6 +34,13 @@ class DailyGoalNotifier extends Notifier<int> {
       ..setString(_dayKey, today)
       ..setInt(_doneKey, done);
   }
+
+  void reset() {
+    state = 0;
+    ref.read(sharedPreferencesProvider)
+      ..remove(_dayKey)
+      ..remove(_doneKey);
+  }
 }
 
 final dailyGoalProvider = NotifierProvider<DailyGoalNotifier, int>(

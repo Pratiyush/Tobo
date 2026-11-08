@@ -116,6 +116,14 @@ class BestScores extends Notifier<Map<String, int>> {
     };
   }
 
+  void reset() {
+    final prefs = ref.read(sharedPreferencesProvider);
+    for (final game in state.keys) {
+      prefs.remove(_key(game));
+    }
+    state = {for (final game in state.keys) game: 0};
+  }
+
   /// Records [score] for [game]; true when it beats the previous best.
   bool submit(String game, int score) {
     final previous = state[game] ?? 0;
