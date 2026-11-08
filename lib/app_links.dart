@@ -1,14 +1,14 @@
 /// Every outbound link in one place.
 library;
 
-/// Draft text: docs/privacy-policy.md. The owner publishes it at this address
-/// (same pattern as leben-in-deutschland-legal) before release.
+/// Published by the hub (owner-approved). Source: German/legal/wortschatz/
+/// in the hub folder; send corrections to the hub, not here.
 const privacyPolicyUrl =
-    'https://pratiyush.github.io/wortschatz-legal/privacy.html';
+    'https://pratiyush.github.io/german-apps-legal/wortschatz/privacy.html';
 
-/// Impressum (DDG §5). Published by the owner with the privacy policy.
+/// Impressum (DDG §5), same source.
 const impressumUrl =
-    'https://pratiyush.github.io/wortschatz-legal/impressum.html';
+    'https://pratiyush.github.io/german-apps-legal/wortschatz/impressum.html';
 
-/// Same support address Leben in Deutschland ships.
+/// Same support address as the published policy and Leben in Deutschland.
 const supportEmail = 'pratiyush1@gmail.com';
