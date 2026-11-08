@@ -158,6 +158,8 @@ void main() {
     // and played on the device.
     await done.timeout(const Duration(seconds: 10));
     expect(find.textContaining('No German voice'), findsNothing);
+    // Let the button's ink ripple finish before the tree is torn down.
+    await tester.pumpAndSettle();
   });
 
   testWidgets('Practice: due words are spelled, with hints, for points', (
