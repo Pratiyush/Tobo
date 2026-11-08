@@ -137,14 +137,14 @@ class _LevelBadge extends StatelessWidget {
                   Text(
                     '$level',
                     style: theme.textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
+                      color: AppColors.ink,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   Text(
                     'LEVEL',
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: Colors.white,
+                      color: AppColors.ink,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.5,
                     ),

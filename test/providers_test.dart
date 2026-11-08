@@ -7,6 +7,10 @@ import 'package:german_words/providers/speech_provider.dart';
 import 'package:german_words/providers/stats_provider.dart';
 import 'package:german_words/providers/words_provider.dart';
 
+import 'package:german_words/services/error_log.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'helpers.dart';
 
 void main() {
@@ -153,5 +157,17 @@ void main() {
     expect(audio.played, isEmpty);
     expect(tts.spoken, [word.display]);
     expect(speaker.clipMisses, {word.id});
+  });
+
+  test('the error log keeps the newest 20 errors on the device', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final log = ErrorLog(prefs);
+    for (var i = 0; i < 25; i++) {
+      log.record(StateError('boom $i'), StackTrace.current);
+    }
+    expect(log.entries, hasLength(ErrorLog.keep));
+    expect(log.latest, contains('boom 24'));
+    expect(log.entries.first, contains('boom 5'));
   });
 }

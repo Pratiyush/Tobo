@@ -77,7 +77,7 @@ class SpeakButton extends ConsumerWidget {
     super.key,
     this.word,
     this.text,
-    this.size = 40,
+    this.size = 48,
     this.filled = false,
   }) : assert((word == null) != (text == null), 'pass word or text');
 
@@ -97,7 +97,7 @@ class SpeakButton extends ConsumerWidget {
               tooltip: 'Listen',
               style: IconButton.styleFrom(
                 backgroundColor: AppColors.orange,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.ink,
               ),
               onPressed: speak,
               icon: icon,

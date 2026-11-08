@@ -51,7 +51,8 @@ ThemeData buildTheme() {
   final scheme = ColorScheme.fromSeed(
     seedColor: AppColors.blueTop,
     primary: AppColors.orange,
-    onPrimary: Colors.white,
+    // Ink on orange is 6.3:1; white on this orange was 2.25:1 (fails AA).
+    onPrimary: AppColors.ink,
     secondary: AppColors.green,
     surface: AppColors.card,
     onSurface: AppColors.ink,
@@ -78,7 +79,7 @@ ThemeData buildTheme() {
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: AppColors.orange,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.ink,
         minimumSize: const Size(48, 52),
         textStyle: base.textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.w800,

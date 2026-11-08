@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
+import '../services/error_log.dart';
+import '../providers/preferences_provider.dart';
 import '../ads/ads_service.dart';
 import '../app.dart';
 import '../app_links.dart';
@@ -111,7 +113,9 @@ class SettingsScreen extends ConsumerWidget {
                   url: Uri(
                     scheme: 'mailto',
                     path: supportEmail,
-                    query: 'subject=$appTitle $appVersion',
+                    query: _supportQuery(
+                      ErrorLog(ref.read(sharedPreferencesProvider)).latest,
+                    ),
                   ),
                 ),
                 const Divider(height: 1),
@@ -197,4 +201,14 @@ class _LinkTile extends StatelessWidget {
     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
     onTap: () => launchUrl(url, mode: LaunchMode.externalApplication),
   );
+}
+
+/// Mail subject, plus the newest local error (if any) for the user to send.
+String _supportQuery(String? lastError) {
+  final subject = Uri.encodeComponent('$appTitle $appVersion');
+  if (lastError == null) return 'subject=$subject';
+  final body = Uri.encodeComponent(
+    '\n\n---\nLast error on this device (delete if you prefer):\n$lastError',
+  );
+  return 'subject=$subject&body=$body';
 }

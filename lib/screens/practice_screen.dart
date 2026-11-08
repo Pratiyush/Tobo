@@ -40,7 +40,7 @@ class PracticeScreen extends ConsumerWidget {
             onTap: due.isEmpty ? null : () => open(SpellingScreen(words: due)),
             child: Row(
               children: [
-                const Icon(Icons.keyboard_rounded, color: Colors.white),
+                const Icon(Icons.keyboard_rounded, color: AppColors.ink),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -49,7 +49,7 @@ class PracticeScreen extends ConsumerWidget {
                       Text(
                         'PRACTICE',
                         style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
+                          color: AppColors.ink,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -60,7 +60,7 @@ class PracticeScreen extends ConsumerWidget {
                             ? 'Learn some words first'
                             : 'All caught up. Come back tomorrow!',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white,
+                          color: AppColors.ink,
                         ),
                       ),
                     ],
@@ -69,11 +69,11 @@ class PracticeScreen extends ConsumerWidget {
                 Text(
                   '${due.length} items',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
+                    color: AppColors.ink,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: Colors.white),
+                const Icon(Icons.chevron_right_rounded, color: AppColors.ink),
               ],
             ),
           ),

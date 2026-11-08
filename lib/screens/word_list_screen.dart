@@ -138,7 +138,7 @@ class _ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final fg = primary ? Colors.white : AppColors.ink;
+    final fg = AppColors.ink;
     return Opacity(
       opacity: onTap == null ? 0.6 : 1,
       child: WhiteCard(
