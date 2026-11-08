@@ -58,7 +58,7 @@ class _Header extends ConsumerWidget {
         Row(
           children: [
             Semantics(
-              label: 'Streak $streak days',
+              label: 'Streak $streak ${streak == 1 ? 'day' : 'days'}',
               child: Row(
                 children: [
                   const Text('🔥', style: TextStyle(fontSize: 22)),
