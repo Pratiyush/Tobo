@@ -56,22 +56,23 @@ class _Header extends ConsumerWidget {
     );
     return Column(
       children: [
-        Row(
+        Stack(
+          alignment: Alignment.center,
           children: [
-            Semantics(
-              label: 'Streak $streak ${streak == 1 ? 'day' : 'days'}',
-              child: Row(
-                children: [
-                  const Text('🔥', style: TextStyle(fontSize: 22)),
-                  const SizedBox(width: 4),
-                  Text('$streak', style: white),
-                ],
+            Text('WORTSCHATZ', style: white?.copyWith(letterSpacing: 2)),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Semantics(
+                label: 'Streak $streak ${streak == 1 ? 'day' : 'days'}',
+                child: Row(
+                  children: [
+                    const Text('🔥', style: TextStyle(fontSize: 22)),
+                    const SizedBox(width: 4),
+                    Text('$streak', style: white),
+                  ],
+                ),
               ),
             ),
-            const Spacer(),
-            Text('WORTSCHATZ', style: white?.copyWith(letterSpacing: 2)),
-            const Spacer(),
-            const SizedBox(width: 40),
           ],
         ),
         const SizedBox(height: 12),

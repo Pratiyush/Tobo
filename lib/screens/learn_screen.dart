@@ -210,85 +210,86 @@ class _Back extends StatelessWidget {
     final theme = Theme.of(context);
     return WhiteCard(
       padding: const EdgeInsets.all(24),
-      child: SizedBox(
-        width: double.infinity,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: ArticleWord(
-                      word: word,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                  SpeakButton(word: word),
-                ],
-              ),
-              if (word.pluralDisplay != null)
-                Text(
-                  'pl. ${word.pluralDisplay}',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.inkSoft,
-                  ),
-                ),
-              const SizedBox(height: 20),
-              Text(
-                word.english.join(', '),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.orangeDeep,
-                ),
-              ),
-              Consumer(
-                builder: (context, ref, _) {
-                  final hint = genderHint(word, ref.watch(nounsProvider));
-                  if (hint == null) return const SizedBox.shrink();
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 12),
-                    child: Text(
-                      hint,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.inkSoft,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              if (word.exampleDe != null) ...[
-                const SizedBox(height: 24),
+      child: SizedBox.expand(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: Text(
-                        word.exampleDe!,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontStyle: FontStyle.italic,
+                    Flexible(
+                      child: ArticleWord(
+                        word: word,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
-                    SpeakButton(text: word.exampleDe!),
+                    SpeakButton(word: word),
                   ],
                 ),
-                if (word.exampleEn != null)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      word.exampleEn!,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.inkSoft,
-                      ),
+                if (word.pluralDisplay != null)
+                  Text(
+                    'pl. ${word.pluralDisplay}',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontStyle: FontStyle.italic,
+                      color: AppColors.inkSoft,
                     ),
                   ),
+                const SizedBox(height: 20),
+                Text(
+                  word.english.join(', '),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.orangeDeep,
+                  ),
+                ),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final hint = genderHint(word, ref.watch(nounsProvider));
+                    if (hint == null) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        hint,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.inkSoft,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                if (word.exampleDe != null) ...[
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          word.exampleDe!,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
+                      SpeakButton(text: word.exampleDe!),
+                    ],
+                  ),
+                  if (word.exampleEn != null)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        word.exampleEn!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: AppColors.inkSoft,
+                        ),
+                      ),
+                    ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

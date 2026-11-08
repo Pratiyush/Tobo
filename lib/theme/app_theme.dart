@@ -25,6 +25,9 @@ abstract final class AppColors {
   static const die = Color(0xFFDD1F26);
   static const das = Color(0xFFFFCE00);
 
+  /// "das" as text on white: dark gold, 4.9:1 contrast (gold itself is 1.5:1).
+  static const dasInk = Color(0xFFA85E00);
+
   static Color article(Gender g) => switch (g) {
     Gender.der => der,
     Gender.die => die,

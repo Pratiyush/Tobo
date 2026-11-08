@@ -42,26 +42,30 @@ class ProgressRing extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) => SizedBox.square(
-    dimension: size,
-    child: Stack(
-      fit: StackFit.expand,
-      children: [
-        CircularProgressIndicator(
-          value: value,
-          strokeWidth: 5,
-          backgroundColor: AppColors.track,
-          color: AppColors.green,
-          strokeCap: StrokeCap.round,
-        ),
-        Center(
-          child: Text(
-            '${(value * 100).round()}%',
-            style: Theme.of(context).textTheme.labelMedium
-                ?.copyWith(fontWeight: FontWeight.w800),
+  Widget build(BuildContext context) => Semantics(
+    label: '${(value * 100).round()}% learned',
+    excludeSemantics: true,
+    child: SizedBox.square(
+      dimension: size,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          CircularProgressIndicator(
+            value: value,
+            strokeWidth: 5,
+            backgroundColor: AppColors.track,
+            color: AppColors.green,
+            strokeCap: StrokeCap.round,
           ),
-        ),
-      ],
+          Center(
+            child: Text(
+              '${(value * 100).round()}%',
+              style: Theme.of(context).textTheme.labelMedium
+                  ?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -154,7 +158,7 @@ class ArticleWord extends StatelessWidget {
               text: '${gender.name} ',
               style: base.copyWith(
                 color: gender == Gender.das
-                    ? AppColors.orangeDeep
+                    ? AppColors.dasInk
                     : AppColors.article(gender),
               ),
             ),
