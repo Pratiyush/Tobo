@@ -64,7 +64,7 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
       ref.read(statsProvider.notifier).addPoints(Reward.game);
     }
     if (ref.read(settingsProvider).autoSpeak) {
-      ref.read(speakerProvider).say(word.display);
+      ref.read(speakerProvider).sayWord(word);
     }
     setState(() => _picked = g);
     await Future<void>.delayed(Duration(milliseconds: correct ? 600 : 1400));

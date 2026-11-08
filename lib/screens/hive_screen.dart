@@ -118,7 +118,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     final points = _hints == 0 ? Reward.hiveWord : Reward.game;
     ref.read(statsProvider.notifier).addPoints(points);
     if (ref.read(settingsProvider).autoSpeak) {
-      ref.read(speakerProvider).say(word.display);
+      ref.read(speakerProvider).sayWord(word);
     }
 
     setState(() {
@@ -310,7 +310,7 @@ class _RoundComplete extends StatelessWidget {
                   ),
                 ),
               ),
-              SpeakButton(text: w.display),
+              SpeakButton(word: w),
             ],
           ),
         const SizedBox(height: 12),

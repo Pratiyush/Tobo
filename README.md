@@ -24,7 +24,8 @@ ad-supported (personalised AdMob ads behind consent, not built yet; see
 - Points, level and daily streak. Learned words come back for practice on a
   simple Leitner schedule (1, 2, 4, 8, 16 days). The *Count games as practice*
   setting lets game answers count toward that schedule.
-- Words are spoken with the device's German (`de-DE`) text-to-speech.
+- Every word plays a recorded pronunciation (ElevenLabs renders shared with Lernle;
+  nouns with their article). Example sentences use the device's German TTS.
 
 ## Words
 
@@ -37,6 +38,12 @@ dart run tool/import_lernle.dart ../lernle/content/lemmas/de.jsonl
 ```
 
 Only import `de.jsonl`. `de_tobo.jsonl` is still pending review.
+
+The clips in `assets/audio/de/` come from Lernle's pronunciation pack:
+
+```sh
+dart run tool/import_lernle_audio.dart ../lernle/app/assets/audio/de
+```
 
 ## Commands
 

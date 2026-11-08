@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/content/content_source.dart';
 import 'package:german_words/data/word_repository.dart';
 
 import 'helpers.dart';
@@ -43,4 +47,18 @@ void main() {
     expect(lists.first.words.length, wordListSize);
     expect(lists.expand((l) => l.words).toList(), deck);
   });
+
+  test(
+    'every word has its bundled clip and the manifest lists exactly them',
+    () {
+      final manifest = jsonDecode(
+        File(audioManifestAsset).readAsStringSync(),
+      ) as Map<String, dynamic>;
+      final ids = {for (final id in manifest['ids'] as List) id as String};
+      expect(ids, {for (final w in deck) w.id});
+      for (final id in ids) {
+        expect(File('$audioDir/$id.mp3').existsSync(), isTrue, reason: id);
+      }
+    },
+  );
 }

@@ -70,7 +70,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
       _score += points;
     }
     if (ref.read(settingsProvider).autoSpeak) {
-      ref.read(speakerProvider).say(_word.display);
+      ref.read(speakerProvider).sayWord(_word);
     }
     setState(() => _result = correct ? _Result.correct : _Result.wrong);
   }
@@ -179,7 +179,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
                         ),
                       ),
                     ),
-                    SpeakButton(text: _word.display),
+                    SpeakButton(word: _word),
                   ],
                 ),
               ],

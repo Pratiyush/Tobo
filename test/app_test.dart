@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/app.dart';
+import 'package:german_words/content/content_source.dart';
 import 'package:german_words/games/hive.dart';
 import 'package:german_words/models/word.dart';
 import 'package:german_words/providers/progress_provider.dart';
@@ -32,7 +33,8 @@ void main() {
 
   testWidgets('learning a word from a list', (tester) async {
     final engine = FakeSpeechEngine();
-    final c = await createContainer(engine: engine);
+    final audio = FakeAudioEngine();
+    final c = await createContainer(engine: engine, audio: audio);
     await tester.pumpWidget(buildApp(c));
 
     await tester.tap(find.text('Words 1'));
@@ -42,7 +44,9 @@ void main() {
     await tester.tap(find.text('LEARN'));
     await tester.pumpAndSettle();
     final first = deck.first;
-    expect(engine.spoken, [first.display]);
+    // Auto-speak plays the recorded clip, not device TTS.
+    expect(audio.played, [AssetMedia('$audioDir/${first.id}.mp3')]);
+    expect(engine.spoken, isEmpty);
 
     await tester.tap(find.text('FLIP'));
     await tester.pumpAndSettle();

@@ -104,7 +104,7 @@ class WordListScreen extends ConsumerWidget {
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SpeakButton(text: word.display),
+                        SpeakButton(word: word),
                         const SizedBox(width: 4),
                         MasteryBars(level: progress[word.id]?.level ?? 0),
                       ],

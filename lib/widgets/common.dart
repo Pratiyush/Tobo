@@ -66,23 +66,26 @@ class ProgressRing extends StatelessWidget {
   );
 }
 
-/// Round orange speaker button that says [text] in German.
+/// Round orange speaker button: plays [word]'s recorded clip, or says
+/// [text] (an example sentence) with device TTS.
 class SpeakButton extends ConsumerWidget {
   const SpeakButton({
     super.key,
-    required this.text,
+    this.word,
+    this.text,
     this.size = 40,
     this.filled = false,
-  });
+  }) : assert((word == null) != (text == null), 'pass word or text');
 
-  final String text;
+  final Word? word;
+  final String? text;
   final double size;
   final bool filled;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final icon = Icon(Icons.volume_up_rounded, size: size * 0.55);
-    Future<void> speak() => speakGerman(context, ref, text);
+    Future<void> speak() => speakGerman(context, ref, word: word, text: text);
     return SizedBox.square(
       dimension: size,
       child: filled
@@ -106,14 +109,18 @@ class SpeakButton extends ConsumerWidget {
   }
 }
 
-/// Speaks [text], telling the user once if there's no German voice.
+/// Plays [word] or says [text], telling the user if nothing could be spoken.
 Future<void> speakGerman(
   BuildContext context,
-  WidgetRef ref,
-  String text,
-) async {
+  WidgetRef ref, {
+  Word? word,
+  String? text,
+}) async {
   final messenger = ScaffoldMessenger.maybeOf(context);
-  final ok = await ref.read(speakerProvider).say(text);
+  final speaker = ref.read(speakerProvider);
+  final ok = word != null
+      ? await speaker.sayWord(word)
+      : await speaker.say(text!);
   if (!ok) {
     messenger
       ?..hideCurrentSnackBar()

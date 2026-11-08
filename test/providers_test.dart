@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/content/content_source.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/progress_provider.dart';
 import 'package:german_words/providers/settings_provider.dart';
@@ -125,4 +126,32 @@ void main() {
       expect(engine.availabilityChecks, 3);
     },
   );
+
+  test('a word plays its recorded clip, not device TTS', () async {
+    final tts = FakeSpeechEngine();
+    final audio = FakeAudioEngine();
+    final word = deck.firstWhere((w) => w.isNoun);
+    final speaker = Speaker(tts, audio: audio, content: FakeContentSource());
+
+    expect(await speaker.sayWord(word), isTrue);
+    expect(audio.played, [AssetMedia('assets/audio/de/${word.id}.mp3')]);
+    expect(tts.spoken, isEmpty);
+  });
+
+  test('a word without a clip falls back to TTS and is logged', () async {
+    final tts = FakeSpeechEngine();
+    final audio = FakeAudioEngine();
+    final word = deck.first;
+    final speaker = Speaker(
+      tts,
+      audio: audio,
+      content: FakeContentSource(withoutClips: {word.id}),
+      retryDelay: Duration.zero,
+    );
+
+    expect(await speaker.sayWord(word), isTrue);
+    expect(audio.played, isEmpty);
+    expect(tts.spoken, [word.display]);
+    expect(speaker.clipMisses, {word.id});
+  });
 }

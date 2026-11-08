@@ -39,7 +39,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
 
   void _autoSpeak() {
     if (_deck.isEmpty || !ref.read(settingsProvider).autoSpeak) return;
-    ref.read(speakerProvider).say(_deck.first.display);
+    ref.read(speakerProvider).sayWord(_deck.first);
   }
 
   void _flip() => setState(() => _flipped = !_flipped);
@@ -190,7 +190,7 @@ class _Front extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 28),
-            SpeakButton(text: word.display, size: 72, filled: true),
+            SpeakButton(word: word, size: 72, filled: true),
           ],
         ),
       ),
@@ -224,7 +224,7 @@ class _Back extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SpeakButton(text: word.display),
+                  SpeakButton(word: word),
                 ],
               ),
               if (word.pluralDisplay != null)
