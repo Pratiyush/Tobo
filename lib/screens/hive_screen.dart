@@ -57,7 +57,8 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     _newRound();
   }
 
-  String _spell(Word w) => w.german.toLowerCase();
+  /// Nouns keep their capital on the tile, as German writes them.
+  String _spell(Word w) => w.german;
 
   void _newRound() {
     final pool = ref.read(gamePoolProvider(false));

@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../ads/ad_widgets.dart';
+import '../games/gender_rules.dart';
 import '../games/quiz.dart';
 import '../models/word.dart';
 import '../providers/progress_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/speech_provider.dart';
 import '../providers/stats_provider.dart';
+import '../providers/words_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
@@ -35,6 +37,9 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
 
   /// The article picked for the current noun, while feedback shows.
   Gender? _picked;
+
+  /// Why the noun has its article, shown with the feedback when known.
+  String? _hint;
 
   @override
   void initState() {
@@ -67,8 +72,14 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
     if (ref.read(settingsProvider).autoSpeak) {
       ref.read(speakerProvider).sayWord(word);
     }
-    setState(() => _picked = g);
-    await Future<void>.delayed(Duration(milliseconds: correct ? 600 : 1400));
+    final hint = genderHint(word, ref.read(nounsProvider));
+    setState(() {
+      _picked = g;
+      _hint = hint;
+    });
+    // Longer when there's a rule to read.
+    final ms = (correct ? 600 : 1400) + (hint == null ? 0 : 1600);
+    await Future<void>.delayed(Duration(milliseconds: ms));
     if (!mounted) return;
     setState(() {
       _picked = null;
@@ -132,6 +143,17 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: _wordStyle(theme),
+                              ),
+                            if (_picked != null && _hint != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  _hint!,
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.inkSoft,
+                                  ),
+                                ),
                               ),
                             const SizedBox(height: 12),
                             Text(

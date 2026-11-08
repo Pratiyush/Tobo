@@ -18,3 +18,11 @@ final wordListsProvider = Provider<List<WordList>>(
 final wordsByIdProvider = Provider<Map<String, Word>>(
   (ref) => {for (final w in ref.watch(wordsProvider)) w.id: w},
 );
+
+/// Nouns only, for gender hints.
+final nounsProvider = Provider<List<Word>>(
+  (ref) => [
+    for (final w in ref.watch(wordsProvider))
+      if (w.isNoun) w,
+  ],
+);

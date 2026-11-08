@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/games/gender_rules.dart';
+import 'package:german_words/models/word.dart';
 import 'package:german_words/games/hive.dart';
 import 'package:german_words/games/quiz.dart';
 import 'package:german_words/games/spelling.dart';
@@ -88,12 +90,24 @@ void main() {
       expect(p.isCorrect, isTrue);
     });
 
-    test('answers compare case-insensitively', () {
+    test('a noun is typed with its capital', () {
       final p = SpellingPuzzle('der Tag', Random(1));
-      for (final c in 'der tag'.split('')) {
+      expect(p.keys.containsKey('T'), isTrue);
+      expect(p.keys.containsKey('t'), isFalse, reason: 'no lower-case twin');
+      for (final c in 'der Tag'.split('')) {
         p.type(c);
       }
       expect(p.isCorrect, isTrue);
+    });
+
+    test('capital and small forms of a letter are separate keys', () {
+      final p = SpellingPuzzle('die Schwester', Random(1));
+      expect(p.keys['S'], 1);
+      expect(p.keys['s'], 1);
+      p.type('s');
+      expect(p.typed, 's');
+      p.hint();
+      expect(p.typed, 'd', reason: 'hint removes the wrong letter first');
     });
   });
 
@@ -105,5 +119,41 @@ void main() {
       expect(d.pos, target.pos);
       expect(d.english.any(target.english.contains), isFalse);
     }
+  });
+
+  group('gender hints', () {
+    final nouns = deck.where((w) => w.isNoun).toList();
+    Word noun(String german) => nouns.firstWhere((w) => w.german == german);
+
+    test('compounds take the article of their last part', () {
+      expect(genderHint(noun('Kaltmiete'), nouns), contains('die Miete'));
+      expect(genderHint(noun('Krankenhaus'), nouns), contains('das Haus'));
+    });
+
+    test('suffix rules explain -ung and friends', () {
+      expect(genderHint(noun('Wohnung'), nouns), contains('-ung take die'));
+    });
+
+    test('a pattern that disagrees with the article gives no hint', () {
+      expect(genderHint(noun('Antwort'), nouns), isNull, reason: 'das Wort');
+      expect(genderHint(noun('Baum'), nouns), isNull, reason: '-um is das');
+      expect(genderHint(noun('Kuchen'), nouns), isNull, reason: '-chen');
+    });
+
+    test('every hint on the deck agrees with the real article', () {
+      var hinted = 0;
+      for (final w in nouns) {
+        final hint = genderHint(w, nouns);
+        if (hint == null) continue;
+        hinted++;
+        final g = w.gender!.name;
+        expect(
+          hint,
+          anyOf(contains('take $g.'), contains(': $g ')),
+          reason: w.german,
+        );
+      }
+      expect(hinted, greaterThan(20));
+    });
   });
 }

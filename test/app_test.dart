@@ -140,7 +140,8 @@ void main() {
     );
     await tester.pump();
     expect(find.text('Richtig!'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 1));
+    // Up to 2.2 s when a gender hint is shown.
+    await tester.pump(const Duration(seconds: 3));
     expect(find.text('2/$derDieDasRounds'), findsOneWidget);
     expect(c.read(statsProvider).points, Reward.game);
   });

@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../providers/words_provider.dart';
+import '../games/gender_rules.dart';
 import '../models/word.dart';
 import '../providers/progress_provider.dart';
 import '../providers/settings_provider.dart';
@@ -243,6 +245,22 @@ class _Back extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                   color: AppColors.orangeDeep,
                 ),
+              ),
+              Consumer(
+                builder: (context, ref, _) {
+                  final hint = genderHint(word, ref.watch(nounsProvider));
+                  if (hint == null) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Text(
+                      hint,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.inkSoft,
+                      ),
+                    ),
+                  );
+                },
               ),
               if (word.exampleDe != null) ...[
                 const SizedBox(height: 24),

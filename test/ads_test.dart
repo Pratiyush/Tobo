@@ -177,7 +177,8 @@ void main() {
       final label =
           '${noun.gender!.name[0].toUpperCase()}${noun.gender!.name.substring(1)}';
       await tester.tap(find.text(label));
-      await tester.pump(const Duration(seconds: 2));
+      // Feedback lasts up to 3 s when a gender hint is shown.
+      await tester.pump(const Duration(seconds: 4));
     }
     await tester.pumpAndSettle();
     final points = c.read(statsProvider).points;

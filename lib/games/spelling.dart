@@ -1,10 +1,11 @@
 import 'dart:math';
 
 /// The spelling drill's custom keyboard: only the answer's letters plus a
-/// few decoys, each key showing how many times it is still available.
+/// few decoys, each key showing how many times it is still available. Keys
+/// keep their case, so a noun is typed with its capital ("die Versicherung").
 class SpellingPuzzle {
   SpellingPuzzle(this.answer, Random rng, {int decoys = 3})
-    : _remaining = _buildKeys(answer.toLowerCase(), rng, decoys);
+    : _remaining = _buildKeys(answer, rng, decoys);
 
   /// The word to type, e.g. `die Welt`. A space is typed with [space].
   final String answer;
@@ -21,7 +22,14 @@ class SpellingPuzzle {
       counts[ch] = (counts[ch] ?? 0) + 1;
     }
     final extras =
-        _alphabet.split('').where((c) => !counts.containsKey(c)).toList()
+        _alphabet
+            .split('')
+            .where(
+              (c) =>
+                  !counts.containsKey(c) &&
+                  !counts.containsKey(c.toUpperCase()),
+            )
+            .toList()
           ..shuffle(rng);
     for (final c in extras.take(decoys)) {
       counts[c] = 1;
@@ -40,7 +48,7 @@ class SpellingPuzzle {
 
   bool get isFull => _typed.length == answer.length;
 
-  bool get isCorrect => typed == answer.toLowerCase();
+  bool get isCorrect => typed == answer;
 
   void type(String key) {
     final left = _remaining[key] ?? 0;
@@ -57,7 +65,7 @@ class SpellingPuzzle {
 
   /// Removes any wrong letters, then types the next correct one.
   void hint() {
-    final target = answer.toLowerCase();
+    final target = answer;
     while (_typed.isNotEmpty && !target.startsWith(typed)) {
       backspace();
     }
