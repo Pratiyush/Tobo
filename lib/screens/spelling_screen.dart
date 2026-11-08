@@ -168,8 +168,8 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
                   _result == _Result.correct ? 'Richtig!' : 'The answer is',
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: _result == _Result.correct
-                        ? AppColors.green
-                        : AppColors.red,
+                        ? AppColors.greenInk
+                        : AppColors.die,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -292,7 +292,7 @@ class _Keyboard extends StatelessWidget {
                             child: Text(
                               '$left',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: AppColors.orangeDeep,
+                                color: AppColors.orangeInk,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
@@ -328,9 +328,9 @@ class _RoundKey extends StatelessWidget {
     iconSize: 26,
     style: IconButton.styleFrom(
       backgroundColor: color,
-      foregroundColor: color == Colors.white || color == AppColors.gold
-          ? AppColors.ink
-          : Colors.white,
+      // Ink on every fill (white, gold, green, orange): white icons on the
+      // green and orange keys were 2.3-2.7:1.
+      foregroundColor: AppColors.ink,
       disabledBackgroundColor: Colors.white24,
       minimumSize: const Size(52, 52),
     ),

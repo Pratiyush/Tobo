@@ -125,8 +125,8 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
                                     : 'It’s ${_words[_index].gender!.name}',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: _picked == _words[_index].gender
-                                      ? AppColors.green
-                                      : AppColors.red,
+                                      ? AppColors.greenInk
+                                      : AppColors.die,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),

@@ -113,7 +113,7 @@ class StreakRestoreCard extends ConsumerWidget {
             ),
             const Icon(
               Icons.ondemand_video_rounded,
-              color: AppColors.orangeDeep,
+              color: AppColors.orangeInk,
             ),
           ],
         ),

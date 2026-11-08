@@ -128,6 +128,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                               child: FilledButton.icon(
                                 style: FilledButton.styleFrom(
                                   backgroundColor: AppColors.green,
+                                  foregroundColor: AppColors.ink,
                                 ),
                                 onPressed: _know,
                                 icon: const Icon(Icons.check_circle_rounded),
@@ -243,7 +244,7 @@ class _Back extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w900,
-                    color: AppColors.orangeDeep,
+                    color: AppColors.orangeInk,
                   ),
                 ),
                 Consumer(

@@ -201,7 +201,7 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
     if (showResult && option.id == word.id) {
       bg = AppColors.green;
     } else if (showResult && option.id == _picked?.id) {
-      bg = AppColors.red;
+      bg = AppColors.die;
     } else {
       bg = Colors.white;
     }
@@ -210,7 +210,8 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
       child: FilledButton(
         style: FilledButton.styleFrom(
           backgroundColor: bg,
-          foregroundColor: bg == Colors.white ? AppColors.ink : Colors.white,
+          // Ink on white and green (5.3:1); white on the flag red (4.9:1).
+          foregroundColor: bg == AppColors.die ? Colors.white : AppColors.ink,
           padding: const EdgeInsets.symmetric(horizontal: 8),
         ),
         onPressed: () => _resolve(option),
