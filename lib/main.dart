@@ -19,9 +19,18 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     // Load both at once; the splash stays up until the first frame.
-    final support = await getApplicationSupportDirectory();
-    final store = ContentStore(Directory('${support.path}/content'));
-    final content = UpdatableContentSource(store);
+    // CONTENT_CDN_ENABLED off (default): bundled seed only, no store, no
+    // network content requests.
+    final store = contentCdnEnabled
+        ? ContentStore(
+            Directory(
+              '${(await getApplicationSupportDirectory()).path}/content',
+            ),
+          )
+        : null;
+    final content = store != null
+        ? UpdatableContentSource(store)
+        : BundledContentSource();
     final (prefs, words) = await (
       SharedPreferences.getInstance(),
       content.loadWords(),
@@ -41,7 +50,7 @@ Future<void> main() async {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           contentSourceProvider.overrideWithValue(content),
-          contentStoreProvider.overrideWithValue(store),
+          if (store != null) contentStoreProvider.overrideWithValue(store),
           wordsProvider.overrideWithValue(words),
         ],
         child: const GermanWordsApp(),

@@ -12,6 +12,12 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
+/// The CDN client is off unless built with `--dart-define=CONTENT_CDN_ENABLED=true`
+/// (hub decision, 2026-11-09): off, the app uses only its bundled seed and
+/// makes no content requests at all. Turn it on once the privacy policy has
+/// its content-downloads section.
+const contentCdnEnabled = bool.fromEnvironment('CONTENT_CDN_ENABLED');
+
 /// The live CDN. The local `content/tools/serve` mirrors it for tests.
 const contentBaseUrl = 'https://german-content.pratiyush1.workers.dev';
 

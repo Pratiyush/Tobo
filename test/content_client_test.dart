@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/content/content_client.dart';
+import 'package:german_words/providers/content_update_provider.dart';
 
 import 'helpers.dart';
 
@@ -245,5 +246,22 @@ void main() {
     expect(store.version, 3);
     expect(File(store.clipPath(first)!).readAsStringSync(), v2Clip);
     expect(Directory('${tmp.path}/v2').existsSync(), isFalse);
+  });
+
+  test('CONTENT_CDN_ENABLED defaults to off', () {
+    expect(contentCdnEnabled, isFalse);
+  });
+
+  testWidgets('with the CDN client off: no store, no checks, no Settings row', (
+    tester,
+  ) async {
+    final c = await createContainer();
+    expect(c.read(contentStoreProvider), isNull);
+    await c.read(contentUpdateProvider.notifier).checkDaily();
+    expect(c.read(contentUpdateProvider).state, UpdateState.idle);
+    await tester.pumpWidget(buildApp(c));
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Word content'), findsNothing);
   });
 }

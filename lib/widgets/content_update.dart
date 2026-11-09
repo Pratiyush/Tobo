@@ -53,6 +53,8 @@ class ContentUpdateTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Hidden while the CDN client is off (no store).
+    if (ref.watch(contentStoreProvider) == null) return const SizedBox.shrink();
     final check = ref.watch(contentUpdateProvider);
     final notifier = ref.read(contentUpdateProvider.notifier);
     final version = check.state == UpdateState.updated
