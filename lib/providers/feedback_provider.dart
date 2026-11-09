@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:io' show Platform;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
@@ -27,13 +28,22 @@ class DeviceFeedbackEngine implements FeedbackEngine {
       // Low-latency, mixed with other audio, and quiet under the iOS silent
       // switch (unlike word recordings, which play through it).
       unawaited(p.setPlayerMode(PlayerMode.lowLatency));
+      // iOS: respectSilence selects the ambient category, which already
+      // mixes with other audio; adding mixWithOthers fails audioplayers'
+      // validation and broke every game answer on iOS (BUG-28).
       unawaited(
-        p.setAudioContext(
-          AudioContextConfig(
-            respectSilence: true,
-            focus: AudioContextConfigFocus.mixWithOthers,
-          ).build(),
-        ),
+        p
+            .setAudioContext(
+              AudioContextConfig(
+                respectSilence: true,
+                focus: Platform.isIOS
+                    ? AudioContextConfigFocus.gain
+                    : AudioContextConfigFocus.mixWithOthers,
+              ).build(),
+            )
+            .catchError(
+              (Object e) => developer.log('sfx context: $e', name: 'audio'),
+            ),
       );
       unawaited(p.setReleaseMode(ReleaseMode.stop));
     }
@@ -79,10 +89,22 @@ class DeviceFeedbackEngine implements FeedbackEngine {
   }
 }
 
+/// Sounds are a nicety: if the device engine can't be built, games stay
+/// silent instead of failing.
+class SilentFeedbackEngine implements FeedbackEngine {
+  @override
+  void play(GameSound sound) {}
+}
+
 final feedbackEngineProvider = Provider<FeedbackEngine>((ref) {
-  final engine = DeviceFeedbackEngine();
-  ref.onDispose(engine.dispose);
-  return engine;
+  try {
+    final engine = DeviceFeedbackEngine();
+    ref.onDispose(engine.dispose);
+    return engine;
+  } on Object catch (e) {
+    developer.log('sfx engine unavailable: $e', name: 'audio');
+    return SilentFeedbackEngine();
+  }
 });
 
 /// What games call: respects the "Sounds & vibration" setting.
@@ -92,17 +114,20 @@ class GameFeedback {
   final FeedbackEngine _engine;
   final bool enabled;
 
-  void right({int combo = 0}) {
+  void right({int combo = 0}) =>
+      _play(combo >= 3 ? GameSound.combo : GameSound.correct);
+
+  void wrong() => _play(GameSound.wrong);
+
+  void roundEnd() => _play(GameSound.roundEnd);
+
+  void _play(GameSound sound) {
     if (!enabled) return;
-    _engine.play(combo >= 3 ? GameSound.combo : GameSound.correct);
-  }
-
-  void wrong() {
-    if (enabled) _engine.play(GameSound.wrong);
-  }
-
-  void roundEnd() {
-    if (enabled) _engine.play(GameSound.roundEnd);
+    try {
+      _engine.play(sound);
+    } on Object catch (e) {
+      developer.log('sfx ${sound.name}: $e', name: 'audio');
+    }
   }
 }
 

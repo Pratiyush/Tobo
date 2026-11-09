@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/games/combo.dart';
 import 'package:german_words/games/gender_rules.dart';
 import 'package:german_words/models/word.dart';
+import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/games/hive.dart';
 import 'package:german_words/games/quiz.dart';
 import 'package:german_words/games/spelling.dart';
@@ -177,4 +178,16 @@ void main() {
     expect(starsFor(3, 20), 0);
     expect(starsFor(0, 0), 0);
   });
+
+  test('a failing sound engine never breaks a game answer (BUG-28)', () {
+    final feedback = GameFeedback(_ThrowingEngine(), enabled: true);
+    expect(feedback.right, returnsNormally);
+    expect(feedback.wrong, returnsNormally);
+    expect(feedback.roundEnd, returnsNormally);
+  });
+}
+
+class _ThrowingEngine implements FeedbackEngine {
+  @override
+  void play(GameSound sound) => throw StateError('no audio');
 }
