@@ -9,6 +9,7 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/app.dart';
@@ -66,13 +67,18 @@ void main() {
     content = BundledContentSource();
     words = await content.loadWords();
     prefs = await SharedPreferences.getInstance();
-    audio = RecordingAudioEngine();
   });
 
   setUp(() async {
     await prefs.clear();
     await prefs.setBool('onboarded', true);
-    audio.played.clear();
+    // A fresh player per test, so a clip still preparing when one test ends
+    // can't fail the next.
+    audio = RecordingAudioEngine();
+    addTearDown(() async {
+      await audio.inner.stop();
+      await audio.inner.dispose();
+    });
     // Android needs the surface converted once per test, not once per run.
     surfaceConverted = false;
     clock = MovableClock();
@@ -152,6 +158,12 @@ void main() {
     await learn(tester, 3);
     expect(c.read(progressProvider), hasLength(3));
     expect(c.read(dailyGoalProvider), 3);
+    // Home is a lazy list: scroll back to the top before looking.
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('daily-goal')),
+      -300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.byKey(const ValueKey('daily-goal')), findsOneWidget);
     expect(c.read(statsProvider).points, 3 * Reward.learn);
     expect(prefs.getString('word_progress'), contains(words.first.id));
@@ -215,8 +227,18 @@ void main() {
       );
       await tester.pump();
     }
-    await tester.pumpAndSettle();
+    await pumpUntil(
+      tester,
+      () => find.text('Word 2 of $hiveWordsPerRound').evaluate().isNotEmpty,
+    );
     expect(find.text('Word 2 of $hiveWordsPerRound'), findsOneWidget);
+    // BUG-25: after the chime the app must go idle, not draw every vsync.
+    await tester.pump(const Duration(seconds: 2));
+    expect(
+      SchedulerBinding.instance.transientCallbackCount,
+      0,
+      reason: 'something still schedules frames after a game sound',
+    );
     expect(c.read(statsProvider).points, Reward.hiveWord);
   });
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,11 @@ abstract class FeedbackEngine {
 class DeviceFeedbackEngine implements FeedbackEngine {
   DeviceFeedbackEngine() {
     for (final p in _players.values) {
+      // No position tracking: audioplayers' frame-based updater would ask
+      // for a frame every vsync while "playing", and Android's low-latency
+      // (SoundPool) player never reports completion, so after one chime the
+      // app would never go idle again (BUG-25).
+      p.positionUpdater = null;
       // Low-latency, mixed with other audio, and quiet under the iOS silent
       // switch (unlike word recordings, which play through it).
       unawaited(p.setPlayerMode(PlayerMode.lowLatency));
@@ -57,8 +63,12 @@ class DeviceFeedbackEngine implements FeedbackEngine {
         HapticFeedback.heavyImpact();
     }
     final player = _players[sound]!;
+    // Fire and forget; a sound that can't play must never surface an error.
     unawaited(
-      player.stop().then((_) => player.play(AssetSource(_files[sound]!))),
+      player
+          .stop()
+          .then((_) => player.play(AssetSource(_files[sound]!)))
+          .catchError((Object e) => developer.log('sfx: $e', name: 'audio')),
     );
   }
 

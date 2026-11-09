@@ -54,6 +54,9 @@ abstract class AudioEngine {
 
 class AudioPlayersEngine implements AudioEngine {
   AudioPlayersEngine() {
+    // Nothing uses the playback position; without this, audioplayers
+    // schedules a frame every vsync while a clip plays (see BUG-25).
+    _player.positionUpdater = null;
     // Like the TTS engine: play through the iOS silent switch.
     unawaited(
       _player.setAudioContext(
