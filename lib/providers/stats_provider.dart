@@ -38,6 +38,11 @@ class Stats {
   }
 }
 
+/// The calendar day [n] days before [t]. Not `t.subtract(Duration(days: n))`:
+/// that is 24 real hours, and after the spring-forward night (a 23-hour day)
+/// 00:30 minus 24 h lands two calendar days back (BUG-32).
+DateTime daysAgo(DateTime t, int n) => DateTime(t.year, t.month, t.day - n);
+
 String _dayKey(DateTime t) =>
     '${t.year}-${t.month.toString().padLeft(2, '0')}-'
     '${t.day.toString().padLeft(2, '0')}';
@@ -56,7 +61,7 @@ class StatsNotifier extends Notifier<Stats> {
   void addPoints(int points) {
     final now = ref.read(clockProvider)();
     final today = _dayKey(now);
-    final yesterday = _dayKey(now.subtract(const Duration(days: 1)));
+    final yesterday = _dayKey(daysAgo(now, 1));
     final streak = switch (state.lastDay) {
       final d when d == today => state.streak,
       final d when d == yesterday => state.streak + 1,
@@ -77,7 +82,7 @@ class StatsNotifier extends Notifier<Stats> {
   /// streak continues when points are earned today.
   void restoreStreak() {
     final now = ref.read(clockProvider)();
-    final yesterday = _dayKey(now.subtract(const Duration(days: 1)));
+    final yesterday = _dayKey(daysAgo(now, 1));
     state = Stats(
       points: state.points,
       streak: state.streak,
@@ -101,7 +106,7 @@ final statsProvider = NotifierProvider<StatsNotifier, Stats>(StatsNotifier.new);
 final currentStreakProvider = Provider<int>((ref) {
   final stats = ref.watch(statsProvider);
   final now = ref.watch(clockProvider)();
-  final live = {_dayKey(now), _dayKey(now.subtract(const Duration(days: 1)))};
+  final live = {_dayKey(now), _dayKey(daysAgo(now, 1))};
   return live.contains(stats.lastDay) ? stats.streak : 0;
 });
 
@@ -110,6 +115,6 @@ final currentStreakProvider = Provider<int>((ref) {
 final restorableStreakProvider = Provider<int>((ref) {
   final stats = ref.watch(statsProvider);
   final now = ref.watch(clockProvider)();
-  final missed = _dayKey(now.subtract(const Duration(days: 2)));
+  final missed = _dayKey(daysAgo(now, 2));
   return stats.lastDay == missed ? stats.streak : 0;
 });
