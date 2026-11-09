@@ -43,6 +43,12 @@ abstract final class AppColors {
     Gender.das => das,
   };
 
+  /// A dimmed (not chosen) article button: a darker shade of its own colour
+  /// (maroon, dark gold, near-black). Lightening toward white turned the
+  /// flag red pink, a colour the owner rules out (BUG-35).
+  static Color dimmedArticle(Gender g) =>
+      Color.lerp(article(g), Colors.black, 0.45)!;
+
   /// Text colour readable on [article].
   static Color onArticle(Gender g) => switch (g) {
     Gender.der || Gender.die => Colors.white,

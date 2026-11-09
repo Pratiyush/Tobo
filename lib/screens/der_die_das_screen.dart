@@ -254,7 +254,7 @@ class _ArticleButton extends StatelessWidget {
     duration: const Duration(milliseconds: 150),
     child: Material(
       color: dimmed
-          ? Color.lerp(AppColors.article(gender), Colors.white, 0.6)
+          ? AppColors.dimmedArticle(gender)
           : AppColors.article(gender),
       shape: const CircleBorder(
         side: BorderSide(color: Colors.white, width: 3),
@@ -269,7 +269,7 @@ class _ArticleButton extends StatelessWidget {
             child: Text(
               '${gender.name[0].toUpperCase()}${gender.name.substring(1)}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: dimmed ? AppColors.ink : AppColors.onArticle(gender),
+                color: dimmed ? Colors.white : AppColors.onArticle(gender),
                 fontWeight: FontWeight.w900,
               ),
             ),

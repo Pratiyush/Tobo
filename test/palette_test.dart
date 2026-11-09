@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/models/word.dart';
 import 'package:german_words/theme/app_theme.dart';
 
 (double, double, double) _hsl(int rgb) {
@@ -61,6 +62,13 @@ void main() {
     expect(hits, isEmpty);
   });
 
+  test('dimmed article buttons never turn pink or coral (BUG-35)', () {
+    for (final g in Gender.values) {
+      final c = AppColors.dimmedArticle(g).toARGB32() & 0xFFFFFF;
+      expect(_claudeish(c), isNull, reason: '${g.name} dimmed');
+    }
+  });
+
   test('flag red is deep and saturated, not pinkish', () {
     final (_, s, l) = _hsl(AppColors.die.toARGB32() & 0xFFFFFF);
     expect(s, greaterThan(0.8));
@@ -74,5 +82,12 @@ void main() {
     expect(_contrast(AppColors.orangeInk, Colors.white), greaterThan(4.5));
     expect(_contrast(AppColors.greenInk, Colors.white), greaterThan(4.5));
     expect(_contrast(AppColors.ink, AppColors.green), greaterThan(4.5));
+    for (final g in Gender.values) {
+      expect(
+        _contrast(Colors.white, AppColors.dimmedArticle(g)),
+        greaterThan(4.5),
+        reason: 'label on dimmed ${g.name}',
+      );
+    }
   });
 }
