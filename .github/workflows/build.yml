@@ -11,7 +11,7 @@ env:
 
 jobs:
   test:
-    name: Analyze and test
+    name: Fast gate (tools/verify.sh)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,10 +20,9 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
-      - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed lib test tool integration_test test_driver
-      - run: flutter analyze
-      - run: flutter test
+      # The fast gate (docs/test-plan.md): format, analyze, unit, widget and
+      # headless whole-app flows, TZ=Europe/Berlin for the DST cases.
+      - run: bash tools/verify.sh
 
   android:
     name: Android APK
