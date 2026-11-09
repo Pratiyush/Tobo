@@ -115,8 +115,8 @@ jobs:
   e2e-ios:
     name: E2E on iOS simulator
     # A hung step otherwise runs to GitHub's 6-hour cap (BUG-37); two
-    # 20-minute attempts plus setup fit in 55.
-    timeout-minutes: 55
+    # 30-minute attempts plus setup fit in 70.
+    timeout-minutes: 70
     needs: test
     runs-on: macos-latest
     steps:
@@ -130,10 +130,10 @@ jobs:
       - name: Boot an iPhone simulator and run the E2E suite
         id: e2e
         # simctl can hang installing the app on a hosted runner (BUG-37):
-        # stop after 20 minutes and retry once below. A real test failure
+        # stop after 30 minutes (a cold runner has taken 18) and retry once below. A real test failure
         # records its exit code and is not retried.
         continue-on-error: true
-        timeout-minutes: 20
+        timeout-minutes: 30
         run: |
           UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print(next(x['udid'] for r, v in d.items() if 'iOS' in r for x in v if x['name'].startswith('iPhone')))")
           echo "UDID=$UDID" >> "$GITHUB_ENV"
@@ -144,7 +144,7 @@ jobs:
           echo $? > e2e-exit
       - name: Retry once on a fresh simulator (the first run hung)
         if: steps.e2e.outcome == 'failure' && hashFiles('e2e-exit') == ''
-        timeout-minutes: 20
+        timeout-minutes: 30
         run: |
           xcrun simctl shutdown all || true
           xcrun simctl erase "$UDID"
