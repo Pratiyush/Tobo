@@ -59,9 +59,11 @@ class AudioPlayersEngine implements AudioEngine {
     _player.positionUpdater = null;
     // Like the TTS engine: play through the iOS silent switch.
     unawaited(
-      _player.setAudioContext(
-        AudioContextConfig(respectSilence: false).build(),
-      ),
+      _player
+          .setAudioContext(AudioContextConfig(respectSilence: false).build())
+          .catchError(
+            (Object e) => developer.log('clip context: $e', name: 'audio'),
+          ),
     );
   }
 

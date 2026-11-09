@@ -19,34 +19,7 @@ abstract class FeedbackEngine {
 
 class DeviceFeedbackEngine implements FeedbackEngine {
   DeviceFeedbackEngine() {
-    for (final p in _players.values) {
-      // No position tracking: audioplayers' frame-based updater would ask
-      // for a frame every vsync while "playing", and Android's low-latency
-      // (SoundPool) player never reports completion, so after one chime the
-      // app would never go idle again (BUG-25).
-      p.positionUpdater = null;
-      // Low-latency, mixed with other audio, and quiet under the iOS silent
-      // switch (unlike word recordings, which play through it).
-      unawaited(p.setPlayerMode(PlayerMode.lowLatency));
-      // iOS: respectSilence selects the ambient category, which already
-      // mixes with other audio; adding mixWithOthers fails audioplayers'
-      // validation and broke every game answer on iOS (BUG-28).
-      unawaited(
-        p
-            .setAudioContext(
-              AudioContextConfig(
-                respectSilence: true,
-                focus: Platform.isIOS
-                    ? AudioContextConfigFocus.gain
-                    : AudioContextConfigFocus.mixWithOthers,
-              ).build(),
-            )
-            .catchError(
-              (Object e) => developer.log('sfx context: $e', name: 'audio'),
-            ),
-      );
-      unawaited(p.setReleaseMode(ReleaseMode.stop));
-    }
+    _ready = Future.wait([for (final p in _players.values) _configure(p)]);
   }
 
   static const _files = {
@@ -60,6 +33,39 @@ class DeviceFeedbackEngine implements FeedbackEngine {
     for (final s in GameSound.values) s: AudioPlayer(playerId: 'sfx-${s.name}'),
   };
 
+  /// Completes when every player is configured. Sounds wait on it, and
+  /// nothing reaches a player after [dispose]: a late call to a disposed
+  /// native player fails with "Player has not yet been created" (BUG-29).
+  late final Future<void> _ready;
+  bool _disposed = false;
+
+  Future<void> _configure(AudioPlayer p) async {
+    // No position tracking: audioplayers' frame-based updater would ask
+    // for a frame every vsync while "playing", and Android's low-latency
+    // (SoundPool) player never reports completion, so after one chime the
+    // app would never go idle again (BUG-25).
+    p.positionUpdater = null;
+    try {
+      // (audioplayers awaits the native player's creation in each call.)
+      // Low-latency, quiet under the iOS silent switch (unlike word
+      // recordings). iOS: respectSilence selects the ambient category,
+      // which already mixes with other audio; adding mixWithOthers fails
+      // audioplayers' validation (BUG-28).
+      await p.setPlayerMode(PlayerMode.lowLatency);
+      await p.setAudioContext(
+        AudioContextConfig(
+          respectSilence: true,
+          focus: Platform.isIOS
+              ? AudioContextConfigFocus.gain
+              : AudioContextConfigFocus.mixWithOthers,
+        ).build(),
+      );
+      await p.setReleaseMode(ReleaseMode.stop);
+    } on Object catch (e) {
+      developer.log('sfx setup: $e', name: 'audio');
+    }
+  }
+
   @override
   void play(GameSound sound) {
     switch (sound) {
@@ -72,19 +78,28 @@ class DeviceFeedbackEngine implements FeedbackEngine {
       case GameSound.roundEnd:
         HapticFeedback.heavyImpact();
     }
+    if (_disposed) return;
     final player = _players[sound]!;
     // Fire and forget; a sound that can't play must never surface an error.
     unawaited(
-      player
-          .stop()
-          .then((_) => player.play(AssetSource(_files[sound]!)))
+      _ready
+          .then((_) => _disposed ? null : player.stop())
+          .then(
+            (_) => _disposed ? null : player.play(AssetSource(_files[sound]!)),
+          )
           .catchError((Object e) => developer.log('sfx: $e', name: 'audio')),
     );
   }
 
   Future<void> dispose() async {
+    _disposed = true;
+    await _ready.catchError((Object _) {});
     for (final p in _players.values) {
-      await p.dispose();
+      try {
+        await p.dispose();
+      } on Object catch (e) {
+        developer.log('sfx dispose: $e', name: 'audio');
+      }
     }
   }
 }
