@@ -113,7 +113,15 @@ void main() {
       await binding.convertFlutterSurfaceToImage();
       surfaceConverted = true;
     }
-    settle ? await tester.pumpAndSettle() : await tester.pump();
+    if (settle) {
+      await tester.pumpAndSettle();
+    } else {
+      // The test binding draws a tap marker that fades over two frames;
+      // without these it lands in the store screenshot (BUG-38).
+      for (var i = 0; i < 3; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+    }
     await binding.takeScreenshot(name);
   }
 
