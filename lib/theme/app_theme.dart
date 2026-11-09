@@ -3,16 +3,17 @@ import 'package:flutter/material.dart';
 import '../models/word.dart';
 
 /// Every colour in the app. Arcade style: blue ground, white cards,
-/// orange calls to action, green to confirm.
+/// amber calls to action, green to confirm.
 abstract final class AppColors {
   static const blueTop = Color(0xFF2E7BC4);
   static const blueBottom = Color(0xFF1B3FA0);
-  static const orange = Color(0xFFF2A03D);
-  static const orangeDeep = Color(0xFFD9822B);
+  // Calls to action are amber, clear of the coral/salmon band the owner
+  // rules out (test/palette_test.dart applies the hub audit's bands).
+  static const orange = Color(0xFFF59E0B);
+  static const orangeDeep = Color(0xFFCC7A00);
   static const green = Color(0xFF34B36B);
-  // Errors use the flag red (die); the old #E5484D read as pinkish coral,
-  // which the hub rules out.
-  static const red = Color(0xFFDD1F26);
+  // Errors use the deep flag red (die), never a pinkish red.
+  static const red = die;
   static const ink = Color(0xFF1F2A44);
   static const inkSoft = Color(0xFF66718A);
   static const card = Colors.white;
@@ -24,7 +25,8 @@ abstract final class AppColors {
 
   /// The German flag as an article mnemonic.
   static const der = Color(0xFF1A1A1A);
-  static const die = Color(0xFFDD1F26);
+  // The Bundesflagge red: deep and fully saturated, 5.2:1 with white.
+  static const die = Color(0xFFDD0000);
   static const das = Color(0xFFFFCE00);
 
   /// Text-safe variants on white (WCAG AA, 4.5:1+). The brand colours stay
