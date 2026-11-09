@@ -32,6 +32,9 @@ const _suffixRules = <(String, Gender)>[
 String? genderHint(Word word, Iterable<Word> nouns) {
   final gender = word.gender;
   if (gender == null) return null;
+  if (word.isPluralOnly) {
+    return 'Plural-only noun: plurals always take die.';
+  }
   final lower = word.german.toLowerCase();
 
   Word? head;

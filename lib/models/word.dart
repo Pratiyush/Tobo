@@ -55,6 +55,13 @@ class Word {
 
   String get meaning => english.first;
 
-  /// German plurals always take "die".
-  String? get pluralDisplay => plural == null ? null : 'die $plural';
+  /// A noun that exists only in the plural (die Leute, die Eltern, die
+  /// Ferien): the deck stores it as "die" with plural = singular. Feminine
+  /// nouns never have an unchanged plural, so this marks exactly those.
+  bool get isPluralOnly => gender == Gender.die && plural == german;
+
+  /// German plurals always take "die". Null for plural-only nouns, whose
+  /// "plural" would just repeat the word.
+  String? get pluralDisplay =>
+      plural == null || isPluralOnly ? null : 'die $plural';
 }

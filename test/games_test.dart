@@ -132,6 +132,17 @@ void main() {
       expect(genderHint(noun('Krankenhaus'), nouns), contains('das Haus'));
     });
 
+    test('plural-only nouns are recognised and explained (BUG-13)', () {
+      for (final g in ['Leute', 'Eltern', 'Ferien']) {
+        expect(noun(g).isPluralOnly, isTrue, reason: g);
+        expect(noun(g).pluralDisplay, isNull);
+        expect(genderHint(noun(g), nouns), contains('Plural-only'));
+      }
+      expect(noun('Fenster').isPluralOnly, isFalse);
+      expect(noun('Fenster').pluralDisplay, 'die Fenster');
+      expect(nouns.where((w) => w.isPluralOnly), hasLength(3));
+    });
+
     test('suffix rules explain -ung and friends', () {
       expect(genderHint(noun('Wohnung'), nouns), contains('-ung take die'));
     });

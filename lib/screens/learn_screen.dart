@@ -181,6 +181,16 @@ class _Front extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
+            if (word.isPluralOnly) ...[
+              const SizedBox(height: 6),
+              Text(
+                'plural only · always die',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: AppColors.inkSoft,
+                ),
+              ),
+            ],
             if (word.pluralDisplay != null) ...[
               const SizedBox(height: 6),
               Text(
