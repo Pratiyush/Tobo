@@ -4,6 +4,7 @@ import 'dart:ui' show PointMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../widgets/score_counter.dart';
 import '../providers/words_provider.dart';
 import '../providers/daily_hive_provider.dart';
 import '../games/daily.dart';
@@ -232,9 +233,8 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                 const Spacer(),
                 ComboBadge(combo: _combo.current),
                 const SizedBox(width: 12),
-                const Icon(Icons.bolt_rounded, color: AppColors.gold),
-                Text(
-                  '$_score',
+                ScoreCounter(
+                  score: _score,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,

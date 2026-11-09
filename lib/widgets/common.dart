@@ -6,6 +6,7 @@ import '../models/word.dart';
 import '../providers/progress_provider.dart';
 import '../providers/speech_provider.dart';
 import '../theme/app_theme.dart';
+import 'score_counter.dart';
 import 'session_summary.dart';
 
 export 'session_summary.dart';
@@ -236,8 +237,7 @@ class GameHeader extends StatelessWidget {
               const Spacer(),
               ComboBadge(combo: combo),
               const SizedBox(width: 12),
-              const Icon(Icons.bolt_rounded, color: AppColors.gold),
-              Text('$score', style: style),
+              ScoreCounter(score: score, style: style),
             ],
           ),
           const SizedBox(height: 8),
