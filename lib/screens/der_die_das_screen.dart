@@ -246,11 +246,16 @@ class _ArticleButton extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => AnimatedOpacity(
-    opacity: dimmed ? 0.3 : 1,
+  Widget build(BuildContext context) => AnimatedScale(
+    // Dimmed buttons shrink and turn a light tint of their own colour (der
+    // grey, die pink, das pale gold). Fading them let the blue ground show
+    // through (der looked navy, die purple), which blurred the colour hook.
+    scale: dimmed ? 0.85 : 1,
     duration: const Duration(milliseconds: 150),
     child: Material(
-      color: AppColors.article(gender),
+      color: dimmed
+          ? Color.lerp(AppColors.article(gender), Colors.white, 0.6)
+          : AppColors.article(gender),
       shape: const CircleBorder(
         side: BorderSide(color: Colors.white, width: 3),
       ),
@@ -264,7 +269,7 @@ class _ArticleButton extends StatelessWidget {
             child: Text(
               '${gender.name[0].toUpperCase()}${gender.name.substring(1)}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.onArticle(gender),
+                color: dimmed ? AppColors.ink : AppColors.onArticle(gender),
                 fontWeight: FontWeight.w900,
               ),
             ),
