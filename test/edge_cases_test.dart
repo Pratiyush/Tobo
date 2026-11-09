@@ -442,6 +442,23 @@ void main() {
       expect(tts.spoken, [word.display]);
     });
 
+    test(
+      'a disposed or failing player never throws out of the speaker',
+      () async {
+        final tts = FakeSpeechEngine();
+        final speaker = Speaker(
+          tts,
+          audio: _BrokenAudio(),
+          content: FakeContentSource(),
+          retryDelay: Duration.zero,
+        );
+        expect(await speaker.say('Ich habe keine Zeit.'), isTrue);
+        expect(await speaker.sayWord(deck.first), isTrue);
+        await expectLater(speaker.stop(), completes);
+        expect(tts.spoken, ['Ich habe keine Zeit.', deck.first.display]);
+      },
+    );
+
     test('no German voice and no clip: reported, not thrown', () async {
       final speaker = Speaker(
         FakeSpeechEngine(available: false),
@@ -452,6 +469,15 @@ void main() {
       expect(await speaker.sayWord(deck.first), isFalse);
     });
   });
+}
+
+/// A player that was disposed: every call fails (BUG-34).
+class _BrokenAudio implements AudioEngine {
+  @override
+  Future<void> play(MediaRef clip) async => throw StateError('disposed');
+
+  @override
+  Future<void> stop() async => throw StateError('disposed');
 }
 
 class _FailingAudio implements AudioEngine {

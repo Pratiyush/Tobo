@@ -74,6 +74,7 @@ class AudioPlayersEngine implements AudioEngine {
 
   @override
   Future<void> play(MediaRef clip) async {
+    if (_disposed) return;
     await _player.stop();
     await _player.play(switch (clip) {
       // AudioCache prefixes asset paths with "assets/".
@@ -86,9 +87,18 @@ class AudioPlayersEngine implements AudioEngine {
   }
 
   @override
-  Future<void> stop() => _player.stop();
+  Future<void> stop() async {
+    if (!_disposed) await _player.stop();
+  }
 
-  Future<void> dispose() => _player.dispose();
+  /// Calls after dispose are ignored: a late, delayed pronunciation must
+  /// never reach a disposed native player (BUG-34).
+  bool _disposed = false;
+
+  Future<void> dispose() async {
+    _disposed = true;
+    await _player.dispose();
+  }
 }
 
 final speechEngineProvider = Provider<SpeechEngine>((ref) {
@@ -159,7 +169,7 @@ class Speaker {
           );
     }
     if (!_available) return false;
-    await _audio?.stop();
+    await _stopClip();
     await _engine.stop();
     await _engine.setLanguage(germanLocale);
     await _engine.speak(text);
@@ -167,8 +177,18 @@ class Speaker {
   }
 
   Future<void> stop() async {
-    await _audio?.stop();
+    await _stopClip();
     await _engine.stop();
+  }
+
+  /// Stopping a clip is best effort: a player that failed or was disposed
+  /// must not break speech (BUG-34).
+  Future<void> _stopClip() async {
+    try {
+      await _audio?.stop();
+    } on Object catch (e) {
+      developer.log('clip stop: $e', name: 'audio');
+    }
   }
 }
 
