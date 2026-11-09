@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../content/content_client.dart';
 import '../providers/content_update_provider.dart';
+import '../providers/settings_provider.dart';
 import '../theme/app_theme.dart';
 import 'common.dart';
 
@@ -92,13 +93,24 @@ class ContentUpdateTile extends ConsumerWidget {
       ),
       UpdateState.idle => (null, 'Check', notifier.check),
     };
-    return ListTile(
-      leading: const Icon(Icons.cloud_sync_rounded),
-      title: Text('Word content · version $version'),
-      subtitle: subtitle == null ? null : Text(subtitle),
-      trailing: action == null
-          ? null
-          : TextButton(onPressed: onTap, child: Text(action)),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.cloud_sync_rounded),
+          title: Text('Word content · version $version'),
+          subtitle: subtitle == null ? null : Text(subtitle),
+          trailing: action == null
+              ? null
+              : TextButton(onPressed: onTap, child: Text(action)),
+        ),
+        SwitchListTile(
+          title: const Text('Update automatically on Wi-Fi'),
+          subtitle: const Text('Never on mobile data'),
+          value: ref.watch(settingsProvider).autoUpdateOnWifi,
+          onChanged: ref.read(settingsProvider.notifier).setAutoUpdateOnWifi,
+        ),
+      ],
     );
   }
 }

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../content/content_client.dart';
 import '../content/content_source.dart';
+import '../content/network_info.dart';
 import 'preferences_provider.dart';
+import 'settings_provider.dart';
 import 'words_provider.dart';
 
 const _lastCheckKey = 'content_last_check';
@@ -58,6 +60,12 @@ class ContentUpdateNotifier extends Notifier<UpdateCheck> {
       return;
     }
     await check(silent: true);
+    // Opted in and on Wi-Fi: install without a tap. Never on mobile data.
+    if (state.state == UpdateState.available &&
+        ref.read(settingsProvider).autoUpdateOnWifi &&
+        await ref.read(networkInfoProvider).isUnmetered()) {
+      await update();
+    }
   }
 
   /// Checks now (Settings button) or quietly (daily).

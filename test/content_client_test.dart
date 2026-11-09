@@ -4,11 +4,15 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:german_words/content/content_client.dart';
+import 'package:german_words/content/content_source.dart';
 import 'package:german_words/providers/content_update_provider.dart';
+import 'package:german_words/providers/preferences_provider.dart';
+import 'package:german_words/providers/settings_provider.dart';
 
 import 'helpers.dart';
 
@@ -267,6 +271,7 @@ void main() {
     await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Word content'), findsNothing);
+    expect(find.text('Update automatically on Wi-Fi'), findsNothing);
   });
 
   group('HttpContentFetcher on a flaky network (BUG-36)', () {
@@ -343,6 +348,84 @@ void main() {
       );
       await expectLater(f.get(url), throwsFormatException);
       expect(calls, hasLength(1));
+    });
+  });
+
+  group('update automatically on Wi-Fi (spec §3, opt-in)', () {
+    Future<(ProviderContainer, FakeFetcher)> setUpCdn({
+      required bool auto,
+      required bool unmetered,
+      bool networkFails = false,
+    }) async {
+      final cdn = _cdn();
+      final c = await createContainer(
+        words: deck.take(3).toList(),
+        prefs: {if (auto) 'settings_auto_update_wifi': true},
+        network: FakeNetworkInfo(unmetered: unmetered, fails: networkFails),
+        // The app's bundled clips, so only the changed one downloads.
+        content: BundledContentSource()..seedClipHashes = cdn.seed,
+        overrides: [
+          contentStoreProvider.overrideWithValue(ContentStore(tmp)),
+          contentFetcherProvider.overrideWithValue(cdn.fetcher),
+        ],
+      );
+      return (c, cdn.fetcher);
+    }
+
+    test('off by default', () async {
+      final c = await createContainer();
+      expect(c.read(settingsProvider).autoUpdateOnWifi, isFalse);
+    });
+
+    test('on and on Wi-Fi: the daily check installs the update', () async {
+      final (c, _) = await setUpCdn(auto: true, unmetered: true);
+      await c.read(contentUpdateProvider.notifier).checkDaily();
+      expect(c.read(contentUpdateProvider).state, UpdateState.updated);
+      expect(ContentStore(tmp).version, 2);
+    });
+
+    test('on but on mobile data: only says an update is available', () async {
+      final (c, f) = await setUpCdn(auto: true, unmetered: false);
+      await c.read(contentUpdateProvider.notifier).checkDaily();
+      expect(c.read(contentUpdateProvider).state, UpdateState.available);
+      expect(f.fetched, ['manifest.json'], reason: 'nothing downloaded');
+    });
+
+    test('off on Wi-Fi: waits for a tap', () async {
+      final (c, f) = await setUpCdn(auto: false, unmetered: true);
+      await c.read(contentUpdateProvider.notifier).checkDaily();
+      expect(c.read(contentUpdateProvider).state, UpdateState.available);
+      expect(f.fetched, ['manifest.json']);
+    });
+
+    test('a failing network probe counts as mobile data', () async {
+      final (c, f) = await setUpCdn(
+        auto: true,
+        unmetered: true,
+        networkFails: true,
+      );
+      await c.read(contentUpdateProvider.notifier).checkDaily();
+      expect(c.read(contentUpdateProvider).state, UpdateState.available);
+      expect(f.fetched, ['manifest.json']);
+    });
+
+    testWidgets('the switch shows with the CDN client and persists', (
+      tester,
+    ) async {
+      final (c, _) = await setUpCdn(auto: false, unmetered: false);
+      await tester.pumpWidget(buildApp(c));
+      await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+      final toggle = find.text('Update automatically on Wi-Fi');
+      await tester.ensureVisible(toggle);
+      await tester.pumpAndSettle();
+      await tester.tap(toggle);
+      await tester.pumpAndSettle();
+      expect(c.read(settingsProvider).autoUpdateOnWifi, isTrue);
+      expect(
+        c.read(sharedPreferencesProvider).getBool('settings_auto_update_wifi'),
+        isTrue,
+      );
     });
   });
 }

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:german_words/ads/ads_service.dart';
 import 'package:german_words/app.dart';
 import 'package:german_words/content/content_source.dart';
+import 'package:german_words/content/network_info.dart';
 import 'package:german_words/data/word_repository.dart';
 import 'package:german_words/models/word.dart';
 import 'package:german_words/providers/feedback_provider.dart';
@@ -97,6 +98,7 @@ Future<ProviderContainer> createContainer({
   AdsService? ads,
   FeedbackEngine? feedback,
   TestClock? clock,
+  NetworkInfo? network,
   List<Override> overrides = const [],
   List<Word>? words,
 }) async {
@@ -114,6 +116,7 @@ Future<ProviderContainer> createContainer({
       feedbackEngineProvider.overrideWithValue(
         feedback ?? FakeFeedbackEngine(),
       ),
+      networkInfoProvider.overrideWithValue(network ?? FakeNetworkInfo()),
       if (clock != null) clockProvider.overrideWithValue(clock.call),
       ...overrides,
     ],
@@ -130,3 +133,18 @@ Widget buildScreen(ProviderContainer container, Widget screen) =>
       container: container,
       child: MaterialApp(theme: buildTheme(), home: screen),
     );
+
+/// Wi-Fi or mobile data, without the platform plugin.
+class FakeNetworkInfo implements NetworkInfo {
+  FakeNetworkInfo({this.unmetered = false, this.fails = false});
+
+  final bool unmetered;
+  final bool fails;
+
+  @override
+  Future<bool> isUnmetered() async {
+    // Mirrors ConnectivityNetworkInfo: a failing probe counts as metered.
+    if (fails) return false;
+    return unmetered;
+  }
+}
