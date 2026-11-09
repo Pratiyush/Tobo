@@ -1,8 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'dart:async';
+
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:german_words/content/content_client.dart';
 import 'package:german_words/providers/content_update_provider.dart';
 
@@ -263,5 +267,82 @@ void main() {
     await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Word content'), findsNothing);
+  });
+
+  group('HttpContentFetcher on a flaky network (BUG-36)', () {
+    MockClient flaky(List<Object> script, List<int> calls) =>
+        MockClient((request) async {
+          calls.add(1);
+          final step = script[calls.length - 1];
+          if (step is Exception) throw step;
+          return http.Response('ok', step as int, headers: {'etag': '"e"'});
+        });
+
+    final url = Uri.parse('https://cdn.test/manifest.json');
+
+    test('a dropped connection is retried, then succeeds', () async {
+      final calls = <int>[];
+      final f = HttpContentFetcher(
+        client: flaky([http.ClientException('reset'), 200], calls),
+        backoff: Duration.zero,
+      );
+      final r = await f.get(url);
+      expect(r.status, 200);
+      expect(calls, hasLength(2));
+    });
+
+    test('a stalled request times out and is retried', () async {
+      final calls = <int>[];
+      final f = HttpContentFetcher(
+        client: MockClient((request) async {
+          calls.add(1);
+          if (calls.length == 1) await Completer<void>().future;
+          return http.Response('ok', 200);
+        }),
+        timeout: const Duration(milliseconds: 20),
+        backoff: Duration.zero,
+      );
+      expect((await f.get(url)).status, 200);
+      expect(calls, hasLength(2));
+    });
+
+    test('a 503 from the edge is retried; a 404 or 500 is not', () async {
+      final calls = <int>[];
+      final f = HttpContentFetcher(
+        client: flaky([503, 200], calls),
+        backoff: Duration.zero,
+      );
+      expect((await f.get(url)).status, 200);
+      for (final status in [404, 500]) {
+        final once = <int>[];
+        final g = HttpContentFetcher(
+          client: flaky([status, 200], once),
+          backoff: Duration.zero,
+        );
+        expect((await g.get(url)).status, status);
+        expect(once, hasLength(1), reason: '$status is not transient');
+      }
+    });
+
+    test('gives up after 3 attempts with the last error', () async {
+      final calls = <int>[];
+      final f = HttpContentFetcher(
+        client: flaky(List.filled(5, http.ClientException('down')), calls),
+        backoff: Duration.zero,
+      );
+      await expectLater(f.get(url), throwsA(isA<http.ClientException>()));
+      expect(calls, hasLength(HttpContentFetcher.attempts));
+      expect(HttpContentFetcher.attempts, 3);
+    });
+
+    test('a non-network error (bad data) is not retried', () async {
+      final calls = <int>[];
+      final f = HttpContentFetcher(
+        client: flaky([const FormatException('bad'), 200], calls),
+        backoff: Duration.zero,
+      );
+      await expectLater(f.get(url), throwsFormatException);
+      expect(calls, hasLength(1));
+    });
   });
 }

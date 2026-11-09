@@ -6,6 +6,7 @@
 // only Wortschatz's words and the clips whose sha256 changed are downloaded,
 // every file is sha256-verified, the new version is written to a staging
 // directory and switched in atomically. Any failure keeps the old content.
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -129,21 +130,51 @@ abstract class ContentFetcher {
 }
 
 class HttpContentFetcher implements ContentFetcher {
-  HttpContentFetcher([http.Client? client]) : _client = client ?? http.Client();
+  HttpContentFetcher({
+    http.Client? client,
+    this.timeout = const Duration(seconds: 30),
+    this.backoff = const Duration(seconds: 2),
+  }) : _client = client ?? http.Client();
 
   final http.Client _client;
+  final Duration timeout;
+
+  /// Wait before retry n is n × [backoff].
+  final Duration backoff;
+
+  /// Tries per request: mobile networks drop and stall, so a dropped
+  /// connection, a stalled request or a busy edge (502/503/504) is retried
+  /// twice before an update gives up and rolls back (BUG-36).
+  static const attempts = 3;
+
+  static bool _transient(Object e) =>
+      e is TimeoutException ||
+      e is SocketException ||
+      e is http.ClientException;
 
   @override
   Future<FetchResult> get(Uri url, {String? etag}) async {
-    // No identifiers beyond what HTTP needs; no cookies, no analytics.
-    final response = await _client
-        .get(url, headers: {'If-None-Match': ?etag})
-        .timeout(const Duration(seconds: 30));
-    return FetchResult(
-      response.statusCode,
-      response.bodyBytes,
-      response.headers['etag'],
-    );
+    for (var attempt = 1; ; attempt++) {
+      try {
+        // No identifiers beyond what HTTP needs; no cookies, no analytics.
+        final response = await _client
+            .get(url, headers: {'If-None-Match': ?etag})
+            .timeout(timeout);
+        final busy = const {502, 503, 504}.contains(response.statusCode);
+        if (busy && attempt < attempts) {
+          await Future<void>.delayed(backoff * attempt);
+          continue;
+        }
+        return FetchResult(
+          response.statusCode,
+          response.bodyBytes,
+          response.headers['etag'],
+        );
+      } catch (e) {
+        if (!_transient(e) || attempt >= attempts) rethrow;
+        await Future<void>.delayed(backoff * attempt);
+      }
+    }
   }
 }
 

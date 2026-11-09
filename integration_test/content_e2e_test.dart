@@ -36,28 +36,31 @@ void main() {
       store: ContentStore(tmp),
       wordIds: const ['de.zeit.n'],
     );
-    late UpdateCheck check;
-    late String? etag;
+    // runAsync reports an error and returns null, so nullable results keep
+    // a network failure readable instead of a LateError (BUG-36).
+    UpdateCheck? check;
+    String? etag;
     await tester.runAsync(() async => (check, etag) = await updater.check());
-    expect(check.manifest, isNotNull);
-    expect(check.manifest!.minClient, lessThanOrEqualTo(contentClientVersion));
-    expect(check.state, anyOf(UpdateState.upToDate, UpdateState.available));
+    expect(check, isNotNull, reason: 'manifest check failed; see above');
+    expect(check!.manifest, isNotNull);
+    expect(check!.manifest!.minClient, lessThanOrEqualTo(contentClientVersion));
+    expect(check!.state, anyOf(UpdateState.upToDate, UpdateState.available));
     // A second check with the ETag is a cheap 304.
-    late UpdateCheck again;
+    UpdateCheck? again;
     await tester.runAsync(
       () async => (again, _) = await updater.check(etag: etag),
     );
-    expect(again.state, UpdateState.upToDate);
+    expect(again?.state, UpdateState.upToDate);
     // Download the lookup and verify its hash, as an update would.
-    final lookup = check.manifest!.lookup;
-    late FetchResult r;
+    final lookup = check!.manifest!.lookup;
+    FetchResult? r;
     await tester.runAsync(
       () async => r = await HttpContentFetcher().get(
         Uri.parse('$contentBaseUrl/${lookup.url}'),
       ),
     );
-    expect(r.status, 200);
-    expect(sha256Matches(r.body, lookup.sha256), isTrue);
+    expect(r?.status, 200);
+    expect(sha256Matches(r!.body, lookup.sha256), isTrue);
   });
 
   testWidgets(
