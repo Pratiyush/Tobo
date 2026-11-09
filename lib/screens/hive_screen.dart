@@ -221,13 +221,17 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             child: Row(
               children: [
-                Text(
-                  widget.daily != null
-                      ? 'Daily Hive · ${widget.daily!.level.label}'
-                      : 'Round $_round',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
+                Flexible(
+                  child: Text(
+                    widget.daily != null
+                        ? 'Daily Hive · ${widget.daily!.level.label}'
+                        : 'Round $_round',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -243,55 +247,61 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: WhiteCard(
-              child: SizedBox(
-                width: double.infinity,
-                child: _roundDone
-                    ? _RoundComplete(
-                        words: _targets,
-                        points: _roundPoints,
-                        stars: _stars,
-                        onShare: widget.daily == null
-                            ? null
-                            : () => ref.read(shareTextProvider)(
-                                widget.daily!.shareText(
-                                  stars: _stars,
-                                  hints: _roundHints,
+          // The board has fixed geometry; the clue card stops growing at 1.6x
+          // text so the board still fits a 360 x 640 phone at font 2.0.
+          MediaQuery.withClampedTextScaling(
+            maxScaleFactor: 1.6,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: WhiteCard(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: _roundDone
+                      ? _RoundComplete(
+                          words: _targets,
+                          points: _roundPoints,
+                          stars: _stars,
+                          onShare: widget.daily == null
+                              ? null
+                              : () => ref.read(shareTextProvider)(
+                                  widget.daily!.shareText(
+                                    stars: _stars,
+                                    hints: _roundHints,
+                                  ),
                                 ),
+                          onNext: widget.daily != null
+                              ? () => Navigator.of(context).maybePop()
+                              : () =>
+                                    finishRound(ref, () => setState(_newRound)),
+                        )
+                      : Column(
+                          children: [
+                            Text(
+                              'Word ${_solved + 1} of ${_targets.length}',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: AppColors.inkSoft,
                               ),
-                        onNext: widget.daily != null
-                            ? () => Navigator.of(context).maybePop()
-                            : () => finishRound(ref, () => setState(_newRound)),
-                      )
-                    : Column(
-                        children: [
-                          Text(
-                            'Word ${_solved + 1} of ${_targets.length}',
-                            style: theme.textTheme.labelLarge?.copyWith(
-                              color: AppColors.inkSoft,
                             ),
-                          ),
-                          Text(
-                            _target.meaning,
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w900,
+                            Text(
+                              _target.meaning,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _traced.isEmpty ? _blanks(_target) : _traced,
-                            key: const ValueKey('hive-traced'),
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              color: _wrong ? AppColors.red : AppColors.ink,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 3,
+                            const SizedBox(height: 4),
+                            Text(
+                              _traced.isEmpty ? _blanks(_target) : _traced,
+                              key: const ValueKey('hive-traced'),
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                color: _wrong ? AppColors.red : AppColors.ink,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 3,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                ),
               ),
             ),
           ),
@@ -320,10 +330,12 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Row(
                 children: [
-                  Text(
-                    '${_board.tiles.length} letters left',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.white70,
+                  Expanded(
+                    child: Text(
+                      '${_board.tiles.length} letters left',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white70,
+                      ),
                     ),
                   ),
                   const Spacer(),

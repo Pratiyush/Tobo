@@ -80,30 +80,35 @@ class _RootScreenState extends ConsumerState<RootScreen> {
         children: [
           // One banner for all three tabs (menus only, per the placement map).
           const AdBanner(),
-          NavigationBar(
-            selectedIndex: _tab,
-            onDestinationSelected: (i) => setState(() => _tab = i),
-            destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home_rounded),
-                label: 'Words',
-              ),
-              NavigationDestination(
-                icon: Badge(
-                  isLabelVisible: due > 0,
-                  label: Text('$due'),
-                  child: const Icon(Icons.rocket_launch_outlined),
+          // The bar has a fixed height; very large fonts would push its
+          // labels out, so they stop growing at 1.3x (content still scales).
+          MediaQuery.withClampedTextScaling(
+            maxScaleFactor: 1.3,
+            child: NavigationBar(
+              selectedIndex: _tab,
+              onDestinationSelected: (i) => setState(() => _tab = i),
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home_rounded),
+                  label: 'Words',
                 ),
-                selectedIcon: const Icon(Icons.rocket_launch_rounded),
-                label: 'Practice',
-              ),
-              const NavigationDestination(
-                icon: Icon(Icons.person_outline_rounded),
-                selectedIcon: Icon(Icons.person_rounded),
-                label: 'Settings',
-              ),
-            ],
+                NavigationDestination(
+                  icon: Badge(
+                    isLabelVisible: due > 0,
+                    label: Text('$due'),
+                    child: const Icon(Icons.rocket_launch_outlined),
+                  ),
+                  selectedIcon: const Icon(Icons.rocket_launch_rounded),
+                  label: 'Practice',
+                ),
+                const NavigationDestination(
+                  icon: Icon(Icons.person_outline_rounded),
+                  selectedIcon: Icon(Icons.person_rounded),
+                  label: 'Settings',
+                ),
+              ],
+            ),
           ),
         ],
       ),

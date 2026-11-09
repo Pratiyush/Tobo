@@ -168,49 +168,53 @@ class _Front extends StatelessWidget {
     return WhiteCard(
       onTap: onFlip,
       padding: const EdgeInsets.all(24),
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            LevelBadge(level: word.level, large: true),
-            const SizedBox(height: 12),
-            ArticleWord(
-              word: word,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            if (word.isPluralOnly) ...[
-              const SizedBox(height: 6),
-              Text(
-                'plural only · always die',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  fontStyle: FontStyle.italic,
-                  color: AppColors.inkSoft,
+      // Scrolls when a long word meets a large font on a small phone.
+      child: SizedBox.expand(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LevelBadge(level: word.level, large: true),
+                const SizedBox(height: 12),
+                ArticleWord(
+                  word: word,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
-              ),
-            ],
-            if (word.pluralDisplay != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                'pl. ${word.pluralDisplay}',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontStyle: FontStyle.italic,
-                  color: AppColors.inkSoft,
+                if (word.isPluralOnly) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'plural only · always die',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontStyle: FontStyle.italic,
+                      color: AppColors.inkSoft,
+                    ),
+                  ),
+                ],
+                if (word.pluralDisplay != null) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'pl. ${word.pluralDisplay}',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontStyle: FontStyle.italic,
+                      color: AppColors.inkSoft,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                Text(
+                  word.pos,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: AppColors.inkSoft,
+                  ),
                 ),
-              ),
-            ],
-            const SizedBox(height: 8),
-            Text(
-              word.pos,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: AppColors.inkSoft,
-              ),
+                const SizedBox(height: 28),
+                SpeakButton(word: word, size: 72, filled: true),
+              ],
             ),
-            const SizedBox(height: 28),
-            SpeakButton(word: word, size: 72, filled: true),
-          ],
+          ),
         ),
       ),
     );

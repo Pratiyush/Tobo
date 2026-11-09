@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -140,18 +141,21 @@ class SessionSummary extends StatelessWidget {
               tween: IntTween(begin: calm ? p : 0, end: p),
               duration: Duration(milliseconds: calm ? 1 : 900),
               curve: Curves.easeOutCubic,
-              builder: (context, v, _) => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.bolt_rounded, color: AppColors.orangeInk),
-                  Text(
-                    '+$v points',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.orangeInk,
+              builder: (context, v, _) => FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.bolt_rounded, color: AppColors.orangeInk),
+                    Text(
+                      '+$v points',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.orangeInk,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -260,14 +264,15 @@ class _PopInState extends State<_PopIn> with SingleTickerProviderStateMixin {
     if (widget.delay == Duration.zero) {
       _c.value = 1;
     } else {
-      Future<void>.delayed(widget.delay, () {
-        if (mounted) _c.forward();
-      });
+      _timer = Timer(widget.delay, _c.forward);
     }
   }
 
+  Timer? _timer;
+
   @override
   void dispose() {
+    _timer?.cancel();
     _c.dispose();
     super.dispose();
   }

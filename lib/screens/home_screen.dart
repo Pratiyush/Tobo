@@ -142,25 +142,29 @@ class _LevelBadge extends StatelessWidget {
                 ),
               ),
               alignment: Alignment.center,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '$level',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      color: AppColors.ink,
-                      fontWeight: FontWeight.w900,
+              padding: const EdgeInsets.all(8),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '$level',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'LEVEL',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppColors.ink,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.5,
+                    Text(
+                      'LEVEL',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
