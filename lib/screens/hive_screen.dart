@@ -16,6 +16,7 @@ import '../ads/ad_widgets.dart';
 import '../ads/ads_service.dart';
 import '../games/hive.dart';
 import '../models/word.dart';
+import '../providers/onboarding_provider.dart';
 import '../providers/progress_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/speech_provider.dart';
@@ -157,6 +158,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
     }
 
     final word = _target;
+    ref.read(hiveCoachedProvider.notifier).done();
     ref.read(progressProvider.notifier).gradeFromGame(word.id, correct: true);
     final bonus = _hints == 0 ? _combo.hit() : 0;
     if (_hints > 0) _combo.miss();
@@ -299,6 +301,20 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                                 letterSpacing: 3,
                               ),
                             ),
+                            if (!ref.watch(hiveCoachedProvider))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  'Tap or drag through touching letters to '
+                                  'spell the German word',
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: AppColors.inkSoft,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                 ),
