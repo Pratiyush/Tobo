@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/content/content_source.dart';
 import 'package:german_words/data/word_repository.dart';
@@ -61,4 +62,26 @@ void main() {
       }
     },
   );
+
+  test('every word has its recorded clip, intact (one voice everywhere)', () {
+    // Owner rule: every word plays Lernle's ElevenLabs clip; device TTS is
+    // only a fallback. A missing, empty or swapped mp3 would silently drop
+    // a word to the robot voice.
+    final manifest = jsonDecode(
+      File('assets/audio/de/manifest.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final hashes = (manifest['sha256'] as Map).cast<String, String>();
+    expect(manifest['count'], deck.length);
+    for (final w in deck) {
+      final clip = File('assets/audio/de/${w.id}.mp3');
+      expect(clip.existsSync(), isTrue, reason: '${w.id} has no clip');
+      final bytes = clip.readAsBytesSync();
+      expect(bytes.length, greaterThan(1000), reason: '${w.id} clip is empty');
+      expect(
+        sha256.convert(bytes).toString(),
+        hashes[w.id],
+        reason: '${w.id} clip differs from the manifest',
+      );
+    }
+  });
 }
