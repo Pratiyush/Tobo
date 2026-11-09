@@ -12,6 +12,7 @@ env:
 jobs:
   test:
     name: Fast gate (tools/verify.sh)
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,6 +27,7 @@ jobs:
 
   android:
     name: Android APK
+    timeout-minutes: 30
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -57,6 +59,7 @@ jobs:
 
   ios:
     name: iOS app (unsigned)
+    timeout-minutes: 40
     needs: test
     runs-on: macos-latest
     steps:
@@ -80,6 +83,7 @@ jobs:
 
   e2e-android:
     name: E2E on Android emulator
+    timeout-minutes: 45
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -110,6 +114,8 @@ jobs:
 
   e2e-ios:
     name: E2E on iOS simulator
+    # A hung step otherwise runs to GitHub's 6-hour cap (BUG-37).
+    timeout-minutes: 45
     needs: test
     runs-on: macos-latest
     steps:
