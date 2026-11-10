@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app's 40 UI languages for Android 13+'s per-app language setting
+     (Settings > Apps > Tongue Twisters > Language). One entry per row of
+     lib/l10n/languages.dart, kept in step by test/platform_languages_test.dart.
+     Hebrew and Indonesian use Android's legacy codes iw and in; Flutter reads
+     them as he and id. A pick here applies while the in-app choice is
+     System default. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="de" />
+    <locale android:name="fr" />
+    <locale android:name="es" />
+    <locale android:name="it" />
+    <locale android:name="pt-BR" />
+    <locale android:name="pt-PT" />
+    <locale android:name="nl" />
+    <locale android:name="pl" />
+    <locale android:name="tr" />
+    <locale android:name="ru" />
+    <locale android:name="uk" />
+    <locale android:name="cs" />
+    <locale android:name="sk" />
+    <locale android:name="sv" />
+    <locale android:name="da" />
+    <locale android:name="nb" />
+    <locale android:name="fi" />
+    <locale android:name="el" />
+    <locale android:name="ro" />
+    <locale android:name="hu" />
+    <locale android:name="hr" />
+    <locale android:name="bg" />
+    <locale android:name="iw" />
+    <locale android:name="ar" />
+    <locale android:name="fa" />
+    <locale android:name="ur" />
+    <locale android:name="hi" />
+    <locale android:name="bn" />
+    <locale android:name="ta" />
+    <locale android:name="th" />
+    <locale android:name="vi" />
+    <locale android:name="in" />
+    <locale android:name="ms" />
+    <locale android:name="fil" />
+    <locale android:name="ja" />
+    <locale android:name="ko" />
+    <locale android:name="zh-Hans" />
+    <locale android:name="zh-Hant" />
+    <locale android:name="sw" />
+</locale-config>

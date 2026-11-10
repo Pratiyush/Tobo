@@ -1,6 +1,9 @@
 import '../providers/feedback_provider.dart';
 import '../providers/daily_goal_provider.dart';
 import '../widgets/level_picker.dart';
+import '../l10n/languages.dart';
+import '../providers/language_provider.dart';
+import 'language_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,9 +24,9 @@ import '../providers/words_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
+import '../l10n/l10n_ext.dart';
 
 const appVersion = '1.0.0';
-const appCredit = 'Made with ❤️ by Pratiyush Kumar Singh';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -42,17 +45,43 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
-          Center(child: Text('SETTINGS', style: heading)),
+          Center(child: Text(context.l10n.settingsTitle, style: heading)),
           const SizedBox(height: 16),
           WhiteCard(
             padding: EdgeInsets.zero,
             child: Column(
               children: [
+                Builder(
+                  builder: (context) {
+                    final tag = ref.watch(appLanguageProvider);
+                    final picked = tag == null ? null : languageForTag(tag);
+                    final l = AppLocalizations.of(context);
+                    return ListTile(
+                      key: const ValueKey('settings-language'),
+                      leading: const Icon(Icons.translate_rounded),
+                      title: Text(l.settingsLanguage),
+                      subtitle: Text(
+                        picked == null
+                            ? l.languageSystemDefault
+                            : '${picked.flag} ${picked.name}',
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const LanguageScreen(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const Divider(height: 1),
                 ListTile(
                   key: const ValueKey('settings-levels'),
                   leading: const Icon(Icons.school_rounded),
-                  title: const Text('Levels'),
-                  subtitle: Text(settings.levels.label),
+                  title: Text(context.l10n.settingsLevels),
+                  subtitle: Text(
+                    levelChoiceLabel(context.l10n, settings.levels),
+                  ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -62,17 +91,15 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
-                  title: const Text('Speak words automatically'),
-                  subtitle: const Text('On flashcards and after answers'),
+                  title: Text(context.l10n.settingsAutoSpeak),
+                  subtitle: Text(context.l10n.settingsAutoSpeakSub),
                   value: settings.autoSpeak,
                   onChanged: ref.read(settingsProvider.notifier).setAutoSpeak,
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
-                  title: const Text('Count games as practice'),
-                  subtitle: const Text(
-                    'Game answers move learned words up or down',
-                  ),
+                  title: Text(context.l10n.settingsGamesAsPractice),
+                  subtitle: Text(context.l10n.settingsGamesAsPracticeSub),
                   value: settings.countGamesAsPractice,
                   onChanged: ref
                       .read(settingsProvider.notifier)
@@ -80,8 +107,8 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
-                  title: const Text('Sounds & vibration'),
-                  subtitle: const Text('In games and practice'),
+                  title: Text(context.l10n.settingsSounds),
+                  subtitle: Text(context.l10n.settingsSoundsSub),
                   value: settings.soundEffects,
                   onChanged: ref
                       .read(settingsProvider.notifier)
@@ -97,7 +124,7 @@ class SettingsScreen extends ConsumerWidget {
                     Icons.restart_alt_rounded,
                     color: AppColors.red,
                   ),
-                  title: const Text('Reset progress'),
+                  title: Text(context.l10n.settingsReset),
                   onTap: () => _confirmReset(context, ref),
                 ),
               ],
@@ -117,7 +144,7 @@ class SettingsScreen extends ConsumerWidget {
                           children: [
                             ListTile(
                               leading: const Icon(Icons.tune_rounded),
-                              title: const Text('Privacy & ad choices'),
+                              title: Text(context.l10n.settingsPrivacyChoices),
                               onTap: ref
                                   .read(adsServiceProvider)
                                   .showPrivacyOptions,
@@ -129,7 +156,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 _LinkTile(
                   icon: Icons.privacy_tip_outlined,
-                  title: 'Privacy policy',
+                  title: context.l10n.settingsPrivacyPolicy,
                   url: Uri.parse(privacyPolicyUrl),
                 ),
                 const Divider(height: 1),
@@ -141,19 +168,20 @@ class SettingsScreen extends ConsumerWidget {
                 const Divider(height: 1),
                 _LinkTile(
                   icon: Icons.mail_outline_rounded,
-                  title: 'Contact support',
+                  title: context.l10n.settingsContact,
                   url: Uri(
                     scheme: 'mailto',
                     path: supportEmail,
                     query: _supportQuery(
                       ErrorLog(ref.read(sharedPreferencesProvider)).latest,
+                      context.l10n.settingsMailLastError,
                     ),
                   ),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.description_outlined),
-                  title: const Text('Open-source licences'),
+                  title: Text(context.l10n.settingsLicences),
                   onTap: () => showLicensePage(
                     context: context,
                     applicationName: appTitle,
@@ -176,15 +204,16 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$words common German words with English translations and '
-                  'recorded pronunciations. No paywall: every word and game '
-                  'is free.',
+                  context.l10n.settingsAbout(words),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.inkSoft,
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(appCredit, style: theme.textTheme.bodyMedium),
+                Text(
+                  context.l10n.settingsMadeBy,
+                  style: theme.textTheme.bodyMedium,
+                ),
               ],
             ),
           ),
@@ -197,18 +226,16 @@ class SettingsScreen extends ConsumerWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset progress?'),
-        content: const Text(
-          'This forgets every learned word, your points and your streak.',
-        ),
+        title: Text(context.l10n.settingsResetTitle),
+        content: Text(context.l10n.settingsResetBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Reset'),
+            child: Text(context.l10n.settingsResetConfirm),
           ),
         ],
       ),
@@ -238,12 +265,10 @@ class _LinkTile extends StatelessWidget {
 }
 
 /// Mail subject, plus the newest local error (if any) for the user to send.
-String _supportQuery(String? lastError) {
+String _supportQuery(String? lastError, String lastErrorLine) {
   final subject = Uri.encodeComponent('$appTitle $appVersion');
   if (lastError == null) return 'subject=$subject';
-  final body = Uri.encodeComponent(
-    '\n\n---\nLast error on this device (delete if you prefer):\n$lastError',
-  );
+  final body = Uri.encodeComponent('\n\n---\n$lastErrorLine\n$lastError');
   return 'subject=$subject&body=$body';
 }
 
@@ -253,7 +278,7 @@ class LevelSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => BlueScaffold(
-    title: 'Levels',
+    title: context.l10n.settingsLevels,
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -263,8 +288,7 @@ class LevelSettingsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          'Your progress is kept for every level, so switching never loses '
-          'a learned word.',
+          context.l10n.levelsKeepProgress,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium
               ?.copyWith(color: Colors.white),

@@ -12,6 +12,7 @@ import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
 import 'learn_screen.dart';
 import 'spelling_screen.dart';
+import '../l10n/l10n_ext.dart';
 
 /// One list: Learn the new words, Practice the learned ones, browse them all.
 class WordListScreen extends ConsumerWidget {
@@ -47,8 +48,8 @@ class WordListScreen extends ConsumerWidget {
               Expanded(
                 child: Text(
                   fresh.isEmpty
-                      ? 'You’ve learned every word in this list.'
-                      : 'There are ${fresh.length} words left in this list.',
+                      ? context.l10n.wordListAllLearned
+                      : context.l10n.wordListWordsLeft(fresh.length),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                   ),
@@ -58,7 +59,7 @@ class WordListScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           _ActionCard(
-            label: 'Learn',
+            label: context.l10n.commonLearn,
             count: fresh.length,
             primary: true,
             onTap: fresh.isEmpty
@@ -71,7 +72,7 @@ class WordListScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 10),
           _ActionCard(
-            label: 'Practice',
+            label: context.l10n.navPractice,
             count: due.length,
             onTap: due.isEmpty
                 ? null
@@ -83,7 +84,7 @@ class WordListScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'VOCABULARY (${list.words.length})',
+            context.l10n.wordListVocabulary(list.words.length),
             style: theme.textTheme.titleSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w900,
@@ -163,7 +164,7 @@ class _ActionCard extends StatelessWidget {
               ),
             ),
             Text(
-              '$count items',
+              context.l10n.commonItems(count),
               style: theme.textTheme.bodyMedium?.copyWith(color: fg),
             ),
             Icon(Icons.chevron_right_rounded, color: fg),

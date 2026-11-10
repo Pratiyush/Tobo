@@ -11,6 +11,7 @@ import 'der_die_das_screen.dart';
 import 'fallee_screen.dart';
 import 'hive_screen.dart';
 import 'spelling_screen.dart';
+import '../l10n/l10n_ext.dart';
 
 /// The Practice tab: the due-words spelling drill, then the three games.
 class PracticeScreen extends ConsumerWidget {
@@ -34,7 +35,7 @@ class PracticeScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
-          Center(child: Text('PRACTICE', style: heading)),
+          Center(child: Text(context.l10n.practiceTitle, style: heading)),
           const SizedBox(height: 16),
           WhiteCard(
             color: AppColors.orange,
@@ -48,7 +49,7 @@ class PracticeScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'PRACTICE',
+                        context.l10n.practiceTitle,
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: AppColors.ink,
                           fontWeight: FontWeight.w900,
@@ -56,10 +57,10 @@ class PracticeScreen extends ConsumerWidget {
                       ),
                       Text(
                         due.isNotEmpty
-                            ? 'Spell the words that are due'
+                            ? context.l10n.practiceSpellDue
                             : learned.isEmpty
-                            ? 'Learn some words first'
-                            : 'All caught up. Come back tomorrow!',
+                            ? context.l10n.practiceLearnFirst
+                            : context.l10n.practiceCaughtUp,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: AppColors.ink,
                         ),
@@ -68,7 +69,7 @@ class PracticeScreen extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  '${due.length} items',
+                  context.l10n.commonItems(due.length),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.ink,
                     fontWeight: FontWeight.w700,
@@ -79,7 +80,7 @@ class PracticeScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Text('GAMES', style: heading),
+          Text(context.l10n.practiceGames, style: heading),
           const SizedBox(height: 12),
           Consumer(
             builder: (context, ref, _) {
@@ -87,17 +88,18 @@ class PracticeScreen extends ConsumerWidget {
               final result = ref.watch(dailyHiveResultProvider);
               return _GameCard(
                 key: const ValueKey('daily-hive'),
-                title: 'Daily Hive · ${daily.level.label}',
+                title: context.l10n.dailyHiveTitle(daily.level.label),
                 subtitle: result == null
-                    ? 'Today\'s board, the same for every learner'
-                    : 'Done today: ${'★' * result.stars}'
-                          '${'☆' * (3 - result.stars)}. Tap to share',
+                    ? context.l10n.practiceDailySub
+                    : context.l10n.practiceDailyDone(starText(result.stars)),
                 icon: Icons.today_rounded,
                 color: AppColors.gold,
                 onTap: result == null
                     ? () => open(HiveScreen(daily: daily))
                     : () => ref.read(shareTextProvider)(
-                        daily.shareText(
+                        dailyShareText(
+                          context.l10n,
+                          daily,
                           stars: result.stars,
                           hints: result.hints,
                         ),
@@ -108,7 +110,7 @@ class PracticeScreen extends ConsumerWidget {
           const SizedBox(height: 10),
           _GameCard(
             title: 'Hive',
-            subtitle: 'Swipe across the honeycomb to spell each word',
+            subtitle: context.l10n.practiceHiveSub,
             icon: Icons.hexagon_rounded,
             color: AppColors.orange,
             onTap: () => open(const HiveScreen()),
@@ -116,7 +118,7 @@ class PracticeScreen extends ConsumerWidget {
           const SizedBox(height: 10),
           _GameCard(
             title: 'Der Die Das',
-            subtitle: 'Pick the right article',
+            subtitle: context.l10n.practiceDddSub,
             icon: Icons.circle,
             color: AppColors.die,
             onTap: () => open(const DerDieDasScreen()),
@@ -125,7 +127,7 @@ class PracticeScreen extends ConsumerWidget {
           const SizedBox(height: 10),
           _GameCard(
             title: 'Fallee',
-            subtitle: 'Choose the meaning before the word lands',
+            subtitle: context.l10n.practiceFalleeSub,
             icon: Icons.view_in_ar_rounded,
             color: AppColors.blueTop,
             onTap: () => open(const FalleeScreen()),

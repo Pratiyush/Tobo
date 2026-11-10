@@ -241,6 +241,9 @@ void main() {
       await tester.pumpWidget(buildApp(c));
       await tester.tap(find.text('Settings'));
       await tester.pumpAndSettle();
+      // Settings is a lazy list: look at its end, where the row would be.
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -3000));
+      await tester.pumpAndSettle();
       expect(find.text('Privacy & ad choices'), findsNothing);
       ads.privacyOptionsRequired.value = true;
       await tester.pumpAndSettle();

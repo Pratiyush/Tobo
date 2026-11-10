@@ -18,6 +18,7 @@ import '../providers/stats_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
+import '../l10n/l10n_ext.dart';
 
 /// Words per spelling session.
 const spellingSessionSize = 10;
@@ -119,7 +120,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
   @override
   Widget build(BuildContext context) {
     return BlueScaffold(
-      title: 'Practice',
+      title: context.l10n.spellingTitle,
       onPop: () => ref.read(speakerProvider).stop(),
       body: _index >= _words.length
           ? SessionSummary(
@@ -127,9 +128,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
               points: _score,
               newBest: _newBest,
               title: 'Gut gemacht!',
-              message:
-                  'You practised ${_words.length} words and earned '
-                  '$_score points.',
+              message: context.l10n.spellingDone(_words.length, _score),
               onAgain: null,
             )
           : Column(
@@ -160,7 +159,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
               ),
               if (_word.isNoun)
                 Text(
-                  'noun — include der, die or das',
+                  context.l10n.spellingNounHint,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.inkSoft,
                   ),
@@ -193,7 +192,9 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
               if (done) ...[
                 const SizedBox(height: 12),
                 Text(
-                  _result == _Result.correct ? 'Richtig!' : 'The answer is',
+                  _result == _Result.correct
+                      ? 'Richtig!'
+                      : context.l10n.spellingAnswerIs,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: _result == _Result.correct
                         ? AppColors.greenInk
@@ -221,7 +222,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
         ),
         const SizedBox(height: 16),
         if (done)
-          FilledButton(onPressed: _next, child: const Text('NEXT'))
+          FilledButton(onPressed: _next, child: Text(context.l10n.commonNext))
         else ...[
           _Keyboard(
             puzzle: _puzzle,
@@ -231,7 +232,7 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
           Row(
             children: [
               _RoundKey(
-                tooltip: 'Hint',
+                tooltip: context.l10n.commonHint,
                 icon: Icons.lightbulb_rounded,
                 color: AppColors.gold,
                 onTap: () async {
@@ -244,21 +245,21 @@ class _SpellingScreenState extends ConsumerState<SpellingScreen> {
               ),
               const SizedBox(width: 8),
               _RoundKey(
-                tooltip: 'Skip',
+                tooltip: context.l10n.spellingSkip,
                 icon: Icons.skip_next_rounded,
                 color: Colors.white,
                 onTap: _skip,
               ),
               const Spacer(),
               _RoundKey(
-                tooltip: 'Delete',
+                tooltip: context.l10n.spellingDelete,
                 icon: Icons.backspace_rounded,
                 color: AppColors.orange,
                 onTap: () => setState(_puzzle.backspace),
               ),
               const SizedBox(width: 8),
               _RoundKey(
-                tooltip: 'Check',
+                tooltip: context.l10n.spellingCheck,
                 icon: Icons.keyboard_return_rounded,
                 color: AppColors.green,
                 onTap: _puzzle.isFull ? _submit : null,

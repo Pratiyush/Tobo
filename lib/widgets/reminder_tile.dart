@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/reminder_provider.dart';
 import '../services/reminders.dart';
+import '../l10n/l10n_ext.dart';
 
 /// Settings rows for the opt-in daily reminder.
 class ReminderTile extends ConsumerWidget {
@@ -17,25 +18,20 @@ class ReminderTile extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         SwitchListTile(
-          title: const Text('Daily reminder'),
+          title: Text(context.l10n.reminderSwitch),
           subtitle: Text(
             reminder.on
-                ? 'One nudge a day at $time'
-                : 'One nudge a day, at a time you choose',
+                ? context.l10n.reminderOnAt(time)
+                : context.l10n.reminderOff,
           ),
           value: reminder.on,
           onChanged: (on) async {
             if (!on) return notifier.turnOff();
             final messenger = ScaffoldMessenger.of(context);
-            if (!await notifier.turnOn()) {
-              messenger.showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Allow notifications for Wortschatz in your phone '
-                    'settings to get a reminder.',
-                  ),
-                ),
-              );
+            final blocked = context.l10n.reminderBlocked;
+            final texts = reminderTexts(context.l10n);
+            if (!await notifier.turnOn(texts)) {
+              messenger.showSnackBar(SnackBar(content: Text(blocked)));
             }
           },
         ),
@@ -43,12 +39,13 @@ class ReminderTile extends ConsumerWidget {
           ListTile(
             key: const ValueKey('reminder-time'),
             leading: const Icon(Icons.schedule),
-            title: const Text('Reminder time'),
+            title: Text(context.l10n.reminderTime),
             trailing: Text(
               time,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             onTap: () async {
+              final texts = reminderTexts(context.l10n);
               final picked = await showTimePicker(
                 context: context,
                 initialTime: TimeOfDay(
@@ -62,7 +59,7 @@ class ReminderTile extends ConsumerWidget {
                 ),
               );
               if (picked != null) {
-                await notifier.setTime(picked.hour * 60 + picked.minute);
+                await notifier.setTime(picked.hour * 60 + picked.minute, texts);
               }
             },
           ),

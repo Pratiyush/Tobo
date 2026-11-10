@@ -29,11 +29,11 @@ const _suffixRules = <(String, Gender)>[
 /// Miete"), looked up among [nouns]. A hint is only returned when it agrees
 /// with the word's real article, so it can never teach a wrong one; e.g.
 /// "die Antwort" gets none although it ends in "Wort".
-String? genderHint(Word word, Iterable<Word> nouns) {
+GenderHint? genderHint(Word word, Iterable<Word> nouns) {
   final gender = word.gender;
   if (gender == null) return null;
   if (word.isPluralOnly) {
-    return 'Plural-only noun: plurals always take die.';
+    return const PluralOnlyHint();
   }
   final lower = word.german.toLowerCase();
 
@@ -50,18 +50,37 @@ String? genderHint(Word word, Iterable<Word> nouns) {
     }
   }
   if (head != null) {
-    return head.gender == gender
-        ? 'Compound words take the article of their last part: '
-              '${head.display}.'
-        : null;
+    return head.gender == gender ? CompoundHint(head.display) : null;
   }
 
   for (final (suffix, ruleGender) in _suffixRules) {
     if (lower.length > suffix.length + 1 && lower.endsWith(suffix)) {
-      return ruleGender == gender
-          ? 'Most nouns ending in -$suffix take ${gender.name}.'
-          : null;
+      return ruleGender == gender ? SuffixHint(suffix, gender.name) : null;
     }
   }
   return null;
+}
+
+/// Why a noun takes its article; rendered in the UI language by
+/// genderHintText (lib/l10n/l10n_ext.dart).
+sealed class GenderHint {
+  const GenderHint();
+}
+
+/// Plural-only nouns always take die.
+class PluralOnlyHint extends GenderHint {
+  const PluralOnlyHint();
+}
+
+/// A compound takes its last part's article; [head] is e.g. "die Miete".
+class CompoundHint extends GenderHint {
+  const CompoundHint(this.head);
+  final String head;
+}
+
+/// Most nouns ending in -[suffix] take [article] (der, die or das).
+class SuffixHint extends GenderHint {
+  const SuffixHint(this.suffix, this.article);
+  final String suffix;
+  final String article;
 }

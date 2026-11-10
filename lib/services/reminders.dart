@@ -12,13 +12,28 @@ abstract interface class Reminders {
   Future<bool> requestPermission();
 
   /// Replaces any reminder with one every day at [minutesOfDay] after
-  /// midnight, device time.
-  Future<void> schedule(int minutesOfDay);
+  /// midnight, device time, saying [texts] (in the UI language).
+  Future<void> schedule(int minutesOfDay, ReminderTexts texts);
 
   Future<void> cancel();
 }
 
 final remindersProvider = Provider<Reminders>((ref) => LocalReminders());
+
+/// What the notification says, in the UI language (reminderTexts in
+/// lib/l10n/l10n_ext.dart builds it). The title stays German on purpose.
+class ReminderTexts {
+  const ReminderTexts({
+    required this.body,
+    required this.channel,
+    required this.channelDescription,
+  });
+
+  static const title = 'Zeit für Wörter';
+  final String body;
+  final String channel;
+  final String channelDescription;
+}
 
 /// The next [minutesOfDay] on the device's wall clock after [now]: later
 /// today, or tomorrow once it has passed. Tomorrow is a calendar day, not 24
@@ -85,24 +100,24 @@ class LocalReminders implements Reminders {
   /// time, which would drift an hour at a clock change, so the app
   /// reschedules at every launch (ReminderNotifier.sync).
   @override
-  Future<void> schedule(int minutesOfDay) async {
+  Future<void> schedule(int minutesOfDay, ReminderTexts texts) async {
     final p = await _ready();
     await p.cancel(id: _id);
     final when = nextReminder(minutesOfDay, DateTime.now()).toUtc();
     await p.zonedSchedule(
       id: _id,
-      title: 'Zeit für Wörter',
+      title: ReminderTexts.title,
       // Says what is waiting, never what will be lost: no streak count, no
       // countdown, no warning.
-      body: "Today's Daily Hive is ready. Five minutes of German?",
+      body: texts.body,
       scheduledDate: tz.TZDateTime.from(when, tz.UTC),
-      notificationDetails: const NotificationDetails(
+      notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           'daily_reminder',
-          'Daily reminder',
-          channelDescription: 'One reminder a day, at the time you choose.',
+          texts.channel,
+          channelDescription: texts.channelDescription,
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: const DarwinNotificationDetails(),
       ),
       // A daily nudge needs no exact alarm (a special permission on
       // Android 13+).

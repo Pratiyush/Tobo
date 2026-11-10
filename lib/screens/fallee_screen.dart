@@ -16,6 +16,7 @@ import '../providers/words_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
+import '../l10n/l10n_ext.dart';
 
 /// Words per Fallee session.
 const falleeRounds = 15;
@@ -152,8 +153,8 @@ class _FalleeScreenState extends ConsumerState<FalleeScreen>
           ? SessionSummary(
               title: '$_score / ${_words.length}',
               message: _score >= _words.length * 0.8
-                  ? 'Blitzschnell! Lightning fast.'
-                  : 'Keep going: the more you play, the faster you’ll read.',
+                  ? context.l10n.falleePerfect
+                  : context.l10n.falleeKeepGoing,
               stars: starsFor(_score, _words.length),
               points: _points,
               bestCombo: _combo.best,

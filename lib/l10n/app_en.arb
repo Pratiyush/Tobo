@@ -1,0 +1,864 @@
+{
+  "@@locale": "en",
+  "@@x-translator-notes": "Wortschatz is a game-style app for learning German vocabulary: flashcards, spelling practice and three word games (Hive, Der Die Das, Fallee). The user is learning German; this text is the app's UI in the user's own language. Tone: warm, short, upbeat, casual; address the user informally where the language allows (du/tu/ты...). Never translate German learning content: German words, the articles der/die/das, German example sentences, and the German words in quotes such as 'Richtig!' stay exactly as given. Keep the brand 'Wortschatz' and the game names 'Hive', 'Der Die Das' and 'Fallee' in Latin letters, unchanged. Keep emoji and {placeholders} exactly. Use Latin digits. 'Arcade' must never become a word for a gambling or slot-machine hall. Most strings sit on buttons, chips or one-line rows on a 360 dp wide phone: prefer short words. Strings in ALL CAPS in English are shown in capitals: write them in capitals too if your script has them, with your language's own casing rules (Turkish i → İ, German ß stays ß); scripts without capitals just write the text.",
+  "settingsLanguage": "App language",
+  "@settingsLanguage": {
+    "description": "Settings row and screen title for choosing the UI language. Max ~20 chars."
+  },
+  "languageSearchHint": "Search languages",
+  "@languageSearchHint": {
+    "description": "Hint text in the search box on the language list. Max ~24 chars."
+  },
+  "languageSystemDefault": "System default",
+  "@languageSystemDefault": {
+    "description": "First option in the language list: follow the phone's language. Max ~20 chars."
+  },
+  "languageFollowsDevice": "Follows your device · {language}",
+  "@languageFollowsDevice": {
+    "description": "Subtitle under 'System default'; {language} is a flag + language name like '🇩🇪 Deutsch'.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "appStartFailed": "Wortschatz couldn’t start.\n\n{error}",
+  "@appStartFailed": {
+    "description": "Shown if the app fails to start; {error} is a technical message.",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "navWords": "Words",
+  "@navWords": {
+    "description": "Bottom navigation tab: word lists. Max ~10 chars."
+  },
+  "navPractice": "Practice",
+  "@navPractice": {
+    "description": "Bottom navigation tab: practice and games. Max ~10 chars."
+  },
+  "navSettings": "Settings",
+  "@navSettings": {
+    "description": "Bottom navigation tab. Max ~10 chars."
+  },
+  "homeStreak": "{count, plural, =1{Streak: 1 day} other{Streak: {count} days}}",
+  "@homeStreak": {
+    "description": "Screen-reader label for the 🔥 streak counter.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homePoints": "Points",
+  "@homePoints": {
+    "description": "Stat label under a number on Home. Max ~12 chars."
+  },
+  "homeToPractise": "To practise",
+  "@homeToPractise": {
+    "description": "Stat label: number of words due for practice. Max ~12 chars."
+  },
+  "homeVocabulary": "Vocabulary",
+  "@homeVocabulary": {
+    "description": "Stat label: number of words learned. Max ~12 chars."
+  },
+  "homeLevel": "Level {level}",
+  "@homeLevel": {
+    "description": "Screen-reader label for the player's level badge (a number, not a CEFR level).",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "homeLevelCaps": "LEVEL",
+  "@homeLevelCaps": {
+    "description": "Small caption under the level number in a circle. Max ~8 chars."
+  },
+  "homeListSummary": "{count, plural, =1{1 word} other{{count} words}} · {first} … {last}",
+  "@homeListSummary": {
+    "description": "One line under a word list's name: how many words, then its first and last German word (never translate {first}/{last}).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "homeLevelProgress": "Level {level}: {learned} of {total} words learned",
+  "@homeLevelProgress": {
+    "description": "Screen-reader label; {level} is a CEFR level like A1.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "learned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeStartHere": "Start here",
+  "@homeStartHere": {
+    "description": "Title of the first-run card on Home. Max ~20 chars."
+  },
+  "homeStartHereBody": "Learn your first 10 words with sound, then play them in the games.",
+  "@homeStartHereBody": {
+    "description": "Body of the first-run card. Two lines max."
+  },
+  "homeLearn10": "LEARN 10 WORDS",
+  "@homeLearn10": {
+    "description": "Button on the first-run card, capitals. Max ~18 chars."
+  },
+  "homeGoal": "Today's goal",
+  "@homeGoal": {
+    "description": "Daily goal card title. Max ~22 chars."
+  },
+  "homeGoalReached": "Today's goal reached!",
+  "@homeGoalReached": {
+    "description": "Daily goal card title once done. Max ~24 chars."
+  },
+  "homeGoalReachedBody": "See you tomorrow, or keep playing for points.",
+  "@homeGoalReachedBody": {
+    "description": "Under the reached goal. One or two lines."
+  },
+  "homeGoalProgress": "{done} of {goal} words learned or answered right",
+  "@homeGoalProgress": {
+    "description": "Under the daily goal title.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "int"
+      }
+    }
+  },
+  "adsOutOfHints": "Out of hints",
+  "@adsOutOfHints": {
+    "description": "Dialog title. Max ~24 chars."
+  },
+  "adsWatchForHints": "{count, plural, =1{Watch a short ad for 1 more hint?} other{Watch a short ad for {count} more hints?}}",
+  "@adsWatchForHints": {
+    "description": "Dialog body offering a video ad for extra hints.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonNotNow": "Not now",
+  "@commonNotNow": {
+    "description": "Dialog button that declines. Max ~12 chars."
+  },
+  "adsWatchAd": "Watch ad",
+  "@adsWatchAd": {
+    "description": "Dialog button that plays a video ad. Must say it is an ad. Max ~14 chars."
+  },
+  "adsDoublePoints": "Double points (+{points})",
+  "@adsDoublePoints": {
+    "description": "Button after a round: watch an ad to double the points. Max ~26 chars.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "adsRestoreStreak": "{days, plural, =1{Restore your 1-day streak} other{Restore your {days}-day streak}}",
+  "@adsRestoreStreak": {
+    "description": "Button: watch an ad to restore a lost streak of {days} days. Rephrase freely.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "adsMoreGerman": "More German from Pratiyush",
+  "@adsMoreGerman": {
+    "description": "Label above a link to the developer's other German-learning apps. Keep the name Pratiyush."
+  },
+  "rulePluralOnly": "Plural-only noun: plurals always take die.",
+  "@rulePluralOnly": {
+    "description": "Grammar tip after an answer. Keep the German article 'die' as is."
+  },
+  "ruleCompound": "Compound words take the article of their last part: {head}.",
+  "@ruleCompound": {
+    "description": "Grammar tip; {head} is a German noun with its article, e.g. 'die Miete'.",
+    "placeholders": {
+      "head": {
+        "type": "String"
+      }
+    }
+  },
+  "ruleSuffix": "Most nouns ending in -{suffix} take {article}.",
+  "@ruleSuffix": {
+    "description": "Grammar tip; {suffix} is a German ending like 'ung', {article} is der, die or das (German, unchanged).",
+    "placeholders": {
+      "suffix": {
+        "type": "String"
+      },
+      "article": {
+        "type": "String"
+      }
+    }
+  },
+  "levelBeginner": "Beginner",
+  "@levelBeginner": {
+    "description": "CEFR level A1 description. Max ~22 chars."
+  },
+  "levelElementary": "Elementary",
+  "@levelElementary": {
+    "description": "CEFR level A2 description. Max ~22 chars."
+  },
+  "levelIntermediate": "Intermediate",
+  "@levelIntermediate": {
+    "description": "CEFR level B1 description. Max ~22 chars."
+  },
+  "levelUpperIntermediate": "Upper intermediate",
+  "@levelUpperIntermediate": {
+    "description": "CEFR level B2 description. Max ~22 chars."
+  },
+  "levelAllInSequence": "All levels in sequence",
+  "@levelAllInSequence": {
+    "description": "Level option: learn A1, then A2, B1, B2. Max ~28 chars."
+  },
+  "levelSequenceSub": "A1 → A2 → B1 → B2 · recommended",
+  "@levelSequenceSub": {
+    "description": "Subtitle of that option; keep the level codes."
+  },
+  "levelOrChoose": "Or choose one or more levels",
+  "@levelOrChoose": {
+    "description": "Section caption above the level checkboxes."
+  },
+  "levelWordCount": "{count, plural, =1{1 word} other{{count} words}}",
+  "@levelWordCount": {
+    "description": "Under a level name: how many words it has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "levelBadge": "Level {level}",
+  "@levelBadge": {
+    "description": "Screen-reader label for a CEFR badge; {level} is like A1.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "levelsKeepProgress": "Your progress is kept for every level, so switching never loses a learned word.",
+  "@levelsKeepProgress": {
+    "description": "Note on the Levels screen."
+  },
+  "dailyHiveTitle": "Daily Hive · {level}",
+  "@dailyHiveTitle": {
+    "description": "Title of the daily shared board; keep 'Daily Hive' as the game name if you like, {level} is like A1.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyShare": "Wortschatz Daily Hive · {date} · {level} · {stars} · {hints}",
+  "@dailyShare": {
+    "description": "Text shared to friends; {date} is a short date, {stars} like ★★☆, {hints} from dailyHints. Keep 'Wortschatz'.",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      },
+      "level": {
+        "type": "String"
+      },
+      "stars": {
+        "type": "String"
+      },
+      "hints": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyHints": "{count, plural, =0{no hints} =1{1 hint} other{{count} hints}}",
+  "@dailyHints": {
+    "description": "Part of the shared result: how many hints were used.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practiceDailySub": "Today's board, the same for every learner",
+  "@practiceDailySub": {
+    "description": "Subtitle of the Daily Hive row. One line on a phone if possible."
+  },
+  "practiceDailyDone": "Done today: {stars}. Tap to share",
+  "@practiceDailyDone": {
+    "description": "Subtitle once today's board is done; {stars} like ★★☆.",
+    "placeholders": {
+      "stars": {
+        "type": "String"
+      }
+    }
+  },
+  "dddPerfect": "Perfekt! Every article right.",
+  "@dddPerfect": {
+    "description": "Round-end line when all answers were right. Keep the German 'Perfekt!' and translate the rest."
+  },
+  "dddTip": "Colour is the memory hook: der black, die red, das gold.",
+  "@dddTip": {
+    "description": "Tip; keep der/die/das in German."
+  },
+  "dddItsArticle": "It’s {article}",
+  "@dddItsArticle": {
+    "description": "Feedback after a wrong answer; {article} is der, die or das.",
+    "placeholders": {
+      "article": {
+        "type": "String"
+      }
+    }
+  },
+  "falleePerfect": "Blitzschnell! Lightning fast.",
+  "@falleePerfect": {
+    "description": "Round-end line. Keep the German 'Blitzschnell!' and translate 'Lightning fast.'"
+  },
+  "falleeKeepGoing": "Keep going: the more you play, the faster you’ll read.",
+  "@falleeKeepGoing": {
+    "description": "Round-end line."
+  },
+  "hiveRound": "Round {round}",
+  "@hiveRound": {
+    "description": "Hive title suffix. Max ~10 chars.",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      }
+    }
+  },
+  "hiveWordOf": "Word {n} of {total}",
+  "@hiveWordOf": {
+    "description": "Progress in a Hive round.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "hiveCoach": "Tap or drag through touching letters to spell the German word",
+  "@hiveCoach": {
+    "description": "One-line how-to for first-time players. Two lines max."
+  },
+  "hiveLettersLeft": "{count, plural, =1{1 letter left} other{{count} letters left}}",
+  "@hiveLettersLeft": {
+    "description": "Under the honeycomb.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonHint": "Hint",
+  "@commonHint": {
+    "description": "Button/tooltip that reveals a letter. Max ~10 chars."
+  },
+  "hiveBoardCleared": "Board cleared!",
+  "@hiveBoardCleared": {
+    "description": "Round-end title. Max ~20 chars."
+  },
+  "commonPlusPoints": "{count, plural, =1{+1 point} other{+{count} points}}",
+  "@commonPlusPoints": {
+    "description": "Points earned, shown big.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hiveShareResult": "SHARE RESULT",
+  "@hiveShareResult": {
+    "description": "Button, capitals. Max ~16 chars."
+  },
+  "commonDone": "Done",
+  "@commonDone": {
+    "description": "Button that closes a result. Max ~10 chars."
+  },
+  "hiveNextRound": "NEXT ROUND",
+  "@hiveNextRound": {
+    "description": "Button, capitals. Max ~16 chars."
+  },
+  "commonLearn": "Learn",
+  "@commonLearn": {
+    "description": "Screen title and button: learn new words with flashcards. Max ~12 chars."
+  },
+  "learnDone": "{count, plural, =1{You learned 1 new word. It’ll come back for practice tomorrow.} other{You learned {count} new words. They’ll come back for practice tomorrow.}}",
+  "@learnDone": {
+    "description": "End of a flashcard session.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "learnLater": "LATER",
+  "@learnLater": {
+    "description": "Flashcard button: not yet known. Capitals. Max ~10 chars."
+  },
+  "learnKnowIt": "KNOW IT",
+  "@learnKnowIt": {
+    "description": "Flashcard button: I know this word. Capitals. Max ~10 chars."
+  },
+  "learnFlip": "FLIP",
+  "@learnFlip": {
+    "description": "Flashcard button: turn the card. Capitals. Max ~10 chars."
+  },
+  "learnPluralOnly": "plural only · always die",
+  "@learnPluralOnly": {
+    "description": "Under a plural-only noun; keep the German 'die'."
+  },
+  "learnPlural": "pl. {plural}",
+  "@learnPlural": {
+    "description": "Plural of a noun; {plural} is German. Use your language's short word for plural.",
+    "placeholders": {
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingIntro": "Learn German words by playing. What’s your level?",
+  "@onboardingIntro": {
+    "description": "Under the German 'Willkommen!' on first launch."
+  },
+  "onboardingStart": "START",
+  "@onboardingStart": {
+    "description": "First-launch button, capitals. Max ~12 chars."
+  },
+  "onboardingNotSure": "Not sure? Start at A1",
+  "@onboardingNotSure": {
+    "description": "Text button under START."
+  },
+  "onboardingChangeLater": "You can change this any time in Settings.",
+  "@onboardingChangeLater": {
+    "description": "Note under the level list."
+  },
+  "practiceTitle": "PRACTICE",
+  "@practiceTitle": {
+    "description": "Screen heading, capitals. Max ~14 chars."
+  },
+  "practiceSpellDue": "Spell the words that are due",
+  "@practiceSpellDue": {
+    "description": "Row that starts spelling practice."
+  },
+  "practiceLearnFirst": "Learn some words first",
+  "@practiceLearnFirst": {
+    "description": "Subtitle when nothing is learned yet."
+  },
+  "practiceCaughtUp": "All caught up. Come back tomorrow!",
+  "@practiceCaughtUp": {
+    "description": "Subtitle when nothing is due."
+  },
+  "commonItems": "{count, plural, =1{1 item} other{{count} items}}",
+  "@commonItems": {
+    "description": "How many words are due or in a list.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "practiceGames": "GAMES",
+  "@practiceGames": {
+    "description": "Section heading, capitals. Max ~12 chars."
+  },
+  "practiceHiveSub": "Swipe across the honeycomb to spell each word",
+  "@practiceHiveSub": {
+    "description": "Subtitle of the Hive game row."
+  },
+  "practiceDddSub": "Pick the right article",
+  "@practiceDddSub": {
+    "description": "Subtitle of the Der Die Das game row."
+  },
+  "practiceFalleeSub": "Choose the meaning before the word lands",
+  "@practiceFalleeSub": {
+    "description": "Subtitle of the Fallee game row."
+  },
+  "settingsTitle": "SETTINGS",
+  "@settingsTitle": {
+    "description": "Screen heading, capitals. Max ~14 chars."
+  },
+  "settingsMadeBy": "Made with ❤️ by Pratiyush Kumar Singh",
+  "@settingsMadeBy": {
+    "description": "Footer; keep the name and the emoji."
+  },
+  "settingsLevels": "Levels",
+  "@settingsLevels": {
+    "description": "Settings row and screen title. Max ~16 chars."
+  },
+  "settingsAutoSpeak": "Speak words automatically",
+  "@settingsAutoSpeak": {
+    "description": "Switch title."
+  },
+  "settingsAutoSpeakSub": "On flashcards and after answers",
+  "@settingsAutoSpeakSub": {
+    "description": "Switch subtitle."
+  },
+  "settingsGamesAsPractice": "Count games as practice",
+  "@settingsGamesAsPractice": {
+    "description": "Switch title."
+  },
+  "settingsGamesAsPracticeSub": "Game answers move learned words up or down",
+  "@settingsGamesAsPracticeSub": {
+    "description": "Switch subtitle: answers in games change when a word is due again."
+  },
+  "settingsSounds": "Sounds & vibration",
+  "@settingsSounds": {
+    "description": "Switch title."
+  },
+  "settingsSoundsSub": "In games and practice",
+  "@settingsSoundsSub": {
+    "description": "Switch subtitle."
+  },
+  "settingsReset": "Reset progress",
+  "@settingsReset": {
+    "description": "Settings row that deletes progress."
+  },
+  "settingsResetTitle": "Reset progress?",
+  "@settingsResetTitle": {
+    "description": "Confirmation dialog title."
+  },
+  "settingsResetBody": "This forgets every learned word, your points and your streak.",
+  "@settingsResetBody": {
+    "description": "Confirmation dialog body."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Dialog button. Max ~12 chars."
+  },
+  "settingsResetConfirm": "Reset",
+  "@settingsResetConfirm": {
+    "description": "Destructive dialog button. Max ~12 chars."
+  },
+  "settingsPrivacyChoices": "Privacy & ad choices",
+  "@settingsPrivacyChoices": {
+    "description": "Row that reopens the ad consent form."
+  },
+  "settingsPrivacyPolicy": "Privacy policy",
+  "@settingsPrivacyPolicy": {
+    "description": "Link row."
+  },
+  "settingsContact": "Contact support",
+  "@settingsContact": {
+    "description": "Row that opens an email to the developer."
+  },
+  "settingsLicences": "Open-source licences",
+  "@settingsLicences": {
+    "description": "Row that lists software licences."
+  },
+  "settingsAbout": "{count} common German words with English translations and recorded pronunciations. No paywall: every word and game is free.",
+  "@settingsAbout": {
+    "description": "About text; word meanings are in English, say so.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsMailLastError": "Last error on this device (delete if you prefer):",
+  "@settingsMailLastError": {
+    "description": "Line in the support email above a technical error log."
+  },
+  "spellingTitle": "Practice",
+  "@spellingTitle": {
+    "description": "Spelling practice screen title. Max ~14 chars."
+  },
+  "spellingDone": "You practised {count, plural, =1{1 word} other{{count} words}} and earned {points, plural, =1{1 point} other{{points} points}}.",
+  "@spellingDone": {
+    "description": "End of a spelling session.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "spellingNounHint": "noun — include der, die or das",
+  "@spellingNounHint": {
+    "description": "Hint under the meaning; keep der/die/das in German."
+  },
+  "spellingAnswerIs": "The answer is",
+  "@spellingAnswerIs": {
+    "description": "Shown before the correct German answer (on its own line)."
+  },
+  "commonNext": "NEXT",
+  "@commonNext": {
+    "description": "Button, capitals. Max ~10 chars."
+  },
+  "spellingSkip": "Skip",
+  "@spellingSkip": {
+    "description": "Tooltip. Max ~10 chars."
+  },
+  "spellingDelete": "Delete",
+  "@spellingDelete": {
+    "description": "Tooltip: delete the last letter. Max ~10 chars."
+  },
+  "spellingCheck": "Check",
+  "@spellingCheck": {
+    "description": "Tooltip: check the answer. Max ~10 chars."
+  },
+  "wordListAllLearned": "You’ve learned every word in this list.",
+  "@wordListAllLearned": {
+    "description": "Note above the buttons."
+  },
+  "wordListWordsLeft": "{count, plural, =1{There is 1 word left in this list.} other{There are {count} words left in this list.}}",
+  "@wordListWordsLeft": {
+    "description": "Note above the buttons.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wordListVocabulary": "VOCABULARY ({count})",
+  "@wordListVocabulary": {
+    "description": "Section heading, capitals.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderBody": "Today's Daily Hive is ready. Five minutes of German?",
+  "@reminderBody": {
+    "description": "Daily notification text under the German title 'Zeit für Wörter'. Warm, never a warning."
+  },
+  "reminderChannel": "Daily reminder",
+  "@reminderChannel": {
+    "description": "Name of the notification channel in the phone's settings."
+  },
+  "reminderChannelDesc": "One reminder a day, at the time you choose.",
+  "@reminderChannelDesc": {
+    "description": "Description of that channel."
+  },
+  "reminderSwitch": "Daily reminder",
+  "@reminderSwitch": {
+    "description": "Settings switch title."
+  },
+  "reminderOnAt": "One nudge a day at {time}",
+  "@reminderOnAt": {
+    "description": "Switch subtitle when on; {time} like 19:00.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderOff": "One nudge a day, at a time you choose",
+  "@reminderOff": {
+    "description": "Switch subtitle when off."
+  },
+  "reminderBlocked": "Allow notifications for Wortschatz in your phone settings to get a reminder.",
+  "@reminderBlocked": {
+    "description": "Snackbar when notifications are blocked."
+  },
+  "reminderTime": "Reminder time",
+  "@reminderTime": {
+    "description": "Row that opens a time picker."
+  },
+  "commonMastery": "Mastery {level} of {max}",
+  "@commonMastery": {
+    "description": "Screen-reader label for a word's mastery dots.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "commonPercentLearned": "{percent}% learned",
+  "@commonPercentLearned": {
+    "description": "Under a progress bar.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "commonListen": "Listen",
+  "@commonListen": {
+    "description": "Tooltip of the speaker button."
+  },
+  "commonNoVoice": "No German voice installed. Add one in your device’s text-to-speech settings.",
+  "@commonNoVoice": {
+    "description": "Snackbar when the phone has no German voice."
+  },
+  "contentMb": "{size} MB",
+  "@contentMb": {
+    "description": "A download size.",
+    "placeholders": {
+      "size": {
+        "type": "double",
+        "format": "decimalPatternDigits",
+        "optionalParameters": {
+          "decimalDigits": 1
+        }
+      }
+    }
+  },
+  "contentBanner": "New word data available. Update ({size})",
+  "@contentBanner": {
+    "description": "Home card; {size} like '1.2 MB'.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "contentUpdating": "Updating words…",
+  "@contentUpdating": {
+    "description": "Progress text."
+  },
+  "contentUpdatedBanner": "Words updated. They appear next time you open the app; recordings already play.",
+  "@contentUpdatedBanner": {
+    "description": "Home card after an update."
+  },
+  "contentChecking": "Checking…",
+  "@contentChecking": {
+    "description": "Settings row subtitle."
+  },
+  "contentDownloading": "Downloading and checking files…",
+  "@contentDownloading": {
+    "description": "Settings row subtitle."
+  },
+  "contentAvailable": "Version {version} available, {size}",
+  "@contentAvailable": {
+    "description": "Settings row subtitle; {size} like '1.2 MB'.",
+    "placeholders": {
+      "version": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "contentUpdate": "Update",
+  "@contentUpdate": {
+    "description": "Button. Max ~12 chars."
+  },
+  "contentUpdated": "Updated. New words appear next time you open the app.",
+  "@contentUpdated": {
+    "description": "Settings row subtitle."
+  },
+  "contentUpToDate": "Up to date",
+  "@contentUpToDate": {
+    "description": "Settings row subtitle."
+  },
+  "contentCheck": "Check",
+  "@contentCheck": {
+    "description": "Button: check for new content. Max ~12 chars."
+  },
+  "contentAppTooOld": "Update the app to get new content",
+  "@contentAppTooOld": {
+    "description": "Settings row subtitle."
+  },
+  "contentStore": "Store",
+  "@contentStore": {
+    "description": "Button that opens the app store. Max ~10 chars."
+  },
+  "contentFailed": "Couldn’t update. Your words are unchanged.",
+  "@contentFailed": {
+    "description": "Settings row subtitle."
+  },
+  "contentRetry": "Retry",
+  "@contentRetry": {
+    "description": "Button. Max ~10 chars."
+  },
+  "contentTitle": "Word content · version {version}",
+  "@contentTitle": {
+    "description": "Settings row title.",
+    "placeholders": {
+      "version": {
+        "type": "int"
+      }
+    }
+  },
+  "contentAutoWifi": "Update automatically on Wi-Fi",
+  "@contentAutoWifi": {
+    "description": "Switch title."
+  },
+  "contentAutoWifiSub": "Never on mobile data",
+  "@contentAutoWifiSub": {
+    "description": "Switch subtitle."
+  },
+  "summaryCombo": "Combo: {count} in a row",
+  "@summaryCombo": {
+    "description": "Shown during a game streak of right answers.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryNewBest": "NEW BEST!",
+  "@summaryNewBest": {
+    "description": "Round-end badge, capitals. Max ~12 chars."
+  },
+  "summaryBestCombo": "Best combo: {count} in a row",
+  "@summaryBestCombo": {
+    "description": "Round-end line.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryPlayAgain": "PLAY AGAIN",
+  "@summaryPlayAgain": {
+    "description": "Button, capitals. Max ~14 chars."
+  },
+  "summaryStars": "{count, plural, =1{1 of 3 stars} other{{count} of 3 stars}}",
+  "@summaryStars": {
+    "description": "Screen-reader label for the star rating.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "siblingLernle": "Read real German stories, word by word",
+  "@siblingLernle": {
+    "description": "House ad: one line about the Lernle app (a German story reader)."
+  },
+  "siblingWordbit": "A German word every time you unlock",
+  "@siblingWordbit": {
+    "description": "House ad: one line about the WordBit app (a German word on the lock screen)."
+  },
+  "siblingLeben": "Pass the citizenship test",
+  "@siblingLeben": {
+    "description": "House ad: one line about the 'Leben in Deutschland' app (prep for Germany's citizenship test). Keep the app name out of it."
+  },
+  "siblingAudiobookName": "German audiobook",
+  "@siblingAudiobookName": {
+    "description": "House ad: the name of a German audiobook app, as a plain description."
+  },
+  "siblingAudiobook": "Listen to graded stories",
+  "@siblingAudiobook": {
+    "description": "House ad: one line about the audiobook app (German stories by level)."
+  }
+}

@@ -13,6 +13,8 @@ import 'package:german_words/widgets/common.dart';
 
 import 'helpers.dart';
 
+import 'package:german_words/l10n/l10n_ext.dart';
+
 /// Ads switched on, with a scripted rewarded result and no SDK.
 class FakeAdsService implements AdsService {
   FakeAdsService({this.reward = RewardResult.earned});
@@ -251,19 +253,25 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: HouseAdCard())),
+      const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: HouseAdCard()),
+      ),
     );
     expect(find.text('More German from Pratiyush'), findsNothing);
 
     await tester.pumpWidget(
       const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: HouseAdCard(
             day: 0,
             apps: [
               SiblingApp(
-                name: 'Lernle',
-                pitch: 'Read real German stories',
+                name: _name,
+                pitch: _pitch,
                 androidPackage: 'com.pratiyush.lernle',
                 appStoreId: '1',
               ),
@@ -275,3 +283,6 @@ void main() {
     expect(find.text('More German from Pratiyush'), findsOneWidget);
   });
 }
+
+String _name(AppLocalizations l) => 'Lernle';
+String _pitch(AppLocalizations l) => 'Read real German stories';

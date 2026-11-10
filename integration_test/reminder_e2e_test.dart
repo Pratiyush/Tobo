@@ -6,6 +6,8 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/widgets.dart' show Locale;
+import 'package:german_words/l10n/l10n_ext.dart';
 import 'package:german_words/services/reminders.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -16,11 +18,12 @@ void main() {
     'scheduling holds one daily reminder; rescheduling replaces it; cancel clears it',
     (tester) async {
       final reminders = LocalReminders();
+      final texts = reminderTexts(lookupAppLocalizations(const Locale('en')));
       // Scheduling needs no permission on Android (only posting does), so
       // the test never raises the system dialog.
-      await reminders.schedule(19 * 60);
+      await reminders.schedule(19 * 60, texts);
       expect(await reminders.pendingIds(), [1]);
-      await reminders.schedule(8 * 60);
+      await reminders.schedule(8 * 60, texts);
       expect(await reminders.pendingIds(), [1], reason: 'replaced, not added');
       await reminders.cancel();
       expect(await reminders.pendingIds(), isEmpty);

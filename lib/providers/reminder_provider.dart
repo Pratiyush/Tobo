@@ -43,10 +43,10 @@ class ReminderNotifier extends Notifier<ReminderSetting> {
 
   /// Asks for permission, then schedules. False (and still off) when the
   /// OS refuses or the plugin fails.
-  Future<bool> turnOn() async {
+  Future<bool> turnOn(ReminderTexts texts) async {
     try {
       if (!await _reminders.requestPermission()) return false;
-      await _reminders.schedule(state.minutes);
+      await _reminders.schedule(state.minutes, texts);
     } on Object catch (e) {
       developer.log('reminder not scheduled: $e', name: 'reminder');
       return false;
@@ -64,17 +64,17 @@ class ReminderNotifier extends Notifier<ReminderSetting> {
     }
   }
 
-  Future<void> setTime(int minutes) async {
+  Future<void> setTime(int minutes, ReminderTexts texts) async {
     _save(on: state.on, minutes: minutes);
-    if (state.on) await sync();
+    if (state.on) await sync(texts);
   }
 
   /// At launch: puts an "on" reminder back at its wall-clock time (after a
   /// reboot, an update or a clock change). Never asks for permission.
-  Future<void> sync() async {
+  Future<void> sync(ReminderTexts texts) async {
     if (!state.on) return;
     try {
-      await _reminders.schedule(state.minutes);
+      await _reminders.schedule(state.minutes, texts);
     } on Object catch (e) {
       developer.log('reminder not rescheduled: $e', name: 'reminder');
     }

@@ -24,6 +24,7 @@ import '../providers/stats_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
+import '../l10n/l10n_ext.dart';
 
 /// Words hidden in each Hive board.
 const hiveWordsPerRound = 3;
@@ -226,8 +227,8 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                 Flexible(
                   child: Text(
                     widget.daily != null
-                        ? 'Daily Hive · ${widget.daily!.level.label}'
-                        : 'Round $_round',
+                        ? context.l10n.dailyHiveTitle(widget.daily!.level.label)
+                        : context.l10n.hiveRound(_round),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleMedium?.copyWith(
@@ -266,7 +267,9 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                           onShare: widget.daily == null
                               ? null
                               : () => ref.read(shareTextProvider)(
-                                  widget.daily!.shareText(
+                                  dailyShareText(
+                                    context.l10n,
+                                    widget.daily!,
                                     stars: _stars,
                                     hints: _roundHints,
                                   ),
@@ -279,7 +282,10 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                       : Column(
                           children: [
                             Text(
-                              'Word ${_solved + 1} of ${_targets.length}',
+                              context.l10n.hiveWordOf(
+                                _solved + 1,
+                                _targets.length,
+                              ),
                               style: theme.textTheme.labelLarge?.copyWith(
                                 color: AppColors.inkSoft,
                               ),
@@ -305,8 +311,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(
-                                  'Tap or drag through touching letters to '
-                                  'spell the German word',
+                                  context.l10n.hiveCoach,
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -348,7 +353,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${_board.tiles.length} letters left',
+                      context.l10n.hiveLettersLeft(_board.tiles.length),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: Colors.white70,
                       ),
@@ -356,7 +361,7 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                   ),
                   const Spacer(),
                   IconButton.filled(
-                    tooltip: 'Hint',
+                    tooltip: context.l10n.commonHint,
                     style: IconButton.styleFrom(
                       backgroundColor: AppColors.gold,
                       foregroundColor: AppColors.ink,
@@ -404,13 +409,13 @@ class _RoundComplete extends StatelessWidget {
       children: [
         StarRow(stars: stars),
         Text(
-          'Board cleared!',
+          context.l10n.hiveBoardCleared,
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w900,
           ),
         ),
         Text(
-          '+$points points',
+          context.l10n.commonPlusPoints(points),
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w900,
             color: AppColors.orangeInk,
@@ -450,16 +455,19 @@ class _RoundComplete extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: onShare,
               icon: const Icon(Icons.ios_share_rounded),
-              label: const Text('SHARE RESULT'),
+              label: Text(context.l10n.hiveShareResult),
             ),
           ),
         SizedBox(
           width: double.infinity,
           child: onShare != null
-              ? TextButton(onPressed: onNext, child: const Text('Done'))
+              ? TextButton(
+                  onPressed: onNext,
+                  child: Text(context.l10n.commonDone),
+                )
               : FilledButton(
                   onPressed: onNext,
-                  child: const Text('NEXT ROUND'),
+                  child: Text(context.l10n.hiveNextRound),
                 ),
         ),
       ],

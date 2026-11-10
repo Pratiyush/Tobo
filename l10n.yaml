@@ -1,0 +1,10 @@
+# flutter gen-l10n: lib/l10n/app_en.arb is the template (with a description of
+# every string for translators); each app_<locale>.arb is a translation of it.
+# Generated: lib/l10n/app_localizations*.dart (on pub get, or flutter gen-l10n).
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+preferred-supported-locales: [en]
+untranslated-messages-file: build/l10n_untranslated.json

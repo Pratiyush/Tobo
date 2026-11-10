@@ -8,6 +8,7 @@ import '../providers/speech_provider.dart';
 import '../theme/app_theme.dart';
 import 'score_counter.dart';
 import 'session_summary.dart';
+import '../l10n/l10n_ext.dart';
 
 export 'session_summary.dart';
 
@@ -19,7 +20,7 @@ class MasteryBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: 'Mastery $level of $maxLevel',
+    label: context.l10n.commonMastery(level, maxLevel),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -48,7 +49,7 @@ class ProgressRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '${(value * 100).round()}% learned',
+    label: context.l10n.commonPercentLearned((value * 100).round()),
     excludeSemantics: true,
     child: SizedBox.square(
       dimension: size,
@@ -99,7 +100,7 @@ class SpeakButton extends ConsumerWidget {
       dimension: size,
       child: filled
           ? IconButton.filled(
-              tooltip: 'Listen',
+              tooltip: context.l10n.commonListen,
               style: IconButton.styleFrom(
                 backgroundColor: AppColors.orange,
                 foregroundColor: AppColors.ink,
@@ -108,7 +109,7 @@ class SpeakButton extends ConsumerWidget {
               icon: icon,
             )
           : IconButton(
-              tooltip: 'Listen',
+              tooltip: context.l10n.commonListen,
               color: AppColors.orange,
               padding: EdgeInsets.zero,
               onPressed: speak,
@@ -126,6 +127,7 @@ Future<void> speakGerman(
   String? text,
 }) async {
   final messenger = ScaffoldMessenger.maybeOf(context);
+  final noVoice = context.l10n.commonNoVoice;
   final speaker = ref.read(speakerProvider);
   final ok = word != null
       ? await speaker.sayWord(word)
@@ -133,14 +135,7 @@ Future<void> speakGerman(
   if (!ok) {
     messenger
       ?..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No German voice installed. Add one in your device’s '
-            'text-to-speech settings.',
-          ),
-        ),
-      );
+      ..showSnackBar(SnackBar(content: Text(noVoice)));
   }
 }
 

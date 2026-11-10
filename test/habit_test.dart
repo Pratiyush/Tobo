@@ -84,6 +84,7 @@ void main() {
     await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Reset progress'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Reset progress'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Reset'));

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../games/combo.dart';
 import '../theme/app_theme.dart';
 import 'common.dart';
+import '../l10n/l10n_ext.dart';
 
 /// "🔥 ×3" streak badge; pops in and grows with the combo.
 class ComboBadge extends StatelessWidget {
@@ -25,7 +26,7 @@ class ComboBadge extends StatelessWidget {
       child: show
           ? Semantics(
               key: ValueKey(combo),
-              label: 'Combo: $combo in a row',
+              label: context.l10n.summaryCombo(combo),
               excludeSemantics: true,
               child: Container(
                 padding: const EdgeInsets.symmetric(
@@ -125,7 +126,7 @@ class SessionSummary extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'NEW BEST!',
+                    context.l10n.summaryNewBest,
                     style: theme.textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.w900,
                       color: AppColors.ink,
@@ -148,7 +149,7 @@ class SessionSummary extends StatelessWidget {
                   children: [
                     const Icon(Icons.bolt_rounded, color: AppColors.orangeInk),
                     Text(
-                      '+$v points',
+                      context.l10n.commonPlusPoints(v),
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w900,
                         color: AppColors.orangeInk,
@@ -163,7 +164,7 @@ class SessionSummary extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Best combo: $bestCombo in a row',
+                context.l10n.summaryBestCombo(bestCombo),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.inkSoft,
                 ),
@@ -184,12 +185,12 @@ class SessionSummary extends StatelessWidget {
               width: double.infinity,
               child: FilledButton(
                 onPressed: onAgain,
-                child: const Text('PLAY AGAIN'),
+                child: Text(context.l10n.summaryPlayAgain),
               ),
             ),
           TextButton(
             onPressed: onDone ?? () => Navigator.of(context).maybePop(),
-            child: const Text('Done'),
+            child: Text(context.l10n.commonDone),
           ),
         ],
       ),
@@ -221,7 +222,7 @@ class StarRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final calm = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     return Semantics(
-      label: '$stars of 3 stars',
+      label: context.l10n.summaryStars(stars),
       excludeSemantics: true,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -6,6 +6,7 @@ import '../providers/words_provider.dart';
 import '../theme/app_theme.dart';
 import 'common.dart';
 import 'level_badge.dart';
+import '../l10n/l10n_ext.dart';
 
 /// "All levels in sequence" or any set of levels. Used by onboarding and
 /// Settings; reports every change through [onChanged].
@@ -32,8 +33,8 @@ class LevelPicker extends ConsumerWidget {
                   : Icons.radio_button_unchecked_rounded,
               color: AppColors.blueBottom,
             ),
-            title: const Text('All levels in sequence'),
-            subtitle: const Text('A1 → A2 → B1 → B2 · recommended'),
+            title: Text(context.l10n.levelAllInSequence),
+            subtitle: Text(context.l10n.levelSequenceSub),
             onTap: () => onChanged(const LevelChoice.sequence()),
           ),
           const Divider(height: 1),
@@ -42,7 +43,7 @@ class LevelPicker extends ConsumerWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Or choose one or more levels',
+                context.l10n.levelOrChoose,
                 style: theme.textTheme.labelLarge?.copyWith(
                   color: AppColors.inkSoft,
                 ),
@@ -63,8 +64,8 @@ class LevelPicker extends ConsumerWidget {
                 );
               },
               secondary: LevelBadge(level: level, large: true),
-              title: Text(level.description),
-              subtitle: Text('${count(level)} words'),
+              title: Text(levelName(context.l10n, level)),
+              subtitle: Text(context.l10n.levelWordCount(count(level))),
             ),
         ],
       ),

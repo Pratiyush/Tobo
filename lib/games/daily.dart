@@ -30,32 +30,7 @@ class DailyHive {
 
   String get prefsKey => 'daily_hive_${date}_${level.label}';
 
-  static const _months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
-  /// "Wortschatz Daily Hive · 9 Nov · A1 · ★★★ · no hints"
-  String shareText({required int stars, required int hints}) {
-    final starText = '${'★' * stars}${'☆' * (3 - stars)}';
-    final hintText = switch (hints) {
-      0 => 'no hints',
-      1 => '1 hint',
-      _ => '$hints hints',
-    };
-    return 'Wortschatz Daily Hive · ${day.day} ${_months[day.month - 1]} · '
-        '${level.label} · $starText · $hintText';
-  }
+  // The share text is UI: dailyShareText in lib/l10n/l10n_ext.dart.
 }
 
 /// The level today's board uses: the first chosen level with unlearned

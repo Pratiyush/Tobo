@@ -7,8 +7,9 @@ import '../providers/content_update_provider.dart';
 import '../providers/settings_provider.dart';
 import '../theme/app_theme.dart';
 import 'common.dart';
+import '../l10n/l10n_ext.dart';
 
-String _mb(int bytes) => '${(bytes / 1048576).toStringAsFixed(1)} MB';
+String _mb(AppLocalizations l, int bytes) => l.contentMb(bytes / 1048576);
 
 /// Home: a non-blocking card when newer word data is available.
 class ContentUpdateCard extends ConsumerWidget {
@@ -17,13 +18,11 @@ class ContentUpdateCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final check = ref.watch(contentUpdateProvider);
+    final l = context.l10n;
     final text = switch (check.state) {
-      UpdateState.available =>
-        'New word data available. Update (${_mb(check.downloadBytes)})',
-      UpdateState.updating => 'Updating words…',
-      UpdateState.updated =>
-        'Words updated. They appear next time you open '
-            'the app; recordings already play.',
+      UpdateState.available => l.contentBanner(_mb(l, check.downloadBytes)),
+      UpdateState.updating => l.contentUpdating,
+      UpdateState.updated => l.contentUpdatedBanner,
       _ => null,
     };
     if (text == null) return const SizedBox.shrink();
@@ -61,24 +60,27 @@ class ContentUpdateTile extends ConsumerWidget {
     final version = check.state == UpdateState.updated
         ? check.manifest!.contentVersion
         : notifier.installedVersion;
+    final l = context.l10n;
     final (subtitle, action, onTap) = switch (check.state) {
-      UpdateState.checking => ('Checking…', null, null),
-      UpdateState.updating => ('Downloading and checking files…', null, null),
+      UpdateState.checking => (l.contentChecking, null, null),
+      UpdateState.updating => (l.contentDownloading, null, null),
       UpdateState.available => (
-        'Version ${check.manifest!.contentVersion} available, '
-            '${_mb(check.downloadBytes)}',
-        'Update',
+        l.contentAvailable(
+          check.manifest!.contentVersion,
+          _mb(l, check.downloadBytes),
+        ),
+        l.contentUpdate,
         notifier.update,
       ),
-      UpdateState.updated => (
-        'Updated. New words appear next time you open the app.',
-        null,
-        null,
+      UpdateState.updated => (l.contentUpdated, null, null),
+      UpdateState.upToDate => (
+        l.contentUpToDate,
+        l.contentCheck,
+        notifier.check,
       ),
-      UpdateState.upToDate => ('Up to date', 'Check', notifier.check),
       UpdateState.appTooOld => (
-        'Update the app to get new content',
-        'Store',
+        l.contentAppTooOld,
+        l.contentStore,
         () => launchUrl(
           Uri.parse(
             'https://play.google.com/store/apps/details?id=com.pratiyush.german_words',
@@ -86,27 +88,23 @@ class ContentUpdateTile extends ConsumerWidget {
           mode: LaunchMode.externalApplication,
         ),
       ),
-      UpdateState.failed => (
-        'Couldn’t update. Your words are unchanged.',
-        'Retry',
-        notifier.check,
-      ),
-      UpdateState.idle => (null, 'Check', notifier.check),
+      UpdateState.failed => (l.contentFailed, l.contentRetry, notifier.check),
+      UpdateState.idle => (null, l.contentCheck, notifier.check),
     };
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         ListTile(
           leading: const Icon(Icons.cloud_sync_rounded),
-          title: Text('Word content · version $version'),
+          title: Text(l.contentTitle(version)),
           subtitle: subtitle == null ? null : Text(subtitle),
           trailing: action == null
               ? null
               : TextButton(onPressed: onTap, child: Text(action)),
         ),
         SwitchListTile(
-          title: const Text('Update automatically on Wi-Fi'),
-          subtitle: const Text('Never on mobile data'),
+          title: Text(l.contentAutoWifi),
+          subtitle: Text(l.contentAutoWifiSub),
           value: ref.watch(settingsProvider).autoUpdateOnWifi,
           onChanged: ref.read(settingsProvider.notifier).setAutoUpdateOnWifi,
         ),

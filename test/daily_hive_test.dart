@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:german_words/games/daily.dart';
+import 'package:german_words/l10n/l10n_ext.dart';
 import 'package:german_words/games/hive.dart';
 import 'package:german_words/models/level.dart';
 import 'package:german_words/models/word.dart';
@@ -9,11 +10,15 @@ import 'package:german_words/screens/hive_screen.dart';
 
 import 'helpers.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
+
 List<Word> _targetsOf(WidgetTester tester) =>
     (tester.state(find.byType(HiveScreen)) as dynamic).debugTargets
         as List<Word>;
 
 void main() {
+  // The app's localizations load date formats; a bare unit test must.
+  setUpAll(initializeDateFormatting);
   test('same day and level: same seed; level picks the frontier', () {
     final a = DailyHive(DateTime(2026, 11, 9), Level.a1);
     expect(a.seed, DailyHive(DateTime(2026, 11, 9), Level.a1).seed);
@@ -27,8 +32,8 @@ void main() {
     );
     expect(dailyLevel([Level.b1], (_) => false), Level.b1);
     expect(
-      a.shareText(stars: 2, hints: 1),
-      'Wortschatz Daily Hive · 9 Nov · A1 · ★★☆ · 1 hint',
+      dailyShareText(en, a, stars: 2, hints: 1),
+      'Wortschatz Daily Hive · Nov 9 · A1 · ★★☆ · 1 hint',
     );
   });
 
@@ -80,7 +85,7 @@ void main() {
     expect(find.text('NEXT ROUND'), findsNothing);
     await tester.tap(find.text('SHARE RESULT'));
     await tester.pump();
-    expect(shared.single, day.shareText(stars: 3, hints: 0));
+    expect(shared.single, dailyShareText(en, day, stars: 3, hints: 0));
   });
 
   testWidgets('a played board shares from the Practice tab card', (
@@ -104,7 +109,7 @@ void main() {
     await tester.pump();
     expect(
       shared.single,
-      c.read(dailyHiveProvider).shareText(stars: 2, hints: 1),
+      dailyShareText(en, c.read(dailyHiveProvider), stars: 2, hints: 1),
     );
   });
 }

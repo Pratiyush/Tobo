@@ -4,6 +4,7 @@
 // change can't leave it at the wrong hour.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/l10n/l10n_ext.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/reminder_provider.dart';
 import 'package:german_words/services/reminders.dart';
@@ -62,7 +63,7 @@ void main() {
       final c = await createContainer(reminders: fake);
       expect(c.read(reminderProvider).on, isFalse);
       expect(c.read(reminderProvider).minutes, defaultReminderMinutes);
-      await c.read(reminderProvider.notifier).sync();
+      await c.read(reminderProvider.notifier).sync(reminderTexts(en));
       expect(fake.asked, 0);
       expect(fake.scheduled, isEmpty);
     });
@@ -70,7 +71,10 @@ void main() {
     test('switching on asks once, schedules and persists', () async {
       final fake = FakeReminders();
       final c = await createContainer(reminders: fake);
-      expect(await c.read(reminderProvider.notifier).turnOn(), isTrue);
+      expect(
+        await c.read(reminderProvider.notifier).turnOn(reminderTexts(en)),
+        isTrue,
+      );
       expect(fake.asked, 1);
       expect(fake.scheduled, [defaultReminderMinutes]);
       expect(c.read(reminderProvider).on, isTrue);
@@ -80,7 +84,10 @@ void main() {
     test('permission refused: stays off, nothing scheduled', () async {
       final fake = FakeReminders(grant: false);
       final c = await createContainer(reminders: fake);
-      expect(await c.read(reminderProvider.notifier).turnOn(), isFalse);
+      expect(
+        await c.read(reminderProvider.notifier).turnOn(reminderTexts(en)),
+        isFalse,
+      );
       expect(c.read(reminderProvider).on, isFalse);
       expect(fake.scheduled, isEmpty);
       expect(
@@ -93,11 +100,11 @@ void main() {
       final fake = FakeReminders();
       final c = await createContainer(reminders: fake);
       final n = c.read(reminderProvider.notifier);
-      await n.setTime(8 * 60);
+      await n.setTime(8 * 60, reminderTexts(en));
       expect(fake.scheduled, isEmpty, reason: 'off: only remembered');
-      await n.turnOn();
+      await n.turnOn(reminderTexts(en));
       expect(fake.scheduled, [8 * 60]);
-      await n.setTime(21 * 60 + 15);
+      await n.setTime(21 * 60 + 15, reminderTexts(en));
       expect(fake.scheduled.last, 21 * 60 + 15);
       expect(
         c.read(sharedPreferencesProvider).getInt(reminderMinutesKey),
@@ -108,7 +115,7 @@ void main() {
     test('switching off cancels it', () async {
       final fake = FakeReminders();
       final c = await createContainer(reminders: fake);
-      await c.read(reminderProvider.notifier).turnOn();
+      await c.read(reminderProvider.notifier).turnOn(reminderTexts(en));
       await c.read(reminderProvider.notifier).turnOff();
       expect(fake.cancels, 1);
       expect(c.read(reminderProvider).on, isFalse);
@@ -117,9 +124,12 @@ void main() {
 
     test('a failing plugin leaves it off instead of crashing', () async {
       final c = await createContainer(reminders: _BrokenReminders());
-      expect(await c.read(reminderProvider.notifier).turnOn(), isFalse);
+      expect(
+        await c.read(reminderProvider.notifier).turnOn(reminderTexts(en)),
+        isFalse,
+      );
       expect(c.read(reminderProvider).on, isFalse);
-      await c.read(reminderProvider.notifier).sync();
+      await c.read(reminderProvider.notifier).sync(reminderTexts(en));
     });
   });
 
@@ -181,7 +191,8 @@ class _BrokenReminders implements Reminders {
   Future<bool> requestPermission() async => true;
 
   @override
-  Future<void> schedule(int minutesOfDay) => Future.error(StateError('no'));
+  Future<void> schedule(int minutesOfDay, ReminderTexts texts) =>
+      Future.error(StateError('no'));
 
   @override
   Future<void> cancel() async {}

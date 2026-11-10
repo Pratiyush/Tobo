@@ -128,15 +128,21 @@ void main() {
     Word noun(String german) => nouns.firstWhere((w) => w.german == german);
 
     test('compounds take the article of their last part', () {
-      expect(genderHint(noun('Kaltmiete'), nouns), contains('die Miete'));
-      expect(genderHint(noun('Krankenhaus'), nouns), contains('das Haus'));
+      expect(
+        hintText(genderHint(noun('Kaltmiete'), nouns)),
+        contains('die Miete'),
+      );
+      expect(
+        hintText(genderHint(noun('Krankenhaus'), nouns)),
+        contains('das Haus'),
+      );
     });
 
     test('plural-only nouns are recognised and explained (BUG-13)', () {
       for (final g in ['Leute', 'Eltern', 'Ferien']) {
         expect(noun(g).isPluralOnly, isTrue, reason: g);
         expect(noun(g).pluralDisplay, isNull);
-        expect(genderHint(noun(g), nouns), contains('Plural-only'));
+        expect(hintText(genderHint(noun(g), nouns)), contains('Plural-only'));
       }
       expect(noun('Fenster').isPluralOnly, isFalse);
       expect(noun('Fenster').pluralDisplay, 'die Fenster');
@@ -144,7 +150,10 @@ void main() {
     });
 
     test('suffix rules explain -ung and friends', () {
-      expect(genderHint(noun('Wohnung'), nouns), contains('-ung take die'));
+      expect(
+        hintText(genderHint(noun('Wohnung'), nouns)),
+        contains('-ung take die'),
+      );
     });
 
     test('a pattern that disagrees with the article gives no hint', () {
@@ -156,7 +165,7 @@ void main() {
     test('every hint on the deck agrees with the real article', () {
       var hinted = 0;
       for (final w in nouns) {
-        final hint = genderHint(w, nouns);
+        final hint = hintText(genderHint(w, nouns));
         if (hint == null) continue;
         hinted++;
         final g = w.gender!.name;

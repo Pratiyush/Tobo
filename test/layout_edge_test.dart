@@ -17,6 +17,8 @@ import 'package:german_words/widgets/common.dart';
 
 import 'helpers.dart';
 
+import 'package:german_words/l10n/l10n_ext.dart';
+
 void main() {
   // The longest words in the deck stress every card.
   final longNouns = [...deck.where((w) => w.isNoun)]
@@ -86,7 +88,7 @@ void main() {
 
   test('every level name fits the picker', () {
     expect(
-      Level.values.map((l) => l.description).every((d) => d.length < 24),
+      Level.values.map((l) => levelName(en, l)).every((d) => d.length < 24),
       isTrue,
     );
   });

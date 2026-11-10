@@ -6,6 +6,7 @@ import '../providers/onboarding_provider.dart';
 import '../providers/settings_provider.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/level_picker.dart';
+import '../l10n/l10n_ext.dart';
 
 /// First run: what level? One question, then straight to the games.
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -40,12 +41,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           children: [
             FilledButton(
               onPressed: () => _finish(_choice),
-              child: const Text('START'),
+              child: Text(context.l10n.onboardingStart),
             ),
             TextButton(
               style: TextButton.styleFrom(foregroundColor: Colors.white),
               onPressed: () => _finish(const LevelChoice.sequence()),
-              child: const Text('Not sure? Start at A1'),
+              child: Text(context.l10n.onboardingNotSure),
             ),
           ],
         ),
@@ -56,7 +57,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           Text('Willkommen!', style: white, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Text(
-            'Learn German words by playing. What’s your level?',
+            context.l10n.onboardingIntro,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
           ),
@@ -67,7 +68,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
           const SizedBox(height: 12),
           Text(
-            'You can change this any time in Settings.',
+            context.l10n.onboardingChangeLater,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
           ),

@@ -16,6 +16,7 @@ import '../providers/stats_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
+import '../l10n/l10n_ext.dart';
 
 /// New words per Learn session.
 const learnSessionSize = 10;
@@ -73,15 +74,12 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
   Widget build(BuildContext context) {
     final total = min(widget.words.length, learnSessionSize);
     return BlueScaffold(
-      title: 'Learn',
+      title: context.l10n.commonLearn,
       onPop: () => ref.read(speakerProvider).stop(),
       body: _deck.isEmpty
           ? SessionSummary(
               title: 'Wunderbar!',
-              message:
-                  'You learned $_known new '
-                  '${_known == 1 ? 'word' : 'words'}. They’ll come back '
-                  'for practice tomorrow.',
+              message: context.l10n.learnDone(_known),
               onAgain: null,
             )
           : Column(
@@ -124,7 +122,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                 ),
                                 onPressed: _later,
                                 icon: const Icon(Icons.hourglass_bottom),
-                                label: const Text('LATER'),
+                                label: Text(context.l10n.learnLater),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -136,7 +134,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                                 ),
                                 onPressed: _know,
                                 icon: const Icon(Icons.check_circle_rounded),
-                                label: const Text('KNOW IT'),
+                                label: Text(context.l10n.learnKnowIt),
                               ),
                             ),
                           ],
@@ -146,7 +144,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                           child: FilledButton.icon(
                             onPressed: _flip,
                             icon: const Icon(Icons.flip_rounded),
-                            label: const Text('FLIP'),
+                            label: Text(context.l10n.learnFlip),
                           ),
                         ),
                 ),
@@ -186,7 +184,7 @@ class _Front extends StatelessWidget {
                 if (word.isPluralOnly) ...[
                   const SizedBox(height: 6),
                   Text(
-                    'plural only · always die',
+                    context.l10n.learnPluralOnly,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontStyle: FontStyle.italic,
                       color: AppColors.inkSoft,
@@ -196,7 +194,7 @@ class _Front extends StatelessWidget {
                 if (word.pluralDisplay != null) ...[
                   const SizedBox(height: 6),
                   Text(
-                    'pl. ${word.pluralDisplay}',
+                    context.l10n.learnPlural(word.pluralDisplay!),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontStyle: FontStyle.italic,
                       color: AppColors.inkSoft,
@@ -254,7 +252,7 @@ class _Back extends StatelessWidget {
                 ),
                 if (word.pluralDisplay != null)
                   Text(
-                    'pl. ${word.pluralDisplay}',
+                    context.l10n.learnPlural(word.pluralDisplay!),
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontStyle: FontStyle.italic,
                       color: AppColors.inkSoft,
@@ -276,7 +274,7 @@ class _Back extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.only(top: 12),
                       child: Text(
-                        hint,
+                        genderHintText(context.l10n, hint),
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: AppColors.inkSoft,

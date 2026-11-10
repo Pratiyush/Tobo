@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import '../widgets/common.dart';
 import 'ad_policy.dart';
 import 'ads_service.dart';
+import '../l10n/l10n_ext.dart';
 
 /// Uses a hint from [quota]. When none are left (ads on only), offers a
 /// rewarded ad for [HintQuota.perReward] more. If no ad is available the
@@ -20,16 +21,16 @@ Future<bool> requestHint(
   final watch = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Out of hints'),
-      content: Text('Watch a short ad for ${HintQuota.perReward} more hints?'),
+      title: Text(context.l10n.adsOutOfHints),
+      content: Text(context.l10n.adsWatchForHints(HintQuota.perReward)),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Not now'),
+          child: Text(context.l10n.commonNotNow),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Watch ad'),
+          child: Text(context.l10n.adsWatchAd),
         ),
       ],
     ),
@@ -78,7 +79,7 @@ class _DoublePointsState extends ConsumerState<DoublePointsButton> {
           }
         },
         icon: const Icon(Icons.ondemand_video_rounded),
-        label: Text('Double points (+${widget.points})'),
+        label: Text(context.l10n.adsDoublePoints(widget.points)),
       ),
     );
   }
@@ -106,7 +107,7 @@ class StreakRestoreCard extends ConsumerWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Restore your $streak-day streak',
+                context.l10n.adsRestoreStreak(streak),
                 style: Theme.of(context).textTheme.titleSmall
                     ?.copyWith(fontWeight: FontWeight.w800),
               ),
@@ -131,8 +132,9 @@ class SiblingApp {
     this.appStoreId = '',
   });
 
-  final String name;
-  final String pitch;
+  /// Name and one-line pitch in the UI language.
+  final String Function(AppLocalizations l) name;
+  final String Function(AppLocalizations l) pitch;
 
   /// Play package name; empty until the app is live on Play.
   final String androidPackage;
@@ -144,11 +146,21 @@ class SiblingApp {
 /// Each has a different job, which is the point: a family, not clones.
 /// Fill in a store id when that app goes live; until then it is hidden.
 const siblingApps = [
-  SiblingApp(name: 'Lernle', pitch: 'Read real German stories, word by word'),
-  SiblingApp(name: 'WordBit', pitch: 'A German word every time you unlock'),
-  SiblingApp(name: 'Leben in Deutschland', pitch: 'Pass the citizenship test'),
-  SiblingApp(name: 'German audiobook', pitch: 'Listen to graded stories'),
+  SiblingApp(name: _lernle, pitch: _lernlePitch),
+  SiblingApp(name: _wordbit, pitch: _wordbitPitch),
+  SiblingApp(name: _leben, pitch: _lebenPitch),
+  SiblingApp(name: _audiobook, pitch: _audiobookPitch),
 ];
+
+// Proper names stay as they are; descriptions follow the UI language.
+String _lernle(AppLocalizations l) => 'Lernle';
+String _lernlePitch(AppLocalizations l) => l.siblingLernle;
+String _wordbit(AppLocalizations l) => 'WordBit';
+String _wordbitPitch(AppLocalizations l) => l.siblingWordbit;
+String _leben(AppLocalizations l) => 'Leben in Deutschland';
+String _lebenPitch(AppLocalizations l) => l.siblingLeben;
+String _audiobook(AppLocalizations l) => l.siblingAudiobookName;
+String _audiobookPitch(AppLocalizations l) => l.siblingAudiobook;
 
 /// The house-ad slot on the Practice tab. No SDK, no tracking: a store link.
 class HouseAdCard extends StatelessWidget {
@@ -190,18 +202,21 @@ class HouseAdCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'More German from Pratiyush',
+                    context.l10n.adsMoreGerman,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: AppColors.inkSoft,
                     ),
                   ),
                   Text(
-                    app.name,
+                    app.name(context.l10n),
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  Text(app.pitch, style: theme.textTheme.bodyMedium),
+                  Text(
+                    app.pitch(context.l10n),
+                    style: theme.textTheme.bodyMedium,
+                  ),
                 ],
               ),
             ),

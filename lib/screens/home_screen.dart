@@ -16,6 +16,7 @@ import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
 import 'word_list_screen.dart';
+import '../l10n/l10n_ext.dart';
 
 /// Streak, level, stats, then every word list with its progress ring.
 class HomeScreen extends ConsumerWidget {
@@ -69,7 +70,7 @@ class _Header extends ConsumerWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: Semantics(
-                label: 'Streak $streak ${streak == 1 ? 'day' : 'days'}',
+                label: context.l10n.homeStreak(streak),
                 child: Row(
                   children: [
                     const Text('🔥', style: TextStyle(fontSize: 22)),
@@ -87,9 +88,9 @@ class _Header extends ConsumerWidget {
         WhiteCard(
           child: Row(
             children: [
-              _Stat(label: 'Points', value: stats.points),
-              _Stat(label: 'To practise', value: due),
-              _Stat(label: 'Vocabulary', value: learned),
+              _Stat(label: context.l10n.homePoints, value: stats.points),
+              _Stat(label: context.l10n.homeToPractise, value: due),
+              _Stat(label: context.l10n.homeVocabulary, value: learned),
             ],
           ),
         ),
@@ -114,7 +115,7 @@ class _LevelBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Semantics(
-      label: 'Level $level',
+      label: context.l10n.homeLevel(level),
       excludeSemantics: true,
       child: SizedBox.square(
         dimension: 112,
@@ -244,8 +245,11 @@ class _WordListCard extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  '$total items · ${list.words.first.german} … '
-                  '${list.words.last.german}',
+                  context.l10n.homeListSummary(
+                    total,
+                    list.words.first.german,
+                    list.words.last.german,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -277,9 +281,11 @@ class _LevelProgress extends ConsumerWidget {
           if (level != choice.active.first) const SizedBox(width: 8),
           Expanded(
             child: Semantics(
-              label:
-                  'Level ${level.label}: ${progress[level]!.learned} of '
-                  '${progress[level]!.total} words learned',
+              label: context.l10n.homeLevelProgress(
+                level.label,
+                progress[level]!.learned,
+                progress[level]!.total,
+              ),
               excludeSemantics: true,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,15 +345,14 @@ class _TodayCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Start here',
+              context.l10n.homeStartHere,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w900,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              'Learn your first 10 words with sound, then play them in '
-              'the games.',
+              context.l10n.homeStartHereBody,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: AppColors.inkSoft,
               ),
@@ -360,7 +365,7 @@ class _TodayCard extends ConsumerWidget {
                 ),
               ),
               icon: const Icon(Icons.play_arrow_rounded),
-              label: const Text('LEARN 10 WORDS'),
+              label: Text(context.l10n.homeLearn10),
             ),
           ],
         ),
@@ -406,15 +411,17 @@ class _TodayCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  reached ? 'Today\'s goal reached!' : 'Today\'s goal',
+                  reached
+                      ? context.l10n.homeGoalReached
+                      : context.l10n.homeGoal,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 Text(
                   reached
-                      ? 'See you tomorrow, or keep playing for points.'
-                      : '$done of $dailyGoal words learned or answered right',
+                      ? context.l10n.homeGoalReachedBody
+                      : context.l10n.homeGoalProgress(done, dailyGoal),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.inkSoft,
                   ),

@@ -18,6 +18,8 @@ import 'package:german_words/widgets/level_badge.dart';
 
 import 'helpers.dart';
 
+import 'package:german_words/l10n/l10n_ext.dart';
+
 int _count(Level l) => deck.where((w) => w.level == l).length;
 
 void main() {
@@ -29,7 +31,11 @@ void main() {
       expect(pick.active, [Level.a2, Level.b1], reason: 'easiest first');
       expect(pick.toPrefs(), ['A2', 'B1']);
       expect(LevelChoice.fromPrefs(pick.toPrefs()), pick);
-      expect(pick.label, 'A2 + B1');
+      expect(levelChoiceLabel(en, pick), 'A2 + B1');
+      expect(
+        levelChoiceLabel(en, const LevelChoice.sequence()),
+        'All levels in sequence',
+      );
       expect(LevelChoice.fromPrefs(['sequence']).sequence, isTrue);
       expect(LevelChoice.fromPrefs(['Z9']).sequence, isTrue, reason: 'junk');
     });

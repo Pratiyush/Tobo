@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ads/ads_service.dart';
+import 'l10n/languages.dart';
+import 'providers/language_provider.dart';
 import 'providers/content_update_provider.dart';
 import 'providers/reminder_provider.dart';
 import 'providers/progress_provider.dart';
@@ -13,6 +15,7 @@ import 'screens/home_screen.dart';
 import 'screens/practice_screen.dart';
 import 'screens/settings_screen.dart';
 import 'theme/app_theme.dart';
+import 'l10n/l10n_ext.dart';
 
 const appTitle = 'Wortschatz';
 
@@ -24,6 +27,16 @@ class GermanWordsApp extends ConsumerWidget {
     title: appTitle,
     debugShowCheckedModeBanner: false,
     theme: buildTheme(),
+    // The learner's pick, else the device language matched to the
+    // translated set (aliases such as nn → nb), else English.
+    locale: switch (ref.watch(appLanguageProvider)) {
+      final tag? => languageForTag(tag)?.locale,
+      null => null,
+    },
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    localeListResolutionCallback: (locales, _) =>
+        resolveLocale(locales ?? const []),
     // First run asks for the level; then the app proper.
     home: ref.watch(onboardedProvider)
         ? const RootScreen()
@@ -55,7 +68,7 @@ class _RootScreenState extends ConsumerState<RootScreen> {
       // At most once a day; silent when offline.
       ref.read(contentUpdateProvider.notifier).checkDaily();
       // Puts an "on" reminder back at its time after a reboot or clock change.
-      ref.read(reminderProvider.notifier).sync();
+      ref.read(reminderProvider.notifier).sync(reminderTexts(context.l10n));
     });
     _lifecycle = AppLifecycleListener(
       onResume: () => ref
@@ -91,10 +104,10 @@ class _RootScreenState extends ConsumerState<RootScreen> {
               selectedIndex: _tab,
               onDestinationSelected: (i) => setState(() => _tab = i),
               destinations: [
-                const NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded),
-                  label: 'Words',
+                NavigationDestination(
+                  icon: const Icon(Icons.home_outlined),
+                  selectedIcon: const Icon(Icons.home_rounded),
+                  label: context.l10n.navWords,
                 ),
                 NavigationDestination(
                   icon: Badge(
@@ -103,12 +116,12 @@ class _RootScreenState extends ConsumerState<RootScreen> {
                     child: const Icon(Icons.rocket_launch_outlined),
                   ),
                   selectedIcon: const Icon(Icons.rocket_launch_rounded),
-                  label: 'Practice',
+                  label: context.l10n.navPractice,
                 ),
-                const NavigationDestination(
-                  icon: Icon(Icons.person_outline_rounded),
-                  selectedIcon: Icon(Icons.person_rounded),
-                  label: 'Settings',
+                NavigationDestination(
+                  icon: const Icon(Icons.person_outline_rounded),
+                  selectedIcon: const Icon(Icons.person_rounded),
+                  label: context.l10n.navSettings,
                 ),
               ],
             ),
@@ -130,13 +143,19 @@ class StartupErrorApp extends StatelessWidget {
     title: appTitle,
     debugShowCheckedModeBanner: false,
     theme: buildTheme(),
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    localeListResolutionCallback: (locales, _) =>
+        resolveLocale(locales ?? const []),
     home: Scaffold(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Text(
-            'Wortschatz couldn’t start.\n\n$error',
-            textAlign: TextAlign.center,
+          child: Builder(
+            builder: (context) => Text(
+              context.l10n.appStartFailed('$error'),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),

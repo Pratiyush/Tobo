@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/level.dart';
 import '../theme/app_theme.dart';
+import '../l10n/l10n_ext.dart';
 
 /// "A1" pill. Colours pass WCAG AA: ink on green and orange, white on blue
 /// and flag red.
@@ -22,7 +23,7 @@ class LevelBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (bg, fg) = colours(level);
     return Semantics(
-      label: 'Level ${level.label}',
+      label: context.l10n.levelBadge(level.label),
       excludeSemantics: true,
       child: Container(
         padding: EdgeInsets.symmetric(

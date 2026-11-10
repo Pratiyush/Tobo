@@ -18,6 +18,7 @@ import '../providers/words_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/blue_scaffold.dart';
 import '../widgets/common.dart';
+import '../l10n/l10n_ext.dart';
 
 /// Nouns per Der Die Das session.
 const derDieDasRounds = 20;
@@ -96,7 +97,8 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
         () => mounted ? ref.read(speakerProvider).sayWord(word) : null,
       );
     }
-    final hint = genderHint(word, ref.read(nounsProvider));
+    final rule = genderHint(word, ref.read(nounsProvider));
+    final hint = rule == null ? null : genderHintText(context.l10n, rule);
     setState(() {
       _picked = g;
       _hint = hint;
@@ -127,8 +129,8 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
           ? SessionSummary(
               title: '$_score / ${_words.length}',
               message: _score == _words.length
-                  ? 'Perfekt! Every article right.'
-                  : 'Colour is the memory hook: der black, die red, das gold.',
+                  ? context.l10n.dddPerfect
+                  : context.l10n.dddTip,
               stars: starsFor(_score, _words.length),
               points: _points,
               bestCombo: _combo.best,
@@ -161,7 +163,9 @@ class _DerDieDasScreenState extends ConsumerState<DerDieDasScreen> {
                               Text(
                                 _picked == _words[_index].gender
                                     ? 'Richtig!'
-                                    : 'It’s ${_words[_index].gender!.name}',
+                                    : context.l10n.dddItsArticle(
+                                        _words[_index].gender!.name,
+                                      ),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   color: _picked == _words[_index].gender
                                       ? AppColors.greenInk

@@ -8,6 +8,8 @@ import 'package:german_words/app.dart';
 import 'package:german_words/content/content_source.dart';
 import 'package:german_words/content/network_info.dart';
 import 'package:german_words/data/word_repository.dart';
+import 'package:german_words/games/gender_rules.dart';
+import 'package:german_words/l10n/l10n_ext.dart';
 import 'package:german_words/models/word.dart';
 import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/preferences_provider.dart';
@@ -134,7 +136,12 @@ Widget buildApp(ProviderContainer container) => UncontrolledProviderScope(
 Widget buildScreen(ProviderContainer container, Widget screen) =>
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(theme: buildTheme(), home: screen),
+      child: MaterialApp(
+        theme: buildTheme(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: screen,
+      ),
     );
 
 /// Wi-Fi or mobile data, without the platform plugin.
@@ -171,8 +178,20 @@ class FakeReminders implements Reminders {
   }
 
   @override
-  Future<void> schedule(int minutesOfDay) async => scheduled.add(minutesOfDay);
+  Future<void> schedule(int minutesOfDay, ReminderTexts texts) async {
+    scheduled.add(minutesOfDay);
+    lastTexts = texts;
+  }
+
+  ReminderTexts? lastTexts;
 
   @override
   Future<void> cancel() async => cancels++;
 }
+
+/// The English UI strings, for tests of text rendered outside a widget.
+final en = lookupAppLocalizations(const Locale('en'));
+
+/// A grammar hint as the English UI shows it.
+String? hintText(GenderHint? hint) =>
+    hint == null ? null : genderHintText(en, hint);

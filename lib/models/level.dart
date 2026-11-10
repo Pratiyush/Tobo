@@ -1,14 +1,15 @@
 /// CEFR levels Wortschatz teaches, easiest first.
 enum Level {
-  a1('A1', 'Beginner'),
-  a2('A2', 'Elementary'),
-  b1('B1', 'Intermediate'),
-  b2('B2', 'Upper intermediate');
+  a1('A1'),
+  a2('A2'),
+  b1('B1'),
+  b2('B2');
 
-  const Level(this.label, this.description);
+  const Level(this.label);
 
+  /// The CEFR code. Its name ("Beginner"…) is UI: levelName in
+  /// lib/l10n/l10n_ext.dart.
   final String label;
-  final String description;
 
   /// The level of a word's `cefr` field; unknown values count as A1.
   static Level of(String cefr) {
@@ -42,10 +43,6 @@ class LevelChoice {
     for (final l in Level.values)
       if (includes(l)) l,
   ];
-
-  String get label => sequence
-      ? 'All levels in sequence'
-      : [for (final l in active) l.label].join(' + ');
 
   /// Stored as `["sequence"]` or the labels, e.g. `["A2", "B1"]`.
   List<String> toPrefs() =>
