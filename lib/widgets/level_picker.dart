@@ -64,7 +64,13 @@ class LevelPicker extends ConsumerWidget {
                 );
               },
               secondary: LevelBadge(level: level, large: true),
-              title: Text(levelName(context.l10n, level)),
+              // One line that shrinks: "Upper intermediate" broke over
+              // three lines at 360 dp with large text (BUG-41).
+              title: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(levelName(context.l10n, level), maxLines: 1),
+              ),
               subtitle: Text(context.l10n.levelWordCount(count(level))),
             ),
         ],

@@ -48,11 +48,18 @@ class PracticeScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        context.l10n.practiceTitle,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: AppColors.ink,
-                          fontWeight: FontWeight.w900,
+                      // One line that shrinks: it broke as "PRACTIC/E" at
+                      // 360 dp with large text (BUG-40).
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
+                          context.l10n.practiceTitle,
+                          maxLines: 1,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: AppColors.ink,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                       Text(
@@ -68,11 +75,18 @@ class PracticeScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Text(
-                  context.l10n.commonItems(due.length),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.ink,
-                    fontWeight: FontWeight.w700,
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 96),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      context.l10n.commonItems(due.length),
+                      maxLines: 1,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.ink,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ),
                 const Icon(Icons.chevron_right_rounded, color: AppColors.ink),
