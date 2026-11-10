@@ -32,4 +32,7 @@ flutter drive --driver=test_driver/integration_test.dart \
   --target=integration_test/app_e2e_test.dart -d "$device" \
   --dart-define=SCREENSHOTS=true
 mkdir -p "$shots" && cp build/screenshots/*.png "$shots/"
+if [ "$platform" = android ]; then
+  tools/lock-resume-check.sh "$device" docs/better-loop/lock-resume-android.png
+fi
 echo "device tier ($platform): green in $(( $(date +%s) - start )) s (budget 900 s)"
