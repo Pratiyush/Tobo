@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/content_update.dart';
+import '../widgets/reminder_tile.dart';
 import '../services/error_log.dart';
 import '../providers/preferences_provider.dart';
 import '../ads/ads_service.dart';
@@ -86,6 +87,8 @@ class SettingsScreen extends ConsumerWidget {
                       .read(settingsProvider.notifier)
                       .setSoundEffects,
                 ),
+                const Divider(height: 1),
+                const ReminderTile(),
                 const Divider(height: 1),
                 const ContentUpdateTile(),
                 const Divider(height: 1),

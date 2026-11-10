@@ -13,6 +13,7 @@ import 'package:german_words/providers/feedback_provider.dart';
 import 'package:german_words/providers/preferences_provider.dart';
 import 'package:german_words/providers/speech_provider.dart';
 import 'package:german_words/providers/words_provider.dart';
+import 'package:german_words/services/reminders.dart';
 import 'package:german_words/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -99,6 +100,7 @@ Future<ProviderContainer> createContainer({
   FeedbackEngine? feedback,
   TestClock? clock,
   NetworkInfo? network,
+  Reminders? reminders,
   List<Override> overrides = const [],
   List<Word>? words,
 }) async {
@@ -117,6 +119,7 @@ Future<ProviderContainer> createContainer({
         feedback ?? FakeFeedbackEngine(),
       ),
       networkInfoProvider.overrideWithValue(network ?? FakeNetworkInfo()),
+      remindersProvider.overrideWithValue(reminders ?? FakeReminders()),
       if (clock != null) clockProvider.overrideWithValue(clock.call),
       ...overrides,
     ],
@@ -147,4 +150,29 @@ class FakeNetworkInfo implements NetworkInfo {
     if (fails) return false;
     return unmetered;
   }
+}
+
+/// The daily reminder, without the notifications plugin.
+class FakeReminders implements Reminders {
+  FakeReminders({this.grant = true});
+
+  /// Whether the user allows notifications when asked.
+  final bool grant;
+  var asked = 0;
+  var cancels = 0;
+
+  /// Every schedule call, as minutes after midnight.
+  final scheduled = <int>[];
+
+  @override
+  Future<bool> requestPermission() async {
+    asked++;
+    return grant;
+  }
+
+  @override
+  Future<void> schedule(int minutesOfDay) async => scheduled.add(minutesOfDay);
+
+  @override
+  Future<void> cancel() async => cancels++;
 }

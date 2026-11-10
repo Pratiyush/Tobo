@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ads/ads_service.dart';
 import 'providers/content_update_provider.dart';
+import 'providers/reminder_provider.dart';
 import 'providers/progress_provider.dart';
 import 'providers/stats_provider.dart';
 import 'screens/home_screen.dart';
@@ -53,6 +54,8 @@ class _RootScreenState extends ConsumerState<RootScreen> {
       ref.read(adsServiceProvider).start();
       // At most once a day; silent when offline.
       ref.read(contentUpdateProvider.notifier).checkDaily();
+      // Puts an "on" reminder back at its time after a reboot or clock change.
+      ref.read(reminderProvider.notifier).sync();
     });
     _lifecycle = AppLifecycleListener(
       onResume: () => ref
