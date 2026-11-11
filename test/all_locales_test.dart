@@ -90,6 +90,15 @@ Future<void> _loadRoboto() async {
   fail('Roboto not found next to ${Platform.resolvedExecutable}');
 }
 
+/// Scripts Roboto has no glyphs for: the test draws them as 1 em squares,
+/// about twice their real width, so "cut off" can't be judged there and
+/// would push translators into clipped wording. Overflow and RTL checks
+/// still run for them; real rendering is checked on a device
+/// (tools/verify-device.sh screenshots in ar, hi, ta, th, ja).
+const _squareGlyphScripts = {
+  'ar', 'fa', 'ur', 'he', 'hi', 'bn', 'ta', 'th', 'ja', 'ko', 'zh', //
+};
+
 void main() {
   setUpAll(_loadRoboto);
 
@@ -134,7 +143,9 @@ void main() {
       );
       expect(AppLocalizations.of(home).localeName, locale.toString());
       final l = AppLocalizations.of(home);
-      final fixed = _fixedStrings(language);
+      final fixed = _squareGlyphScripts.contains(locale.languageCode)
+          ? const <String>{}
+          : _fixedStrings(language);
       var where = 'Home';
       final navigator = tester.state<NavigatorState>(
         find.byType(Navigator).first,

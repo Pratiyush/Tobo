@@ -5,13 +5,20 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_ar.dart';
+import 'app_localizations_bg.dart';
+import 'app_localizations_bn.dart';
 import 'app_localizations_cs.dart';
 import 'app_localizations_da.dart';
 import 'app_localizations_de.dart';
+import 'app_localizations_el.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
+import 'app_localizations_fa.dart';
 import 'app_localizations_fi.dart';
 import 'app_localizations_fr.dart';
+import 'app_localizations_he.dart';
+import 'app_localizations_hi.dart';
 import 'app_localizations_hr.dart';
 import 'app_localizations_hu.dart';
 import 'app_localizations_it.dart';
@@ -23,8 +30,11 @@ import 'app_localizations_ro.dart';
 import 'app_localizations_ru.dart';
 import 'app_localizations_sk.dart';
 import 'app_localizations_sv.dart';
+import 'app_localizations_ta.dart';
+import 'app_localizations_th.dart';
 import 'app_localizations_tr.dart';
 import 'app_localizations_uk.dart';
+import 'app_localizations_ur.dart';
 
 // ignore_for_file: type=lint
 
@@ -113,12 +123,19 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('ar'),
+    Locale('bg'),
+    Locale('bn'),
     Locale('cs'),
     Locale('da'),
     Locale('de'),
+    Locale('el'),
     Locale('es'),
+    Locale('fa'),
     Locale('fi'),
     Locale('fr'),
+    Locale('he'),
+    Locale('hi'),
     Locale('hr'),
     Locale('hu'),
     Locale('it'),
@@ -131,8 +148,11 @@ abstract class AppLocalizations {
     Locale('ru'),
     Locale('sk'),
     Locale('sv'),
+    Locale('ta'),
+    Locale('th'),
     Locale('tr'),
     Locale('uk'),
+    Locale('ur'),
   ];
 
   /// Settings row and screen title for choosing the UI language. Max ~20 chars.
@@ -1071,13 +1091,20 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) => <String>[
+    'ar',
+    'bg',
+    'bn',
     'cs',
     'da',
     'de',
+    'el',
     'en',
     'es',
+    'fa',
     'fi',
     'fr',
+    'he',
+    'hi',
     'hr',
     'hu',
     'it',
@@ -1089,8 +1116,11 @@ class _AppLocalizationsDelegate
     'ru',
     'sk',
     'sv',
+    'ta',
+    'th',
     'tr',
     'uk',
+    'ur',
   ].contains(locale.languageCode);
 
   @override
@@ -1112,20 +1142,34 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'bg':
+      return AppLocalizationsBg();
+    case 'bn':
+      return AppLocalizationsBn();
     case 'cs':
       return AppLocalizationsCs();
     case 'da':
       return AppLocalizationsDa();
     case 'de':
       return AppLocalizationsDe();
+    case 'el':
+      return AppLocalizationsEl();
     case 'en':
       return AppLocalizationsEn();
     case 'es':
       return AppLocalizationsEs();
+    case 'fa':
+      return AppLocalizationsFa();
     case 'fi':
       return AppLocalizationsFi();
     case 'fr':
       return AppLocalizationsFr();
+    case 'he':
+      return AppLocalizationsHe();
+    case 'hi':
+      return AppLocalizationsHi();
     case 'hr':
       return AppLocalizationsHr();
     case 'hu':
@@ -1148,10 +1192,16 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsSk();
     case 'sv':
       return AppLocalizationsSv();
+    case 'ta':
+      return AppLocalizationsTa();
+    case 'th':
+      return AppLocalizationsTh();
     case 'tr':
       return AppLocalizationsTr();
     case 'uk':
       return AppLocalizationsUk();
+    case 'ur':
+      return AppLocalizationsUr();
   }
 
   throw FlutterError(
