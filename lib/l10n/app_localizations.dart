@@ -16,12 +16,17 @@ import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_fa.dart';
 import 'app_localizations_fi.dart';
+import 'app_localizations_fil.dart';
 import 'app_localizations_fr.dart';
 import 'app_localizations_he.dart';
 import 'app_localizations_hi.dart';
 import 'app_localizations_hr.dart';
 import 'app_localizations_hu.dart';
+import 'app_localizations_id.dart';
 import 'app_localizations_it.dart';
+import 'app_localizations_ja.dart';
+import 'app_localizations_ko.dart';
+import 'app_localizations_ms.dart';
 import 'app_localizations_nb.dart';
 import 'app_localizations_nl.dart';
 import 'app_localizations_pl.dart';
@@ -30,11 +35,14 @@ import 'app_localizations_ro.dart';
 import 'app_localizations_ru.dart';
 import 'app_localizations_sk.dart';
 import 'app_localizations_sv.dart';
+import 'app_localizations_sw.dart';
 import 'app_localizations_ta.dart';
 import 'app_localizations_th.dart';
 import 'app_localizations_tr.dart';
 import 'app_localizations_uk.dart';
 import 'app_localizations_ur.dart';
+import 'app_localizations_vi.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -133,12 +141,17 @@ abstract class AppLocalizations {
     Locale('es'),
     Locale('fa'),
     Locale('fi'),
+    Locale('fil'),
     Locale('fr'),
     Locale('he'),
     Locale('hi'),
     Locale('hr'),
     Locale('hu'),
+    Locale('id'),
     Locale('it'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('ms'),
     Locale('nb'),
     Locale('nl'),
     Locale('pl'),
@@ -148,11 +161,15 @@ abstract class AppLocalizations {
     Locale('ru'),
     Locale('sk'),
     Locale('sv'),
+    Locale('sw'),
     Locale('ta'),
     Locale('th'),
     Locale('tr'),
     Locale('uk'),
     Locale('ur'),
+    Locale('vi'),
+    Locale('zh'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
   ];
 
   /// Settings row and screen title for choosing the UI language. Max ~20 chars.
@@ -1102,12 +1119,17 @@ class _AppLocalizationsDelegate
     'es',
     'fa',
     'fi',
+    'fil',
     'fr',
     'he',
     'hi',
     'hr',
     'hu',
+    'id',
     'it',
+    'ja',
+    'ko',
+    'ms',
     'nb',
     'nl',
     'pl',
@@ -1116,11 +1138,14 @@ class _AppLocalizationsDelegate
     'ru',
     'sk',
     'sv',
+    'sw',
     'ta',
     'th',
     'tr',
     'uk',
     'ur',
+    'vi',
+    'zh',
   ].contains(locale.languageCode);
 
   @override
@@ -1128,6 +1153,18 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+script codes are specified.
+  switch (locale.languageCode) {
+    case 'zh':
+      {
+        switch (locale.scriptCode) {
+          case 'Hant':
+            return AppLocalizationsZhHant();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when language+country codes are specified.
   switch (locale.languageCode) {
     case 'pt':
@@ -1164,6 +1201,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsFa();
     case 'fi':
       return AppLocalizationsFi();
+    case 'fil':
+      return AppLocalizationsFil();
     case 'fr':
       return AppLocalizationsFr();
     case 'he':
@@ -1174,8 +1213,16 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsHr();
     case 'hu':
       return AppLocalizationsHu();
+    case 'id':
+      return AppLocalizationsId();
     case 'it':
       return AppLocalizationsIt();
+    case 'ja':
+      return AppLocalizationsJa();
+    case 'ko':
+      return AppLocalizationsKo();
+    case 'ms':
+      return AppLocalizationsMs();
     case 'nb':
       return AppLocalizationsNb();
     case 'nl':
@@ -1192,6 +1239,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsSk();
     case 'sv':
       return AppLocalizationsSv();
+    case 'sw':
+      return AppLocalizationsSw();
     case 'ta':
       return AppLocalizationsTa();
     case 'th':
@@ -1202,6 +1251,10 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsUk();
     case 'ur':
       return AppLocalizationsUr();
+    case 'vi':
+      return AppLocalizationsVi();
+    case 'zh':
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(
