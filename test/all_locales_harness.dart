@@ -1,4 +1,4 @@
-// Every translation on every screen: for each language with an ARB file
+// Shared by all_locales_<n>_test.dart. Every translation on every screen: for each language with an ARB file
 // (new ones join automatically), open each screen and the round-end
 // summaries on a small 360 dp phone with large text, and scroll each to the
 // end. A RenderFlex overflow or any exception fails the test and names the
@@ -99,16 +99,22 @@ const _squareGlyphScripts = {
   'ar', 'fa', 'ur', 'he', 'hi', 'bn', 'ta', 'th', 'ja', 'ko', 'zh', //
 };
 
-void main() {
+/// Runs the fit test for every [shards]-th language starting at [shard], so
+/// four test files share the 40 languages across parallel test workers.
+void runLocaleFitTests({required int shard, required int shards}) {
   setUpAll(_loadRoboto);
 
-  test('the picker lists exactly the translated languages', () {
-    expect({
-      for (final l in availableLanguages) l.locale,
-    }, AppLocalizations.supportedLocales.toSet());
-  });
+  if (shard == 0) {
+    test('the picker lists exactly the translated languages', () {
+      expect({
+        for (final l in availableLanguages) l.locale,
+      }, AppLocalizations.supportedLocales.toSet());
+    });
+  }
 
-  for (final locale in AppLocalizations.supportedLocales) {
+  final locales = AppLocalizations.supportedLocales;
+  for (var i = shard; i < locales.length; i += shards) {
+    final locale = locales[i];
     final language = languageFor(locale);
 
     test('$locale has its row in the language table', () {
