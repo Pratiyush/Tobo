@@ -313,7 +313,9 @@ class _HiveScreenState extends ConsumerState<HiveScreen> {
                                 child: Text(
                                   context.l10n.hiveCoach,
                                   textAlign: TextAlign.center,
-                                  maxLines: 2,
+                                  // Three lines: Tamil needs them at 360 dp
+                                  // (locales_e2e_test, real fonts).
+                                  maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: AppColors.inkSoft,

@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:german_words/content/content_source.dart';
 import 'package:german_words/l10n/l10n_ext.dart';
 import 'package:german_words/l10n/languages.dart';
+import 'package:german_words/models/word.dart';
 import 'package:german_words/providers/language_provider.dart';
 import 'package:german_words/providers/reminder_provider.dart';
 import 'package:german_words/screens/der_die_das_screen.dart';
@@ -42,14 +44,37 @@ Set<String> _fixedStrings(Language language) {
   };
 }
 
+/// The deck: read from the asset file on the host, from the app bundle on a
+/// device (the source tree isn't there).
+late List<Word> _deck;
+
+final _content = {
+  for (final w in _deck) ...[
+    w.german,
+    w.display,
+    ...w.english,
+    w.meaning,
+    ?w.exampleDe,
+    ?w.exampleEn,
+    ?w.pluralDisplay,
+  ],
+};
+
+bool _isContent(String text) =>
+    text.contains('…') || _content.contains(text) || text.trim().isEmpty;
+
 /// Fails if a fixed UI string on screen is truncated (ellipsis or clipped
 /// past maxLines), or a single short word is broken across lines.
-void _expectNoCutText(WidgetTester tester, Set<String> fixed, String where) {
+///
+/// With [fixed] null (real fonts on a device, where the ARB sources aren't
+/// bundled) every text on screen is checked except learning content, which
+/// may ellipsize by design: deck words, meanings, examples, and "a … b".
+void _expectNoCutText(WidgetTester tester, Set<String>? fixed, String where) {
   for (final element in find.byType(RichText).evaluate()) {
     final box = element.renderObject;
     if (box is! RenderParagraph || !box.hasSize) continue;
     final text = box.text.toPlainText();
-    if (!fixed.contains(text)) continue;
+    if (fixed != null ? !fixed.contains(text) : _isContent(text)) continue;
     expect(
       box.didExceedMaxLines,
       isFalse,
@@ -95,14 +120,26 @@ Future<void> _loadRoboto() async {
 /// would push translators into clipped wording. Overflow and RTL checks
 /// still run for them; real rendering is checked on a device
 /// (tools/verify-device.sh screenshots in ar, hi, ta, th, ja).
-const _squareGlyphScripts = {
+const squareGlyphScripts = {
   'ar', 'fa', 'ur', 'he', 'hi', 'bn', 'ta', 'th', 'ja', 'ko', 'zh', //
 };
 
 /// Runs the fit test for every [shards]-th language starting at [shard], so
 /// four test files share the 40 languages across parallel test workers.
-void runLocaleFitTests({required int shard, required int shards}) {
-  setUpAll(_loadRoboto);
+///
+/// [realFonts]: on a device or simulator every script renders with the
+/// phone's own fonts, so the cut-off check runs for all languages and no
+/// font is loaded (integration_test/locales_e2e_test.dart).
+void runLocaleFitTests({
+  required int shard,
+  required int shards,
+  bool realFonts = false,
+  Set<String>? only,
+}) {
+  setUpAll(() async {
+    _deck = realFonts ? await BundledContentSource().loadWords() : deck;
+    if (!realFonts) await _loadRoboto();
+  });
 
   if (shard == 0) {
     test('the picker lists exactly the translated languages', () {
@@ -115,6 +152,7 @@ void runLocaleFitTests({required int shard, required int shards}) {
   final locales = AppLocalizations.supportedLocales;
   for (var i = shard; i < locales.length; i += shards) {
     final locale = locales[i];
+    if (only != null && !only.contains(locale.toString())) continue;
     final language = languageFor(locale);
 
     test('$locale has its row in the language table', () {
@@ -132,6 +170,7 @@ void runLocaleFitTests({required int shard, required int shards}) {
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
       final c = await createContainer(
+        words: _deck,
         prefs: {
           appLanguageKey: language.tag,
           // Rows that only show when on.
@@ -149,7 +188,9 @@ void runLocaleFitTests({required int shard, required int shards}) {
       );
       expect(AppLocalizations.of(home).localeName, locale.toString());
       final l = AppLocalizations.of(home);
-      final fixed = _squareGlyphScripts.contains(locale.languageCode)
+      final Set<String>? fixed = realFonts
+          ? null
+          : squareGlyphScripts.contains(locale.languageCode)
           ? const <String>{}
           : _fixedStrings(language);
       var where = 'Home';
@@ -195,7 +236,7 @@ void runLocaleFitTests({required int shard, required int shards}) {
         ),
       );
 
-      final words = deck.take(10).toList();
+      final words = _deck.take(10).toList();
       await scrollToEnd();
       await visit(const PracticeScreen());
       await visit(const SettingsScreen());
