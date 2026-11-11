@@ -79,7 +79,12 @@ class _DoublePointsState extends ConsumerState<DoublePointsButton> {
           }
         },
         icon: const Icon(Icons.ondemand_video_rounded),
-        label: Text(context.l10n.adsDoublePoints(widget.points)),
+        // Says it plays an ad before the tap (BUG-39).
+        label: Text(
+          '${context.l10n.adsWatchAd} · '
+          '${context.l10n.adsDoublePoints(widget.points)}',
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
@@ -106,10 +111,21 @@ class StreakRestoreCard extends ConsumerWidget {
             const Text('🔥', style: TextStyle(fontSize: 24)),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                context.l10n.adsRestoreStreak(streak),
-                style: Theme.of(context).textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.adsRestoreStreak(streak),
+                    style: Theme.of(context).textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w800),
+                  ),
+                  // Says it plays an ad before the tap (BUG-39).
+                  Text(
+                    context.l10n.adsWatchAd,
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: AppColors.inkSoft),
+                  ),
+                ],
               ),
             ),
             const Icon(

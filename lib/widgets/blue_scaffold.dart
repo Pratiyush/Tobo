@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import '../l10n/l10n_ext.dart';
 
 /// A scaffold on the blue gradient ground.
 class BlueScaffold extends StatelessWidget {
@@ -40,7 +41,7 @@ class BlueScaffold extends StatelessWidget {
                   title: title == null
                       ? null
                       : Text(
-                          title!.toUpperCase(),
+                          upperFor(title!, context.l10n.localeName),
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,

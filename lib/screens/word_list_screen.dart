@@ -155,7 +155,7 @@ class _ActionCard extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                label.toUpperCase(),
+                upperFor(label, context.l10n.localeName),
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: fg,
                   fontWeight: FontWeight.w900,

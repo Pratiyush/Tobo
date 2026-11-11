@@ -56,3 +56,23 @@ ReminderTexts reminderTexts(AppLocalizations l) => ReminderTexts(
   channel: l.reminderChannel,
   channelDescription: l.reminderChannelDesc,
 );
+
+/// Upper case by the language's own rules, which Dart's toUpperCase
+/// ignores (BUG-40): Turkish and Azerbaijani i → İ and ı → I; Greek
+/// capitals drop the accent (ά → Α, ΐ → Ϊ). [localeName] as in
+/// AppLocalizations.localeName ("tr", "el_GR").
+String upperFor(String text, String localeName) {
+  final lang = localeName.split(RegExp('[-_]')).first;
+  var s = text;
+  if (lang == 'tr' || lang == 'az') {
+    s = s.replaceAll('i', 'İ').replaceAll('ı', 'I');
+  } else if (lang == 'el') {
+    const plain = {
+      'ά': 'α', 'έ': 'ε', 'ή': 'η', 'ί': 'ι', 'ό': 'ο', 'ύ': 'υ', 'ώ': 'ω', //
+      'ΐ': 'ϊ', 'ΰ': 'ϋ', 'Ά': 'Α', 'Έ': 'Ε', 'Ή': 'Η', 'Ί': 'Ι', 'Ό': 'Ο', //
+      'Ύ': 'Υ', 'Ώ': 'Ω',
+    };
+    s = s.split('').map((c) => plain[c] ?? c).join();
+  }
+  return s.toUpperCase();
+}
