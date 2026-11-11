@@ -49,12 +49,14 @@ class Language {
   /// Its ARB file name in lib/l10n.
   String get arbFile => 'app_${(arb ?? tag).replaceAll('-', '_')}.arb';
 
-  /// Whether it has been translated (has an ARB file), so the picker offers it.
-  /// True when [flag] is a script badge (Persian: no flag without religious
-  /// text fits), drawn as a small label instead of an emoji.
+  /// True when [flag] is a script badge drawn as a small label instead of an
+  /// emoji: Persian (no flag without religious text fits), Chinese 简/繁 (a
+  /// country flag is politically loaded for Traditional, and some phones hide
+  /// 🇹🇼), Russian (its learners here come from many countries).
   bool get flagIsBadge =>
       !flag.runes.every((r) => r >= 0x1F1E6 && r <= 0x1F1FF);
 
+  /// Whether it has been translated (has an ARB file), so the picker offers it.
   bool get available => AppLocalizations.supportedLocales.contains(locale);
 
   /// Whether a search for [query] finds it: by its own name, its English name
@@ -89,7 +91,7 @@ const languages = <Language>[
   Language('nl', '🇳🇱', 'Nederlands', 'Dutch'),
   Language('pl', '🇵🇱', 'Polski', 'Polish'),
   Language('tr', '🇹🇷', 'Türkçe', 'Turkish'),
-  Language('ru', '🇷🇺', 'Русский', 'Russian'),
+  Language('ru', 'Ру', 'Русский', 'Russian'),
   Language('uk', '🇺🇦', 'Українська', 'Ukrainian'),
   Language('cs', '🇨🇿', 'Čeština', 'Czech'),
   Language('sk', '🇸🇰', 'Slovenčina', 'Slovak'),
@@ -116,8 +118,8 @@ const languages = <Language>[
   Language('fil', '🇵🇭', 'Filipino', 'Filipino'),
   Language('ja', '🇯🇵', '日本語', 'Japanese'),
   Language('ko', '🇰🇷', '한국어', 'Korean'),
-  Language('zh-Hans', '🇨🇳', '简体中文', 'Chinese (Simplified)', arb: 'zh'),
-  Language('zh-Hant', '🇭🇰', '繁體中文', 'Chinese (Traditional)'),
+  Language('zh-Hans', '简', '简体中文', 'Chinese (Simplified)', arb: 'zh'),
+  Language('zh-Hant', '繁', '繁體中文', 'Chinese (Traditional)'),
   Language('sw', '🇰🇪', 'Kiswahili', 'Swahili'),
 ];
 

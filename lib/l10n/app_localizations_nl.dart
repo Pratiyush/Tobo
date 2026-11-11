@@ -373,7 +373,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get practiceGames => 'SPELLEN';
+  String get practiceGames => 'SPELLETJES';
 
   @override
   String get practiceHiveSub =>
@@ -401,7 +401,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get settingsAutoSpeakSub => 'Op flashcards en na antwoorden';
 
   @override
-  String get settingsGamesAsPractice => 'Spellen tellen als oefening';
+  String get settingsGamesAsPractice => 'Spelletjes tellen als oefening';
 
   @override
   String get settingsGamesAsPracticeSub =>

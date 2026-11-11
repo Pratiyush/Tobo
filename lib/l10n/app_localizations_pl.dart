@@ -107,7 +107,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String homeGoalProgress(int done, int goal) {
-    return '$done z $goal słów nauczonych lub odgadniętych';
+    return 'Nauczone słowa lub dobre odpowiedzi: $done z $goal';
   }
 
   @override
@@ -462,7 +462,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String settingsAbout(int count) {
-    return 'Popularne niemieckie słowa ($count) z angielskimi tłumaczeniami i nagraną wymową. Bez paywalla: każde słowo i każda gra są za darmo.';
+    return 'Popularne niemieckie słowa ($count) z angielskimi tłumaczeniami i nagraną wymową. Bez płatnych treści: każde słowo i każda gra są za darmo.';
   }
 
   @override

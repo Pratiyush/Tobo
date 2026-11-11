@@ -82,7 +82,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String homeLevelProgress(String level, int learned, int total) {
-    return 'Уровень $level: выучено слов: $learned из $total';
+    return 'Уровень $level. Выучено слов: $learned из $total';
   }
 
   @override

@@ -45,7 +45,7 @@
   "levelsKeepProgress": "每個等級的進度都會保留，切換等級也不會遺失學會的單字。",
   "dailyHiveTitle": "Daily Hive · {level}",
   "dailyShare": "Wortschatz Daily Hive · {date} · {level} · {stars} · {hints}",
-  "dailyHints": "{count, plural, =0{沒用提示} other{用了 {count} 次提示}}",
+  "dailyHints": "{count, plural, =0{未使用提示} other{用了 {count} 次提示}}",
   "practiceDailySub": "今日題板，每位學習者都一樣",
   "practiceDailyDone": "今天已完成：{stars}。輕觸即可分享",
   "dddPerfect": "Perfekt! 冠詞全部答對。",

@@ -444,7 +444,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String settingsAbout(int count) {
-    return '$count mots allemands courants avec traductions en anglais et prononciations enregistrées. Pas de paywall : chaque mot et chaque jeu est gratuit.';
+    return '$count mots allemands courants avec traductions en anglais et prononciations enregistrées. Rien de payant : chaque mot et chaque jeu est gratuit.';
   }
 
   @override

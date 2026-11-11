@@ -101,7 +101,7 @@
   "settingsPrivacyPolicy": "Datenschutzerklärung",
   "settingsContact": "Support kontaktieren",
   "settingsLicences": "Open-Source-Lizenzen",
-  "settingsAbout": "{count} häufige deutsche Wörter mit englischen Übersetzungen und eingesprochener Aussprache. Keine Paywall: Jedes Wort und jedes Spiel ist kostenlos.",
+  "settingsAbout": "{count} häufige deutsche Wörter mit englischen Übersetzungen und eingesprochener Aussprache. Keine Bezahlschranke: Jedes Wort und jedes Spiel ist kostenlos.",
   "settingsMailLastError": "Letzter Fehler auf diesem Gerät (lösch ihn gern):",
   "spellingTitle": "Üben",
   "spellingDone": "Du hast {count, plural, one{{count} Wort} other{{count} Wörter}} geübt und {points, plural, one{{points} Punkt} other{{points} Punkte}} gesammelt.",

@@ -373,7 +373,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboardingStart => 'لنبدأ';
 
   @override
-  String get onboardingNotSure => 'لا فكرة لديك؟ لنبدأ من A1';
+  String get onboardingNotSure => 'لست متأكدًا؟ ابدأ من A1';
 
   @override
   String get onboardingChangeLater => 'يمكنك تغيير هذا في أي وقت من الإعدادات.';

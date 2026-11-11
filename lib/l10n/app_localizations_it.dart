@@ -442,7 +442,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String settingsAbout(int count) {
-    return '$count parole tedesche comuni con traduzione in inglese e pronuncia registrata. Nessun paywall: ogni parola e ogni gioco sono gratis.';
+    return '$count parole tedesche comuni con traduzione in inglese e pronuncia registrata. Niente a pagamento: ogni parola e ogni gioco sono gratis.';
   }
 
   @override

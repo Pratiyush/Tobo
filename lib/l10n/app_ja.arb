@@ -21,7 +21,7 @@
   "homeLearn10": "10語を覚える",
   "homeGoal": "今日の目標",
   "homeGoalReached": "今日の目標を達成！",
-  "homeGoalReachedBody": "また明日。続けて遊んでポイントを集めるのもOKです。",
+  "homeGoalReachedBody": "また明日。続けて遊んで、ポイントを集めることもできます。",
   "homeGoalProgress": "学習または正解：{goal}語中{done}語",
   "adsOutOfHints": "ヒントがなくなりました",
   "adsWatchForHints": "{count, plural, other{短い広告を見て、ヒントを{count}回追加しますか？}}",

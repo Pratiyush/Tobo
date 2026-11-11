@@ -95,7 +95,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeGoalReached => '今日の目標を達成！';
 
   @override
-  String get homeGoalReachedBody => 'また明日。続けて遊んでポイントを集めるのもOKです。';
+  String get homeGoalReachedBody => 'また明日。続けて遊んで、ポイントを集めることもできます。';
 
   @override
   String homeGoalProgress(int done, int goal) {

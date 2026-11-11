@@ -838,7 +838,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       count,
       locale: localeName,
       other: '用了 $count 次提示',
-      zero: '沒用提示',
+      zero: '未使用提示',
     );
     return '$_temp0';
   }

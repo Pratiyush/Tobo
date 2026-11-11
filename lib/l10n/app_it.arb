@@ -101,7 +101,7 @@
   "settingsPrivacyPolicy": "Informativa sulla privacy",
   "settingsContact": "Contatta l’assistenza",
   "settingsLicences": "Licenze open source",
-  "settingsAbout": "{count} parole tedesche comuni con traduzione in inglese e pronuncia registrata. Nessun paywall: ogni parola e ogni gioco sono gratis.",
+  "settingsAbout": "{count} parole tedesche comuni con traduzione in inglese e pronuncia registrata. Niente a pagamento: ogni parola e ogni gioco sono gratis.",
   "settingsMailLastError": "Ultimo errore su questo dispositivo (cancellalo se preferisci):",
   "spellingTitle": "Allenamento",
   "spellingDone": "Hai ripassato {count, plural, one{{count} parola} other{{count} parole}} e guadagnato {points, plural, one{{points} punto} other{{points} punti}}.",

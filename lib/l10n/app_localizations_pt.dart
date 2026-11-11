@@ -114,8 +114,8 @@ class AppLocalizationsPt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Ver um anúncio curto para ganhar mais $count dicas?',
-      one: 'Ver um anúncio curto para ganhar mais $count dica?',
+      other: 'Ver um anúncio curto para receber mais $count dicas?',
+      one: 'Ver um anúncio curto para receber mais $count dica?',
     );
     return '$_temp0';
   }
@@ -445,7 +445,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String settingsAbout(int count) {
-    return '$count palavras comuns em alemão com tradução para o inglês e pronúncia gravada. Sem paywall: todas as palavras e jogos são grátis.';
+    return '$count palavras comuns em alemão com tradução para o inglês e pronúncia gravada. Sem conteúdo pago: todas as palavras e jogos são grátis.';
   }
 
   @override
@@ -781,8 +781,8 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Ver um anúncio curto para ganhar mais $count dicas?',
-      one: 'Ver um anúncio curto para ganhar mais $count dica?',
+      other: 'Ver um anúncio curto para receber mais $count dicas?',
+      one: 'Ver um anúncio curto para receber mais $count dica?',
     );
     return '$_temp0';
   }
@@ -1110,7 +1110,7 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String settingsAbout(int count) {
-    return '$count palavras comuns em alemão com tradução para inglês e pronúncia gravada. Sem paywall: todas as palavras e jogos são gratuitos.';
+    return '$count palavras comuns em alemão com tradução para inglês e pronúncia gravada. Sem conteúdo pago: todas as palavras e jogos são gratuitos.';
   }
 
   @override

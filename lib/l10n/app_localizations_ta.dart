@@ -10,7 +10,7 @@ class AppLocalizationsTa extends AppLocalizations {
   AppLocalizationsTa([String locale = 'ta']) : super(locale);
 
   @override
-  String get settingsLanguage => 'ஆப்ஸ் மொழி';
+  String get settingsLanguage => 'ஆப் மொழி';
 
   @override
   String get languageSearchHint => 'மொழியைத் தேடுக';

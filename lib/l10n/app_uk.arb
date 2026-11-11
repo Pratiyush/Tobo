@@ -15,7 +15,7 @@
   "homeLevel": "Рівень {level}",
   "homeLevelCaps": "РІВЕНЬ",
   "homeListSummary": "{count, plural, one{{count} слово} few{{count} слова} many{{count} слів} other{{count} слів}} · {first} … {last}",
-  "homeLevelProgress": "Рівень {level}: вивчено слів: {learned} з {total}",
+  "homeLevelProgress": "Рівень {level}. Вивчено слів: {learned} з {total}",
   "homeStartHere": "Почни тут",
   "homeStartHereBody": "Вивчи перші 10 слів зі звуком, а потім зіграй з ними в іграх.",
   "homeLearn10": "ВИВЧИ 10 СЛІВ",

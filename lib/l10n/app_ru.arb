@@ -15,7 +15,7 @@
   "homeLevel": "Уровень {level}",
   "homeLevelCaps": "УРОВЕНЬ",
   "homeListSummary": "{count, plural, one{{count} слово} few{{count} слова} many{{count} слов} other{{count} слов}} · {first} … {last}",
-  "homeLevelProgress": "Уровень {level}: выучено слов: {learned} из {total}",
+  "homeLevelProgress": "Уровень {level}. Выучено слов: {learned} из {total}",
   "homeStartHere": "Начни здесь",
   "homeStartHereBody": "Выучи первые 10 слов со звуком, а потом сыграй с ними в играх.",
   "homeLearn10": "ВЫУЧИ 10 СЛОВ",

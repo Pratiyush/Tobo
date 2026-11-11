@@ -443,7 +443,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String settingsAbout(int count) {
-    return '$count häufige deutsche Wörter mit englischen Übersetzungen und eingesprochener Aussprache. Keine Paywall: Jedes Wort und jedes Spiel ist kostenlos.';
+    return '$count häufige deutsche Wörter mit englischen Übersetzungen und eingesprochener Aussprache. Keine Bezahlschranke: Jedes Wort und jedes Spiel ist kostenlos.';
   }
 
   @override

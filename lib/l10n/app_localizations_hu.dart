@@ -107,15 +107,15 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get adsOutOfHints => 'Elfogytak a tippek';
+  String get adsOutOfHints => 'Elfogytak a súgások';
 
   @override
   String adsWatchForHints(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Megnézel egy rövid reklámot $count további tippért?',
-      one: 'Megnézel egy rövid reklámot $count további tippért?',
+      other: 'Megnézel egy rövid reklámot $count további súgásért?',
+      one: 'Megnézel egy rövid reklámot $count további súgásért?',
     );
     return '$_temp0';
   }
@@ -218,9 +218,9 @@ class AppLocalizationsHu extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tipp',
-      one: '$count tipp',
-      zero: 'tipp nélkül',
+      other: '$count súgás',
+      one: '$count súgás',
+      zero: 'súgás nélkül',
     );
     return '$_temp0';
   }
@@ -278,7 +278,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get commonHint => 'Tipp';
+  String get commonHint => 'Súgás';
 
   @override
   String get hiveBoardCleared => 'Tábla kész!';
